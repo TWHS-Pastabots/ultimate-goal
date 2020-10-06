@@ -1,3 +1,6 @@
+# Repository specific files
+.idea/**
+
 # Built application files
 *.apk
 *.aar
