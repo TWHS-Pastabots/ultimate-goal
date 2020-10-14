@@ -4,10 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import static org.firstinspires.ftc.teamcode.ComponentIds.MOTOR_LEFT_FRONT;
-import static org.firstinspires.ftc.teamcode.ComponentIds.MOTOR_LEFT_REAR;
-import static org.firstinspires.ftc.teamcode.ComponentIds.MOTOR_RIGHT_FRONT;
-import static org.firstinspires.ftc.teamcode.ComponentIds.MOTOR_RIGHT_REAR;
+import static org.firstinspires.ftc.teamcode.ComponentIds.*;
 
 /**
  * Formal class for organizing all RobotHardware for usage across different Telop/Autonomous driving modes.
