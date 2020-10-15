@@ -40,9 +40,9 @@ public class RobotHardware {
         motorRightRear = hwMap.get(DcMotor.class, MOTOR_RIGHT_REAR);
 
         // TODO: Better understanding of what exactly the encoders are being registered to, and how.
-        encoderHorizontal = hwMap.get(DcMotor.class, "tape_motor");
-        encoderLeft = hwMap.get(DcMotor.class, "left_rear");
-        encoderRight = hwMap.get(DcMotor.class, "right_rear");
+//        encoderHorizontal = hwMap.get(DcMotor.class, "tape_motor");
+//        encoderLeft = hwMap.get(DcMotor.class, "left_rear");
+//        encoderRight = hwMap.get(DcMotor.class, "right_rear");
 
         // Motor direction is FORWARD by default
         motorLeftFront.setDirection(DcMotor.Direction.FORWARD);
