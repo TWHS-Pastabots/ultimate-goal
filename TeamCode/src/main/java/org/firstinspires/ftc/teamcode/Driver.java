@@ -49,6 +49,7 @@ public class Driver extends OpMode {
 
         // Mechanum trig math
         double radius = Math.hypot(left_stick_x, -left_stick_y);
+        // TODO(BSFishy): maybe this can be simplified because we are only getting this angle to put it back into a trig function??
         double ang = Math.atan2(-left_stick_y, left_stick_x) - Math.PI / 4;
 
         double turnCon = right_stick_x * .75;
