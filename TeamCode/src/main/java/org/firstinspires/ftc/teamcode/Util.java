@@ -75,7 +75,7 @@ public class Util {
      * @param number A value in the 0.0 to 1.0 range
      * @return A value with the easeInSine easing function applied
      */
-    public static float easeInSine(float number) {
-        return (float) (1 - Math.cos((number * Math.PI) / 2));
+    public static float easeIn(float number) {
+        return number * number * number;
     }
 }

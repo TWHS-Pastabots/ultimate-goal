@@ -42,15 +42,14 @@ public class Driver extends OpMode {
         if (gamepad1.x) slowCon = 1.0;
 
         // Apply easing function to all stick inputs
-        double left_stick_y = Util.easeInSine(gamepad1.left_stick_y);
-        double left_stick_x = Util.easeInSine(gamepad1.left_stick_x);
-        double right_stick_x = Util.easeInSine(gamepad1.right_stick_x);
-        double right_stick_y = Util.easeInSine(gamepad1.right_stick_y);
+        double left_stick_y = Util.easeIn(gamepad1.left_stick_y);
+        double left_stick_x = Util.easeIn(gamepad1.left_stick_x);
+        double right_stick_x = Util.easeIn(gamepad1.right_stick_x);
+        double right_stick_y = Util.easeIn(gamepad1.right_stick_y);
 
         // Mechanum trig math
-        double radius = Math.hypot(left_stick_x, -left_stick_y);
-        // TODO(BSFishy): maybe this can be simplified because we are only getting this angle to put it back into a trig function??
-        double ang = Math.atan2(-left_stick_y, left_stick_x) - Math.PI / 4;
+        double radius = Math.hypot(left_stick_x, left_stick_y);
+        double ang = Math.atan2(left_stick_y, left_stick_x) - Math.PI / 4;
 
         double turnCon = right_stick_x * .75;
 
