@@ -75,7 +75,7 @@ public class Util {
      * @param number A value in the 0.0 to 1.0 range
      * @return A value with the easeInSine easing function applied
      */
-    public static float easeIn(float number) {
+    public static double easeIn(double number) {
         return number * number * number;
     }
 }
