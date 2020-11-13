@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.Locale;
@@ -9,19 +10,16 @@ import java.util.Locale;
 @TeleOp(name = "Motor Tester")
 public class MotorTester extends OpMode {
 
-    RobotHardware robot = new RobotHardware();
-    ElapsedTime runTime = new ElapsedTime();
-    double slowCon = 0.8;
+    final RobotHardware robot = new RobotHardware();
+    final ElapsedTime runTime = new ElapsedTime();
 
-    int motorOneEncoderPosition = 0;
-    int motorTwoEncoderPosition = 0;
-    int motorThreeEncoderPosition = 0;
-    int motorFourEncoderPosition = 0;
+    int[] encoderPositions;
 
     //run once on init()
     @Override
     public void init() {
         robot.init(hardwareMap);
+        this.encoderPositions = new int[]{0, 0, 0, 0}
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");    //
@@ -46,10 +44,8 @@ public class MotorTester extends OpMode {
         };
 
         // Set power to inputs
-        robot.motorLeftFront.setPower(inputs[0]);
-        robot.motorRightFront.setPower(inputs[1]);
-        robot.motorLeftRear.setPower(inputs[2]);
-        robot.motorRightRear.setPower(inputs[3]);
+        for (int i = 0; i < robot.motors.length; i++)
+            robot.motors[i].setPower(inputs[i]);
 
         // Print input telemetry, power level bars
         telemetry.addData("Started", Util.getHumanDuration((float) runTime.seconds()) + " ago");
@@ -57,10 +53,13 @@ public class MotorTester extends OpMode {
             telemetry.addLine(Telemetry.createLevel((float) input));
 
         // Encoder information
-        if (robot.motorLeftFront != null) {
-            int encoderPosition = robot.motorLeftFront.getCurrentPosition();
-            telemetry.addLine(String.format(Locale.ENGLISH, "Motor One Change: %d", encoderPosition - this.motorOneEncoderPosition));
-            this.motorOneEncoderPosition = encoderPosition;
+        for (int i = 0; i < robot.motors.length; i++) {
+            DcMotor motor = robot.motors[i];
+            if (motor != null) {
+                int encoderPosition = motor.getCurrentPosition();
+                telemetry.addLine(String.format(Locale.ENGLISH, "Motor %d Change: %d", i + 1, encoderPosition - this.encoderPositions[i]));
+                this.encoderPositions[i] = encoderPosition;
+            }
         }
 
         telemetry.update();

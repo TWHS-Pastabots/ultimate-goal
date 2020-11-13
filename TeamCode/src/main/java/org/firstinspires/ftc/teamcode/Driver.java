@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Driver extends OpMode {
 
     /* Declare OpMode members. */
-    RobotHardware robot = new RobotHardware();
-    ElapsedTime runTime = new ElapsedTime();
+    final RobotHardware robot = new RobotHardware();
+    final ElapsedTime runTime = new ElapsedTime();
     double slowCon = 0.8;
 
     //run once on init()

@@ -16,6 +16,7 @@ public class RobotHardware {
     public DcMotor motorLeftRear = null;
     public DcMotor motorRightFront = null;
     public DcMotor motorRightRear = null;
+    public DcMotor[] motors;
 
     // Encoders
     public DcMotor encoderLeft = null;
@@ -23,7 +24,6 @@ public class RobotHardware {
     public DcMotor encoderHorizontal = null;
 
     HardwareMap hwMap = null;
-    private ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
     public RobotHardware() {
@@ -38,11 +38,12 @@ public class RobotHardware {
         motorRightFront = hwMap.get(DcMotor.class, MOTOR_RIGHT_FRONT);
         motorLeftRear = hwMap.get(DcMotor.class, MOTOR_LEFT_REAR);
         motorRightRear = hwMap.get(DcMotor.class, MOTOR_RIGHT_REAR);
+        motors = new DcMotor[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
 
         // TODO: Better understanding of what exactly the encoders are being registered to, and how.
-//        encoderHorizontal = hwMap.get(DcMotor.class, "tape_motor");
-//        encoderLeft = hwMap.get(DcMotor.class, "left_rear");
-//        encoderRight = hwMap.get(DcMotor.class, "right_rear");
+        // encoderHorizontal = hwMap.get(DcMotor.class, "tape_motor");
+        // encoderLeft = hwMap.get(DcMotor.class, "left_rear");
+        // encoderRight = hwMap.get(DcMotor.class, "right_rear");
 
         // Motor direction is FORWARD by default
         motorLeftFront.setDirection(DcMotor.Direction.FORWARD);
@@ -50,23 +51,15 @@ public class RobotHardware {
         motorRightFront.setDirection(DcMotor.Direction.REVERSE);
         motorRightRear.setDirection(DcMotor.Direction.REVERSE);
 
-        // Set all motors to zero power
-        motorLeftFront.setPower(0);
-        motorLeftRear.setPower(0);
-        motorRightFront.setPower(0);
-        motorRightRear.setPower(0);
-
-        // Set all motors to run without encoders.
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
-        motorLeftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorLeftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorRightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorRightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        // Motors will break on Zero power
-        motorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLeftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // Setup motors
+        for (DcMotor motor : motors) {
+            // Set all motors to zero power
+            motor.setPower(0);
+            // Motors will break on Zero power
+            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            // Set all motors to run without encoders.
+            // May want to use RUN_USING_ENCODERS if encoders are installed.
+            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
     }
 }
