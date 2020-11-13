@@ -42,10 +42,10 @@ public class Driver extends OpMode {
         if (gamepad1.x) slowCon = 1.0;
 
         // Apply easing function to all stick inputs
-        double left_stick_y = Util.easeIn(gamepad1.left_stick_y);
-        double left_stick_x = Util.easeIn(gamepad1.left_stick_x);
-        double right_stick_x = Util.easeIn(gamepad1.right_stick_x);
-        double right_stick_y = Util.easeIn(gamepad1.right_stick_y);
+        double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
+        double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
+        double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
+        double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
 
         // Mechanum trig math
         double radius = Math.hypot(left_stick_x, left_stick_y);
@@ -68,10 +68,10 @@ public class Driver extends OpMode {
 
         // Show motor output visually
         telemetry.addData("Started", Util.getHumanDuration((float) runTime.seconds()) + " ago");
-        telemetry.addLine(Util.createLevel((float) v1));
-        telemetry.addLine(Util.createLevel((float) v2));
-        telemetry.addLine(Util.createLevel((float) v3));
-        telemetry.addLine(Util.createLevel((float) v4));
+        telemetry.addLine(Telemetry.createLevel((float) v1));
+        telemetry.addLine(Telemetry.createLevel((float) v2));
+        telemetry.addLine(Telemetry.createLevel((float) v3));
+        telemetry.addLine(Telemetry.createLevel((float) v4));
 
         telemetry.update();
     }

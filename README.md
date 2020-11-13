@@ -2,6 +2,8 @@
 
 This project contains code used by the TWHS FTC Team for the 2020-2021 FTC Ultimate Goal Season.
 
+Most of the project code is located [here](./TeamCode/src/main/java/org/firstinspires/ftc/teamcode)
+
 ## Meta
 
 Version 6.0 (20200921-085816)

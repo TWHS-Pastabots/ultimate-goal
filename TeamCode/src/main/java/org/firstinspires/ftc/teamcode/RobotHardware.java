@@ -22,11 +22,11 @@ public class RobotHardware {
     public DcMotor encoderRight = null;
     public DcMotor encoderHorizontal = null;
 
-    HardwareMap hwMap =  null;
-    private ElapsedTime period  = new ElapsedTime();
+    HardwareMap hwMap = null;
+    private ElapsedTime period = new ElapsedTime();
 
     /* Constructor */
-    public RobotHardware(){
+    public RobotHardware() {
     }
 
     /* Initialize standard Hardware interfaces */

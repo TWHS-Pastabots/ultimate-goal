@@ -1,15 +1,21 @@
 package org.firstinspires.ftc.teamcode;
 
+import java.util.Locale;
+
+/**
+ * A utility class storing miscellaneous functions such as for converting time, easing values,
+ * String manipulation and other minor but repeated operations that would benefit from encapsulation.
+ *
+ * @author Ryan Walters
+ */
 public class Util {
-    // https://charbase.com/block/block-elements
-    // http://jkorpela.fi/chars/spaces.html
 
     static final int barWidth = 34;
     static final String space = "\u2591"; // Light shade block
     static final String bar = "\u2588"; // Full block
 
     /**
-     * Like Math.max, but dependent on magnitude (ignores signage)
+     * Similar to <code>Math.max</code>, but dependent on magnitude (ignores signage).
      *
      * @return The float with the highest magnitude, preferring param A.
      */
@@ -27,6 +33,9 @@ public class Util {
     }
 
     /**
+     * A simple function for getting a human readable representation of a time duration.
+     * Durations of 24 hours are not properly supported.
+     *
      * @param duration The duration of the time to be printed
      * @return A human readable representation of a positive duration
      */
@@ -35,47 +44,26 @@ public class Util {
             int hours = Math.round(duration / 3600);
             int minutes = Math.round((duration % 3600) / 60);
             int seconds = Math.round(duration % 60);
-            return String.format("%d hours, %d minutes and %d seconds", hours, minutes, seconds);
+            return String.format(Locale.ENGLISH, "%d hours, %d minutes and %d seconds", hours, minutes, seconds);
         } else if (duration > 60) {
             int minutes = Math.round(duration / 60);
             int seconds = Math.round(duration % 60);
-            return String.format("%d minutes and %d seconds", minutes, seconds);
-        } else if (duration > 0) {
-            return String.format("%d seconds", Math.round(duration));
+            return String.format(Locale.ENGLISH, "%d minutes and %d seconds", minutes, seconds);
+        } else if (duration >= 1) {
+            return String.format(Locale.ENGLISH, "%d seconds", Math.round(duration));
+        } else if (duration < 0) {
+            return "Invalid duration";
         }
-        return "";
+        return "Less than a second";
     }
 
     /**
-     * Create a progressbar out of Unicode characters.
+     * A easing function that keeps the sign of the function.
      *
-     * @param level The level of the progressbar to be rendered.
-     * @return A progressbar made out of Unicode block and space characters with a certain percent filling.
+     * @param number A value in the [<code>0.0</code>, <code>1.0</code>] range.
+     * @return A value with the cubic easing function applied
      */
-    public static String createLevel(float level) {
-        StringBuilder builder = new StringBuilder("[");
-        int halfWidth = Util.barWidth / 2;
-        int barCount = Math.round(Math.abs(level) * halfWidth);
-
-        // Credit to Matt P. (@BSFishy) for the idea - expanding the bar to show signage like a numberline
-        builder.append(repeat(Util.space, halfWidth));
-        builder.append(repeat(Util.bar, barCount));
-        builder.append(repeat(Util.space, halfWidth - barCount));
-        builder.append("]");
-
-        if (level < 0)
-            builder.reverse();
-
-        return builder.toString();
-    }
-
-    /**
-     * Easing function from https://easings.net/#easeInSine
-     *
-     * @param number A value in the 0.0 to 1.0 range
-     * @return A value with the easeInSine easing function applied
-     */
-    public static double easeIn(double number) {
+    public static double cubicEasing(double number) {
         return number * number * number;
     }
 }

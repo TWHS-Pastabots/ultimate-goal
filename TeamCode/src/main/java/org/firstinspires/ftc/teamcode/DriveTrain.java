@@ -31,7 +31,7 @@ public class DriveTrain {
      * {@link #setTelemetry(Telemetry)} and {@link #setRobotHardware(RobotHardware)} methods.
      *
      * @param telemetry the telemetry to use for logging
-     * @param robot the robot hardware for the motors (cannot be null)
+     * @param robot     the robot hardware for the motors (cannot be null)
      * @see #setTelemetry(Telemetry)
      * @see #setRobotHardware(RobotHardware)
      */
@@ -63,7 +63,7 @@ public class DriveTrain {
         }
 
         this.robot = robot;
-        this.motors = new DcMotor[] {
+        this.motors = new DcMotor[]{
                 robot.motorLeftFront,   // front left
                 robot.motorRightFront,  // front right
                 robot.motorLeftRear,    // back left
@@ -95,12 +95,12 @@ public class DriveTrain {
 
     /**
      * Move the robot with smoothing.
-     *
+     * <p>
      * This is an overload function for {@link #smoothMove(double, double, double, boolean)}. It is merely
      * meant to make it easier to call this method, by providing default values.
      *
      * @param horizontal the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
-     * @param vertical the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
+     * @param vertical   the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
      * @throws NullPointerException if the robot hardware has not been set (see {@link #setRobotHardware(RobotHardware)})
      * @see #smoothMove(double, double, double, boolean)
      */
@@ -110,12 +110,12 @@ public class DriveTrain {
 
     /**
      * Move the robot with smoothing.
-     *
+     * <p>
      * This is an overload function for {@link #smoothMove(double, double, double, boolean)}. It is merely
      * meant to make it easier to call this method, by providing default values.
      *
-     * @param horizontal the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
-     * @param vertical the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
+     * @param horizontal   the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
+     * @param vertical     the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
      * @param addTelemetry if telemetry should be added about the power to the motors (default: {@code true})
      * @throws NullPointerException if the robot hardware has not been set (see {@link #setRobotHardware(RobotHardware)})
      * @see #smoothMove(double, double, double, boolean)
@@ -126,13 +126,13 @@ public class DriveTrain {
 
     /**
      * Move the robot with smoothing.
-     *
+     * <p>
      * This is an overload function for {@link #smoothMove(double, double, double, boolean)}. It is merely
      * meant to make it easier to call this method, by providing default values.
      *
      * @param horizontal the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
-     * @param vertical the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
-     * @param turnAngle the amount to turn the robot on an interval of [{@code -1}, {@code 1}] (default: {@code 0})
+     * @param vertical   the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
+     * @param turnAngle  the amount to turn the robot on an interval of [{@code -1}, {@code 1}] (default: {@code 0})
      * @throws NullPointerException if the robot hardware has not been set (see {@link #setRobotHardware(RobotHardware)})
      * @see #smoothMove(double, double, double, boolean)
      */
@@ -142,31 +142,30 @@ public class DriveTrain {
 
     /**
      * Move the robot with smoothing. This is the same as
-     * {@link #move(double, double, double, boolean) move}, but with {@link Util#easeIn(double)}
+     * {@link #move(double, double, double, boolean) move}, but with {@link Util#cubicEasing(double)}
      * applied to it.
      *
-     * @param horizontal the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
-     * @param vertical the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
-     * @param turnAngle the amount to turn the robot on an interval of [{@code -1}, {@code 1}] (default: {@code 0})
+     * @param horizontal   the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
+     * @param vertical     the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
+     * @param turnAngle    the amount to turn the robot on an interval of [{@code -1}, {@code 1}] (default: {@code 0})
      * @param addTelemetry if telemetry should be added about the power to the motors (default: {@code true})
      * @throws NullPointerException if the robot hardware has not been set (see {@link #setRobotHardware(RobotHardware)})
      * @see #move(double, double, double, boolean)
      */
     public void smoothMove(double horizontal, double vertical, double turnAngle, boolean addTelemetry) {
-        move(Util.easeIn(horizontal), Util.easeIn(vertical), Util.easeIn(turnAngle), addTelemetry);
+        move(Util.cubicEasing(horizontal), Util.cubicEasing(vertical), Util.cubicEasing(turnAngle), addTelemetry);
     }
 
     /**
      * Move the robot.
-     *
+     * <p>
      * This is an overload function for {@link #move(double, double, double, boolean)}. It is merely
      * meant to make it easier to call this method, by providing default values.
      *
      * @param horizontal the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
-     * @param vertical the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
+     * @param vertical   the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
      * @throws NullPointerException if the robot hardware has not been set (see {@link #setRobotHardware(RobotHardware)})
      * @see #move(double, double, double, boolean)
-     *
      */
     public void move(double horizontal, double vertical) {
         move(horizontal, vertical, DEFAULT_TURN_ANGLE, DEFAULT_ADD_TELEMETRY);
@@ -174,12 +173,12 @@ public class DriveTrain {
 
     /**
      * Move the robot.
-     *
+     * <p>
      * This is an overload function for {@link #move(double, double, double, boolean)}. It is merely
      * meant to make it easier to call this method, by providing default values.
      *
-     * @param horizontal the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
-     * @param vertical the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
+     * @param horizontal   the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
+     * @param vertical     the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
      * @param addTelemetry if telemetry should be added about the power to the motors (default: {@code true})
      * @throws NullPointerException if the robot hardware has not been set (see {@link #setRobotHardware(RobotHardware)})
      * @see #move(double, double, double, boolean)
@@ -190,13 +189,13 @@ public class DriveTrain {
 
     /**
      * Move the robot.
-     *
+     * <p>
      * This is an overload function for {@link #move(double, double, double, boolean)}. It is merely
      * meant to make it easier to call this method, by providing default values.
      *
      * @param horizontal the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
-     * @param vertical the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
-     * @param turnAngle the amount to turn the robot on an interval of [{@code -1}, {@code 1}] (default: {@code 0})
+     * @param vertical   the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
+     * @param turnAngle  the amount to turn the robot on an interval of [{@code -1}, {@code 1}] (default: {@code 0})
      * @throws NullPointerException if the robot hardware has not been set (see {@link #setRobotHardware(RobotHardware)})
      * @see #move(double, double, double, boolean)
      */
@@ -208,13 +207,13 @@ public class DriveTrain {
      * Move the robot. This takes the horizontal and vertical inputs and converts them into power
      * levels for the motors to use. It also uses {@literal turnAngle} parameter in the calculation
      * to turn the robot.
-     *
+     * <p>
      * The basic math behind this method is to rotate the given horizontal and vertical components
      * by 135 degrees, and use the resulting (x,y) as inputs for the power.
      *
-     * @param horizontal the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
-     * @param vertical the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
-     * @param turnAngle the amount to turn the robot on an interval of [{@code -1}, {@code 1}] (default: {@code 0})
+     * @param horizontal   the amount to move the robot horizontally on an interval of [{@code -1}, {@code 1}]
+     * @param vertical     the amount to move the robot vertically on an interval of [{@code -1}, {@code 1}]
+     * @param turnAngle    the amount to turn the robot on an interval of [{@code -1}, {@code 1}] (default: {@code 0})
      * @param addTelemetry if telemetry should be added about the power to the motors (default: {@code true})
      * @throws NullPointerException if the robot hardware has not been set (see {@link #setRobotHardware(RobotHardware)})
      */
@@ -232,7 +231,7 @@ public class DriveTrain {
         double turnCon = turnAngle * .75;
 
         // Calculate all of the new rotated power levels
-        double[] inputs = new double[] {
+        double[] inputs = new double[]{
                 radius * Math.cos(ang) + turnCon,
                 radius * Math.sin(ang) - turnCon,
                 radius * Math.sin(ang) + turnCon,
@@ -247,26 +246,8 @@ public class DriveTrain {
         // If telemetry should be added, add it
         if (addTelemetry && telemetry != null) {
             for (double input : inputs) {
-                telemetry.addLine(Util.createLevel((float) (input * getMultiplier())));
+                telemetry.addLine(org.firstinspires.ftc.teamcode.Telemetry.createLevel((float) (input * getMultiplier())));
             }
         }
-
-        // This was the old code that is now replaced with loops
-//        double v1 = (radius * Math.cos(ang) + turnCon) * getMultiplier();
-//        double v2 = (radius * Math.sin(ang) - turnCon) * getMultiplier();
-//        double v3 = (radius * Math.sin(ang) + turnCon) * getMultiplier();
-//        double v4 = (radius * Math.cos(ang) - turnCon) * getMultiplier();
-//
-//        robot.motorLeftFront.setPower(v1);
-//        robot.motorRightFront.setPower(v2);
-//        robot.motorLeftRear.setPower(v3);
-//        robot.motorRightRear.setPower(v4);
-//
-//        if (addTelemetry && telemetry != null) {
-//            telemetry.addLine(Util.createLevel((float) v1));
-//            telemetry.addLine(Util.createLevel((float) v2));
-//            telemetry.addLine(Util.createLevel((float) v3));
-//            telemetry.addLine(Util.createLevel((float) v4));
-//        }
     }
 }
