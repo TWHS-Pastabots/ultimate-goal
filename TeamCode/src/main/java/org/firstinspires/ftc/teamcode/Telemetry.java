@@ -6,6 +6,10 @@ package org.firstinspires.ftc.teamcode;
  * @author Ryan Walters
  */
 public class Telemetry {
+    static final int barWidth = 34; // The width of the telemetry terminal
+    static final String space = "\u2591"; // Light shade block
+    static final String bar = "\u2588"; // Full block
+
     /**
      * Create a progressbar out of Unicode characters.
      * Unicode characters for progress bar found <a href="https://charbase.com/block/block-elements">here</a> and <a href="http://jkorpela.fi/chars/spaces.html">here</a>.
@@ -15,13 +19,13 @@ public class Telemetry {
      */
     public static String createLevel(float level) {
         StringBuilder builder = new StringBuilder("[");
-        int halfWidth = Util.barWidth / 2;
+        int halfWidth = barWidth / 2;
         int barCount = Math.round(Math.abs(level) * halfWidth);
 
         // Credit to Matt P. (@BSFishy) for the idea - expanding the bar to show signage like a numberline
-        builder.append(Util.repeat(Util.space, halfWidth));
-        builder.append(Util.repeat(Util.bar, barCount));
-        builder.append(Util.repeat(Util.space, halfWidth - barCount));
+        builder.append(Util.repeat(space, halfWidth));
+        builder.append(Util.repeat(bar, barCount));
+        builder.append(Util.repeat(space, halfWidth - barCount));
         builder.append("]");
 
         if (level < 0)

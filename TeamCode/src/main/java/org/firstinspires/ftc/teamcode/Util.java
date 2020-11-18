@@ -9,11 +9,6 @@ import java.util.Locale;
  * @author Ryan Walters
  */
 public class Util {
-
-    static final int barWidth = 34;
-    static final String space = "\u2591"; // Light shade block
-    static final String bar = "\u2588"; // Full block
-
     /**
      * Similar to <code>Math.max</code>, but dependent on magnitude (ignores signage).
      *
@@ -65,5 +60,29 @@ public class Util {
      */
     public static double cubicEasing(double number) {
         return number * number * number;
+    }
+
+    /**
+     * Helper function for wrapping index values, especially when incrementing and decrementing.
+     *
+     * @param i An integer index of any sign or magnitude.
+     * @param length The length of the array you want to wrap indexes around.
+     * @return The expected index, accounting for negative and positive wrapping.
+     */
+    public static int wrap(int i, int length) {
+        if (i < 0)
+            return length - Math.abs(i) % length;
+        return i % length;
+    }
+
+
+    /**
+     * @param value The value to be clamped
+     * @param min The maximum in the clamp range
+     * @param max The minimum in the clamp range
+     * @return A value within the min/max clamp range - equal to the given value or the closest value within the range.
+     */
+    public static float clamp(float value, float min, float max) {
+        return Math.max(min, Math.min(max, value));
     }
 }
