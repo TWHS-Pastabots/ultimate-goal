@@ -6,8 +6,21 @@ package org.firstinspires.ftc.teamcode;
  * @author Ryan Walters
  */
 public class ComponentIds {
-    public static final String MOTOR_LEFT_FRONT = "leftFront";
-    public static final String MOTOR_RIGHT_FRONT = "rightFront";
-    public static final String MOTOR_LEFT_REAR = "leftRear";
+    // Wheel Motors
+    public static final String LEFT_FRONT_MOTOR = "leftFront";
+    public static final String RIGHT_FRONT_MOTOR = "rightFront";
+    public static final String LEFT_REAR_MOTOR = "leftRear";
     public static final String MOTOR_RIGHT_REAR = "rightRear";
+
+    // Launcher-related Motors & Servos
+    public static final String INTAKE_MOTOR = "intakeMotor";
+    public static final String LAUNCHER_MOTOR = "launcherMotor";
+    public static final String INTAKE_SERVO = "intakeServo";
+    public static final String BELT_MOTOR = "beltMotor";
+    public static final String BELT_STOPPER = "beltStopper";
+
+    // Wobble Goal-related Motors & Servos
+    public static final String WOBBLE_MOTOR = "wobbleMotor";
+    public static final String WOBBLE_SERVO = "wobbleServo";
+
 }

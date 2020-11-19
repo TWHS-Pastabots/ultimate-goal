@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static org.firstinspires.ftc.teamcode.ComponentIds.*;
 
@@ -34,16 +33,12 @@ public class RobotHardware {
         // Save reference to Hardware map
         this.hwMap = hwMap;
 
-        motorLeftFront = hwMap.get(DcMotor.class, MOTOR_LEFT_FRONT);
-        motorRightFront = hwMap.get(DcMotor.class, MOTOR_RIGHT_FRONT);
-        motorLeftRear = hwMap.get(DcMotor.class, MOTOR_LEFT_REAR);
+        motorLeftFront = hwMap.get(DcMotor.class, LEFT_FRONT_MOTOR);
+        motorRightFront = hwMap.get(DcMotor.class, RIGHT_FRONT_MOTOR);
+        motorLeftRear = hwMap.get(DcMotor.class, LEFT_REAR_MOTOR);
         motorRightRear = hwMap.get(DcMotor.class, MOTOR_RIGHT_REAR);
-        motors = new DcMotor[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
 
-        // TODO: Better understanding of what exactly the encoders are being registered to, and how.
-        // encoderHorizontal = hwMap.get(DcMotor.class, "tape_motor");
-        // encoderLeft = hwMap.get(DcMotor.class, "left_rear");
-        // encoderRight = hwMap.get(DcMotor.class, "right_rear");
+        motors = new DcMotor[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
 
         // Motor direction is FORWARD by default
         motorLeftFront.setDirection(DcMotor.Direction.FORWARD);
