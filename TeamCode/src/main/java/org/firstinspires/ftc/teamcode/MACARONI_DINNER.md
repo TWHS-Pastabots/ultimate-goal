@@ -2,6 +2,14 @@
 
 This is basic documentation describing motor/servo pin-outs and a summary of the control behavior for the Macaroni Dinner Robot for TWHS Pastabots.
 
+## Control Hub Connection
+
+To connect to the control hub, connect to `FTC-Rz3m` with password `password`.
+
+To connect ADB wirelessly, execute `adb connect 192.168.43.1:5555`.
+
+To connect to the browser dashboard, enter `http://192:168.43.1:8080` in your browser.
+
 ## Pin-outs
 
 Hub Pins are labeled by 1 to 2 letters followed by a number. The letter prefixing the pin-out label

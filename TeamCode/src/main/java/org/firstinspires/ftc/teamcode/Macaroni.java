@@ -65,6 +65,20 @@ public class Macaroni extends OpMode {
         robot.leftRearMotor.setPower(v3);
         robot.rightRearMotor.setPower(v4);
 
+        if (gamepad1.right_trigger > 0) {
+            robot.intakeServo.setPower(1);
+            double rt = gamepad1.right_trigger;
+            robot.beltMotor.setPower(Util.cubicEasing(rt));
+            robot.intakeMotor.setPower(Util.cubicEasing(rt));
+            if (gamepad1.right_bumper)
+                robot.launcherMotor.setPower(gamepad1.right_trigger);
+        } else {
+            robot.intakeServo.setPower(0);
+            robot.intakeMotor.setPower(0);
+            robot.beltMotor.setPower(0);
+            robot.launcherMotor.setPower(0);
+        }
+
         // Show motor output visually
         telemetry.addData("Started", Util.getHumanDuration((float) runTime.seconds()) + " ago");
         telemetry.addLine(Telemetry.createLevel((float) v1));

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -21,13 +23,13 @@ public class MacaroniHardware {
     public DcMotor[] wheels;
 
     public DcMotor intakeMotor;
-    public Servo intakeServo;
+    public CRServo intakeServo;
     public DcMotor beltMotor;
-    public Servo beltStopper;
+    public CRServo beltStopper;
     public DcMotor launcherMotor;
 
     public DcMotor wobbleMotor;
-    public Servo wobbleServo;
+    public CRServo wobbleServo;
 
     HardwareMap hwMap = null;
 
@@ -44,7 +46,7 @@ public class MacaroniHardware {
         intakeMotor = hwMap.get(DcMotor.class, INTAKE_MOTOR);
         launcherMotor = hwMap.get(DcMotor.class, LAUNCHER_MOTOR);
         beltMotor = hwMap.get(DcMotor.class, BELT_MOTOR);
-        intakeServo = hwMap.get(Servo.class, INTAKE_SERVO);
+        intakeServo = hwMap.get(CRServo.class, INTAKE_SERVO);
 
         wheels = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor};
         motors = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor, intakeMotor, launcherMotor, beltMotor};
@@ -54,6 +56,10 @@ public class MacaroniHardware {
         leftRearMotor.setDirection(DcMotor.Direction.FORWARD);
         rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
         rightRearMotor.setDirection(DcMotor.Direction.REVERSE);
+
+        // These are built reversed
+        beltMotor.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Setup motors
         for (DcMotor motor : motors) {
