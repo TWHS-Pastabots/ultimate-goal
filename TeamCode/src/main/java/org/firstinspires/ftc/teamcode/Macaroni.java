@@ -24,7 +24,7 @@ public class Macaroni extends OpMode {
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");    //
-        lastControlsUpdate = getRuntime();
+        lastControlsUpdate = runTime.seconds();
     }
 
     // loop on init()
@@ -41,7 +41,7 @@ public class Macaroni extends OpMode {
 
     /**
      * A simple helper function that assists with spacing out controller input polls.
-     *
+     * <p>
      * Without a proper guard in place, controller input code for button presses will be ran hundreds of
      * times per second, resulting in strange behavior. By adding a guard that only lets the button input
      * code run every other fraction of a second, button input is much more reliable for humans.
@@ -50,7 +50,7 @@ public class Macaroni extends OpMode {
      * @return True if the controller should be polled now, false if the duration has not yet elapsed.
      */
     public boolean controllerLoop(double duration) {
-        double now = getRuntime();
+        double now = runTime.seconds();
         if (now - lastControlsUpdate >= duration) {
             this.lastControlsUpdate = now;
             return true;
@@ -62,14 +62,15 @@ public class Macaroni extends OpMode {
     @Override
     public void loop() {
         // Motor multiplier
-        if (gamepad1.b) slowCon = .4;
-        if (gamepad1.a) slowCon = .8;
-        if (gamepad1.x) slowCon = 1.0;
+//        if (gamepad1.b) slowCon = .4;
+//        if (gamepad1.a) slowCon = .8;
+//        if (gamepad1.x) slowCon = 1.0;
 
         // Apply easing function to all stick inputs
         double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
         double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
         double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
+        right_stick_x = gamepad1.right_bumper ? 0.2 : (gamepad1.left_bumper ? -0.2 : right_stick_x);
         double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
 
         // Mechanum trig math
@@ -91,19 +92,21 @@ public class Macaroni extends OpMode {
         robot.rightRearMotor.setPower(v4);
 
         // Poll the controller's inputs 0.33 seconds after the previous poll
-        if (controllerLoop(0.25)) {
+        if ((gamepad1.dpad_up || gamepad1.dpad_down || gamepad1.back) && controllerLoop(0.15)) {
             // Change launcher motor power with D-Pad controls
             float powerChange = gamepad1.dpad_up ? 0.1f : (gamepad1.dpad_down ? -0.1f : 0f);
             launcherPower = Util.clamp(launcherPower + powerChange, 0, 1);
 
             // toggle launcher motor with back button
             if (gamepad1.back) toggleLauncher = !toggleLauncher;
-            if (!gamepad1.x) robot.launcherMotor.setPower(toggleLauncher ? launcherPower : 0);
         }
+
 
         // Gamepad X to spin up launcher motor
         if (gamepad1.x)
             robot.launcherMotor.setPower(1);
+        else if (toggleLauncher)
+            robot.launcherMotor.setPower(launcherPower);
         else
             robot.launcherMotor.setPower(0);
 
@@ -114,6 +117,11 @@ public class Macaroni extends OpMode {
             double rt = gamepad1.right_trigger;
             robot.beltMotor.setPower(Util.cubicEasing(rt));
             robot.intakeMotor.setPower(Util.cubicEasing(rt));
+        } else if (gamepad1.left_trigger > 0) {
+            robot.intakeServo.setPower(-1); // Always run at max power
+            double rt = gamepad1.left_trigger;
+            robot.beltMotor.setPower(Util.cubicEasing(rt));
+            robot.intakeMotor.setPower(-Util.cubicEasing(rt));
         } else {
             robot.intakeServo.setPower(0);
             robot.intakeMotor.setPower(0);

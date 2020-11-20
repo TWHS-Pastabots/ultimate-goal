@@ -18,6 +18,7 @@ public class Telemetry {
      * @return A progressbar made out of Unicode block and space characters with a certain percent filling.
      */
     public static String createLevel(float level) {
+        level = Util.clamp(level, -1, 1);
         StringBuilder builder = new StringBuilder("[");
         int halfWidth = barWidth / 2;
         int barCount = Math.round(Math.abs(level) * halfWidth);
