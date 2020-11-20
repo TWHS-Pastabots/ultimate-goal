@@ -15,7 +15,8 @@ public class Macaroni extends OpMode {
     double lastControlsUpdate;
     double slowCon = 0.8;
     boolean toggleLauncher = false;
-    float launcherPower = 1f;
+    double launcherPower = 1f;
+    private double powerGranularity = 0.05;
 
     //run once on init()
     @Override
@@ -92,10 +93,15 @@ public class Macaroni extends OpMode {
         robot.rightRearMotor.setPower(v4);
 
         // Poll the controller's inputs 0.33 seconds after the previous poll
-        if ((gamepad1.dpad_up || gamepad1.dpad_down || gamepad1.back) && controllerLoop(0.15)) {
+        if ((gamepad1.dpad_up || gamepad1.dpad_down || gamepad1.back || gamepad1.dpad_left || gamepad1.dpad_right) && controllerLoop(0.15)) {
+            if (gamepad1.dpad_left)
+                launcherPower = 0.65;
+            else if (gamepad1.dpad_right)
+                launcherPower = 0.75;
+
             // Change launcher motor power with D-Pad controls
-            float powerChange = gamepad1.dpad_up ? 0.1f : (gamepad1.dpad_down ? -0.1f : 0f);
-            launcherPower = Util.clamp(launcherPower + powerChange, 0, 1);
+            double powerChange = gamepad1.dpad_up ? powerGranularity : (gamepad1.dpad_down ? -powerGranularity : 0f);
+            launcherPower = Util.clamp((float) (launcherPower + powerChange), 0, 1);
 
             // toggle launcher motor with back button
             if (gamepad1.back) toggleLauncher = !toggleLauncher;
@@ -134,7 +140,7 @@ public class Macaroni extends OpMode {
         telemetry.addLine(Telemetry.createLevel((float) v2));
         telemetry.addLine(Telemetry.createLevel((float) v3));
         telemetry.addLine(Telemetry.createLevel((float) v4));
-        telemetry.addLine(String.format(Locale.ENGLISH, "Launcher %s - %d%%", toggleLauncher ? "ON" : "OFF", (int) (launcherPower * 100)));
+        telemetry.addLine(String.format(Locale.ENGLISH, "Launcher %s - %d%%", toggleLauncher ? "ON" : "OFF", Math.round(launcherPower * 100)));
 
         telemetry.update();
     }
