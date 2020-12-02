@@ -16,7 +16,12 @@ public class Macaroni extends OpMode {
     double slowCon = 0.8;
     boolean toggleLauncher = false;
     double launcherPower = 1f;
-    private double powerGranularity = 0.05;
+    private final double powerGranularity = 0.05;
+
+    boolean lowerWobble = false;
+    boolean upperWobble = false;
+    boolean lastLowerWobbleChange = false;
+    boolean lastUpperWobbleChange = false;
 
     //run once on init()
     @Override
@@ -107,6 +112,17 @@ public class Macaroni extends OpMode {
             if (gamepad1.back) toggleLauncher = !toggleLauncher;
         }
 
+        if (gamepad1.b && gamepad1.b != lastLowerWobbleChange) {
+                robot.lowerWobbleServo.setPosition(lowerWobble ? 0 : 1);
+                lowerWobble = !lowerWobble;
+        }
+        lastLowerWobbleChange = gamepad1.b;
+
+        if (gamepad1.y && gamepad1.y != lastUpperWobbleChange) {
+            robot.upperWobbleServo.setPosition(upperWobble ? 0 : 1);
+            upperWobble = !upperWobble;
+        }
+        lastUpperWobbleChange = gamepad1.y;
 
         // Gamepad X to spin up launcher motor
         if (gamepad1.x)
@@ -119,18 +135,18 @@ public class Macaroni extends OpMode {
 
         // Right trigger to run all intake motors/servos at desired speed
         if (gamepad1.right_trigger > 0) {
-            robot.intakeServo.setPower(1); // Always run at max power
-            double rt = gamepad1.right_trigger;
-            robot.beltMotor.setPower(Util.cubicEasing(rt));
-            robot.intakeMotor.setPower(Util.cubicEasing(rt));
+            double rt = Util.cubicEasing(gamepad1.right_trigger);
+            robot.innerIntakeMotor.setPower(rt); // Always run at max power
+            robot.beltMotor.setPower(rt);
+            robot.outerIntakeMotor.setPower(rt);
         } else if (gamepad1.left_trigger > 0) {
-            robot.intakeServo.setPower(-1); // Always run at max power
-            double rt = gamepad1.left_trigger;
-            robot.beltMotor.setPower(Util.cubicEasing(rt));
-            robot.intakeMotor.setPower(-Util.cubicEasing(rt));
+            double lt = gamepad1.left_trigger;
+            robot.innerIntakeMotor.setPower(-lt); // Always run at max power
+            robot.beltMotor.setPower(-lt);
+            robot.outerIntakeMotor.setPower(-lt);
         } else {
-            robot.intakeServo.setPower(0);
-            robot.intakeMotor.setPower(0);
+            robot.innerIntakeMotor.setPower(0);
+            robot.outerIntakeMotor.setPower(0);
             robot.beltMotor.setPower(0);
         }
 

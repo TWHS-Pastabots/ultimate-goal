@@ -13,14 +13,14 @@ public class ComponentIds {
     public static final String MOTOR_RIGHT_REAR = "rightRear";
 
     // Launcher-related Motors & Servos
-    public static final String INTAKE_MOTOR = "intakeMotor";
+    public static final String OUTER_INTAKE_MOTOR = "outerIntakeMotor";
     public static final String LAUNCHER_MOTOR = "launcherMotor";
-    public static final String INTAKE_SERVO = "intakeServo";
+    public static final String INNER_INTAKE_MOTOR = "innerIntakeMotor";
     public static final String BELT_MOTOR = "beltMotor";
     public static final String BELT_STOPPER = "beltStopper";
 
     // Wobble Goal-related Motors & Servos
-    public static final String WOBBLE_MOTOR = "wobbleMotor";
-    public static final String WOBBLE_SERVO = "wobbleServo";
+    public static final String LOWER_WOBBLE_SERVO = "lowerWobbleServo";
+    public static final String UPPER_WOBBLE_SERVO = "upperWobbleServo";
 
 }
