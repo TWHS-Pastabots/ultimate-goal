@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import static org.firstinspires.ftc.teamcode.ComponentIds.*;
 
@@ -11,16 +14,22 @@ import static org.firstinspires.ftc.teamcode.ComponentIds.*;
  */
 public class RobotHardware {
     // Primary wheel motors
-    public DcMotor motorLeftFront = null;
-    public DcMotor motorLeftRear = null;
-    public DcMotor motorRightFront = null;
-    public DcMotor motorRightRear = null;
-    public DcMotor[] motors;
+    public DcMotorEx motorLeftFront = null;
+    public DcMotorEx motorLeftRear = null;
+    public DcMotorEx motorRightFront = null;
+    public DcMotorEx motorRightRear = null;
+    public DcMotorEx[] motors;
 
-    // Encoders
-    public DcMotor encoderLeft = null;
-    public DcMotor encoderRight = null;
-    public DcMotor encoderHorizontal = null;
+    // Primary encoders
+    public DcMotorEx encoderLeft = null;
+    public DcMotorEx encoderRight = null;
+    public DcMotorEx encoderFront = null;
+
+    // IMU
+    public BNO055IMU imu;
+
+    // Battery voltage sensor
+    public VoltageSensor batteryVoltageSensor;
 
     HardwareMap hwMap = null;
 
@@ -33,12 +42,23 @@ public class RobotHardware {
         // Save reference to Hardware map
         this.hwMap = hwMap;
 
-        motorLeftFront = hwMap.get(DcMotor.class, LEFT_FRONT_MOTOR);
-        motorRightFront = hwMap.get(DcMotor.class, RIGHT_FRONT_MOTOR);
-        motorLeftRear = hwMap.get(DcMotor.class, LEFT_REAR_MOTOR);
-        motorRightRear = hwMap.get(DcMotor.class, MOTOR_RIGHT_REAR);
+        motorLeftFront = hwMap.get(DcMotorEx.class, LEFT_FRONT_MOTOR);
+        motorRightFront = hwMap.get(DcMotorEx.class, RIGHT_FRONT_MOTOR);
+        motorLeftRear = hwMap.get(DcMotorEx.class, LEFT_REAR_MOTOR);
+        motorRightRear = hwMap.get(DcMotorEx.class, MOTOR_RIGHT_REAR);
 
-        motors = new DcMotor[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
+        motors = new DcMotorEx[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
+
+        encoderLeft = hwMap.get(DcMotorEx.class, LEFT_ENCODER);
+        encoderRight = hwMap.get(DcMotorEx.class, RIGHT_ENCODER);
+        encoderFront = hwMap.get(DcMotorEx.class, FRONT_ENCODER);
+
+        imu = hwMap.get(BNO055IMU.class, IMU);
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
+
+        batteryVoltageSensor = hwMap.voltageSensor.iterator().next();
 
         // Motor direction is FORWARD by default
         motorLeftFront.setDirection(DcMotor.Direction.FORWARD);

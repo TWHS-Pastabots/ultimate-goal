@@ -12,6 +12,11 @@ public class ComponentIds {
     public static final String LEFT_REAR_MOTOR = "leftRear";
     public static final String MOTOR_RIGHT_REAR = "rightRear";
 
+    // Encoders
+    public static final String LEFT_ENCODER = "leftEncoder";
+    public static final String RIGHT_ENCODER = "rightEncoder";
+    public static final String FRONT_ENCODER = "frontEncoder";
+
     // Launcher-related Motors & Servos
     public static final String OUTER_INTAKE_MOTOR = "outerIntakeMotor";
     public static final String LAUNCHER_MOTOR = "launcherMotor";
@@ -23,4 +28,6 @@ public class ComponentIds {
     public static final String LOWER_WOBBLE_SERVO = "lowerWobbleServo";
     public static final String UPPER_WOBBLE_SERVO = "upperWobbleServo";
 
+
+    public static final String IMU = "imu";
 }
