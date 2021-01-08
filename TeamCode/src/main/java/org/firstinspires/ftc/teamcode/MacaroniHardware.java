@@ -60,7 +60,7 @@ public class MacaroniHardware {
         rightRearMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // These are built reversed
-        beltMotor.setDirection(DcMotor.Direction.REVERSE);
+        beltMotor.setDirection(DcMotor.Direction.FORWARD);
         outerIntakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Setup motors
