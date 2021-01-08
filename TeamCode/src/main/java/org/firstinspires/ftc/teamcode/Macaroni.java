@@ -16,7 +16,7 @@ public class Macaroni extends OpMode {
     double slowCon = 0.8;
     boolean toggleLauncher = false;
     double launcherPower = 1f;
-    private final double powerGranularity = 0.05;
+    private static final double powerGranularity = 0.05;
 
     boolean lowerWobble = false;
     boolean upperWobble = false;
