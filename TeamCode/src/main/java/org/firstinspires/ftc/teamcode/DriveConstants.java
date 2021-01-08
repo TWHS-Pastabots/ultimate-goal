@@ -45,6 +45,23 @@ public class DriveConstants {
     public static double kA = 0;
     public static double kStatic = 0;
 
+    public static class Encoder {
+        /*
+         * These are physical constants that can be determined from your robot (including the track
+         * width; it will be tune empirically later although a rough estimate is important). Users are
+         * free to chose whichever linear distance unit they would like so long as it is consistently
+         * used. The default values were selected with inches in mind. Road runner uses radians for
+         * angular distances although most angular parameters are wrapped in Math.toRadians() for
+         * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
+         */
+        public static double TICKS_PER_REV = 8192;
+        public static double WHEEL_RADIUS = 1.1811; // in
+        public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
+
+        public static double LATERAL_DISTANCE = 10; // in; distance between the left and right wheels
+        public static double FORWARD_OFFSET = 4; // in; offset of the lateral wheel
+    }
+
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
      * the constraints should never exceed ~80% of the robot's actual capabilities. While Road

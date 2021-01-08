@@ -11,6 +11,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.TICKS_PER_REV;
+import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.WHEEL_RADIUS;
+import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.GEAR_RATIO;
+import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.LATERAL_DISTANCE;
+import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.FORWARD_OFFSET;
+
 /*
  * Sample tracking wheel localizer implementation assuming the standard configuration:
  *
@@ -25,13 +31,6 @@ import java.util.List;
  *
  */
 public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
-    public static double TICKS_PER_REV = 8192;
-    public static double WHEEL_RADIUS = 1.1811; // in
-    public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
-
-    public static double LATERAL_DISTANCE = 10; // in; distance between the left and right wheels
-    public static double FORWARD_OFFSET = 4; // in; offset of the lateral wheel
-
     private final Encoder leftEncoder, rightEncoder, frontEncoder;
 
     public StandardTrackingWheelLocalizer(RobotHardware robot) {
