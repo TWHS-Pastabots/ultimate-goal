@@ -1,21 +1,20 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.roadrunner.drivetrain;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.RobotHardware;
 import org.firstinspires.ftc.teamcode.roadrunner.Encoder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.TICKS_PER_REV;
-import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.WHEEL_RADIUS;
-import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.GEAR_RATIO;
-import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.LATERAL_DISTANCE;
-import static org.firstinspires.ftc.teamcode.DriveConstants.Encoder.FORWARD_OFFSET;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.Encoder.TICKS_PER_REV;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.Encoder.WHEEL_RADIUS;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.Encoder.GEAR_RATIO;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.Encoder.LATERAL_DISTANCE;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.Encoder.FORWARD_OFFSET;
 
 /*
  * Sample tracking wheel localizer implementation assuming the standard configuration:

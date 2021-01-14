@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.roadrunner;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDriveTrain;
+import org.firstinspires.ftc.teamcode.roadrunner.drivetrain.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.RobotHardware;
 
 /*

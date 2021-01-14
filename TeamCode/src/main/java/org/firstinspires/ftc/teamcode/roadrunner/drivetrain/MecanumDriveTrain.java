@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.roadrunner.drivetrain;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower;
 import com.acmerobotics.roadrunner.followers.TrajectoryFollower;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
@@ -23,6 +22,10 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.RobotHardware;
+import org.firstinspires.ftc.teamcode.roadrunner.util.AxesSigns;
+import org.firstinspires.ftc.teamcode.roadrunner.util.BNO055IMUUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -30,15 +33,15 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.DriveConstants.BASE_CONSTRAINTS;
-import static org.firstinspires.ftc.teamcode.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.DriveConstants.TRACK_WIDTH;
-import static org.firstinspires.ftc.teamcode.DriveConstants.WHEEL_BASE;
-import static org.firstinspires.ftc.teamcode.DriveConstants.encoderTicksToInches;
-import static org.firstinspires.ftc.teamcode.DriveConstants.kA;
-import static org.firstinspires.ftc.teamcode.DriveConstants.kStatic;
-import static org.firstinspires.ftc.teamcode.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.BASE_CONSTRAINTS;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.WHEEL_BASE;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.kA;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.kStatic;
+import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.kV;
 
 public class MecanumDriveTrain extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
@@ -100,13 +103,13 @@ public class MecanumDriveTrain extends MecanumDrive {
 
         // TODO: adjust the names of the following hardware devices to match your configuration
         imu = robot.imu;
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
+//        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+//        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+//        imu.initialize(parameters);
 
         // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
         // upward (normal to the floor) using a command like the following:
-        // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
+         BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
         leftFront = robot.motorLeftFront;
         leftRear = robot.motorLeftRear;
