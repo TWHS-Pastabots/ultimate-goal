@@ -1,77 +1,43 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import java.util.Arrays;
+
 import static org.firstinspires.ftc.teamcode.ComponentIds.*;
 
-public class SpaghettiHardware {
-    // Primary wheel motors
-    public DcMotor leftFrontMotor = null;
-    public DcMotor leftRearMotor = null;
-    public DcMotor rightFrontMotor = null;
-    public DcMotor rightRearMotor = null;
+public class SpaghettiHardware extends RobotHardware {
+    // Miscellaneous robot motors and servos
+    public DcMotorEx intakeMotor = null;
+    public Servo launcherServo = null;
+    public DcMotorEx launcherMotor = null;
+    public DcMotorEx wobbleArmMotor = null;
 
-    public DcMotor[] motors;
-    public DcMotor[] wheels;
-    public Servo[] servos;
+    @Override
+    public void init(HardwareMap hardwareMap) {
+        super.init(hardwareMap, false);
 
-    public DcMotor intakeMotor;
-    public Servo launcherServo;
-    public DcMotor launcherMotor;
-    public DcMotor wobbleArmMotor;
+        // Initialize motors and servos
+        intakeMotor = hardwareMap.get(DcMotorEx.class, OUTER_INTAKE_MOTOR);
+        launcherServo = hardwareMap.get(Servo.class, LAUNCHER_SERVO);
+        launcherMotor = hardwareMap.get(DcMotorEx.class, LAUNCHER_MOTOR);
+        wobbleArmMotor = hardwareMap.get(DcMotorEx.class, WOBBLE_ARM_MOTOR);
 
-    HardwareMap hwMap = null;
+        // Setup the motors list
+        motors.addAll(Arrays.asList(intakeMotor, launcherMotor, wobbleArmMotor));
 
-    /* Initialize standard Hardware interfaces */
-    public void init(HardwareMap hwMap) {
-        // Save reference to Hardware map
-        this.hwMap = hwMap;
+        // Setup the servos list
+        servos.addAll(Arrays.asList(launcherServo));
 
-        leftFrontMotor = hwMap.get(DcMotor.class, LEFT_FRONT_MOTOR);
-        rightFrontMotor = hwMap.get(DcMotor.class, RIGHT_FRONT_MOTOR);
-        leftRearMotor = hwMap.get(DcMotor.class, LEFT_REAR_MOTOR);
-        rightRearMotor = hwMap.get(DcMotor.class, MOTOR_RIGHT_REAR);
-
-        intakeMotor = hwMap.get(DcMotor.class, OUTER_INTAKE_MOTOR);
-        launcherServo = hwMap.get(Servo.class, LAUNCHER_SERVO);
-        launcherMotor = hwMap.get(DcMotor.class, LAUNCHER_MOTOR);
-        wobbleArmMotor = hwMap.get(DcMotor.class, WOBBLE_ARM_MOTOR);
-
-        wheels = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor};
-        motors = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor, intakeMotor, wobbleArmMotor, launcherMotor};
-        servos = new Servo[]{launcherServo};
-
-        // Motor direction is FORWARD by default
-        leftFrontMotor.setDirection(DcMotor.Direction.FORWARD);
-        leftRearMotor.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightRearMotor.setDirection(DcMotor.Direction.REVERSE);
-
-        // These are built reversed
-        intakeMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        // Set the motor and servo directions
+        intakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
         launcherServo.setDirection(Servo.Direction.FORWARD);
-        launcherMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        wobbleArmMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        launcherMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        wobbleArmMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
-        // Setup motors
-        for (DcMotor motor : motors) {
-            // Set all motors to zero power
-            motor.setPower(0);
-            // Motors will break on Zero power
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            // Set all motors to run without encoders.
-            // May want to use RUN_USING_ENCODERS if encoders are installed.
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-
-        // Setup servos
-        for (Servo servo : servos) {
-            // Set all servos to zeroed out position
-            servo.setPosition(0);
-        }
+        // Initialize the components now that they are setup
+        initializeComponents();
     }
 }

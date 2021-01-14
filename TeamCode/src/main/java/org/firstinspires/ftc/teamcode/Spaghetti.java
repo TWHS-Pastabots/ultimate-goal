@@ -61,12 +61,12 @@ public class Spaghetti extends OpMode {
         double v4 = (radius * Math.cos(ang) - turnCon) * slowCon;
 
         // Sets power of motor, spins wheels
-        robot.leftFrontMotor.setPower(v1);
-        robot.rightFrontMotor.setPower(v2);
-        robot.leftRearMotor.setPower(v3);
-        robot.rightRearMotor.setPower(v4);
+        robot.motorLeftFront.setPower(v1);
+        robot.motorRightFront.setPower(v2);
+        robot.motorLeftRear.setPower(v3);
+        robot.motorRightRear.setPower(v4);
 
-        robot.launcherMotor.setPower(gamepad1.right_trigger);
+        robot.launcherMotor.setPower(Util.cubicEasing(gamepad1.right_trigger));
 
         if (gamepad1.right_bumper) {
             robot.launcherServo.setPosition(SERVO_ON);
