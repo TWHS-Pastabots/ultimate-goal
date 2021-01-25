@@ -1,60 +1,113 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+
+import org.firstinspires.ftc.robotcore.internal.system.Assert;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.firstinspires.ftc.teamcode.ComponentIds.*;
 
-/**
- * Formal class for organizing all RobotHardware for usage across different Telop/Autonomous driving modes.
- * Contains references to HardwareMap and all motors, encoders and sensors used.
- */
 public class RobotHardware {
     // Primary wheel motors
-    public DcMotor motorLeftFront = null;
-    public DcMotor motorLeftRear = null;
-    public DcMotor motorRightFront = null;
-    public DcMotor motorRightRear = null;
-    public DcMotor[] motors;
+    public DcMotorEx motorLeftFront = null;
+    public DcMotorEx motorLeftRear = null;
+    public DcMotorEx motorRightFront = null;
+    public DcMotorEx motorRightRear = null;
+    public DcMotorEx[] wheels = null;
+    public List<DcMotorEx> motors = new ArrayList<>();
 
-    // Encoders
-    public DcMotor encoderLeft = null;
-    public DcMotor encoderRight = null;
-    public DcMotor encoderHorizontal = null;
+    // Primary encoders
+    public DcMotorEx encoderLeft = null;
+    public DcMotorEx encoderRight = null;
+    public DcMotorEx encoderFront = null;
+    public List<DcMotorEx> encoders = new ArrayList<>();
 
-    HardwareMap hwMap = null;
+    // Servos collection
+    public List<Servo> servos = new ArrayList<>();
 
-    /* Constructor */
-    public RobotHardware() {
+    // IMU
+    public BNO055IMU imu = null;
+
+    // Battery voltage sensor
+    public VoltageSensor batteryVoltageSensor = null;
+
+    // Hardware map
+    public HardwareMap hardwareMap = null;
+
+    public void init(HardwareMap hardwareMap) {
+        init(hardwareMap, true);
     }
 
-    /* Initialize standard Hardware interfaces */
-    public void init(HardwareMap hwMap) {
-        // Save reference to Hardware map
-        this.hwMap = hwMap;
+    public void init(HardwareMap hardwareMap, boolean shouldInitializeComponents) {
+        // Setup hardware map
+        Assert.assertNotNull(hardwareMap);
+        this.hardwareMap = hardwareMap;
 
-        motorLeftFront = hwMap.get(DcMotor.class, LEFT_FRONT_MOTOR);
-        motorRightFront = hwMap.get(DcMotor.class, RIGHT_FRONT_MOTOR);
-        motorLeftRear = hwMap.get(DcMotor.class, LEFT_REAR_MOTOR);
-        motorRightRear = hwMap.get(DcMotor.class, MOTOR_RIGHT_REAR);
+        // Initialize wheels
+        motorLeftFront = hardwareMap.get(DcMotorEx.class, LEFT_FRONT_MOTOR);
+        motorRightFront = hardwareMap.get(DcMotorEx.class, RIGHT_FRONT_MOTOR);
+        motorLeftRear = hardwareMap.get(DcMotorEx.class, LEFT_REAR_MOTOR);
+        motorRightRear = hardwareMap.get(DcMotorEx.class, MOTOR_RIGHT_REAR);
 
-        motors = new DcMotor[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
+        // Prepare wheel and motor collections
+        wheels = new DcMotorEx[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
+        motors.addAll(Arrays.asList(wheels));
 
-        // Motor direction is FORWARD by default
-        motorLeftFront.setDirection(DcMotor.Direction.FORWARD);
-        motorLeftRear.setDirection(DcMotor.Direction.FORWARD);
-        motorRightFront.setDirection(DcMotor.Direction.REVERSE);
-        motorRightRear.setDirection(DcMotor.Direction.REVERSE);
+        // Initialize encoders
+        encoderLeft = hardwareMap.get(DcMotorEx.class, LEFT_ENCODER);
+        encoderRight = hardwareMap.get(DcMotorEx.class, RIGHT_ENCODER);
+        encoderFront = hardwareMap.get(DcMotorEx.class, FRONT_ENCODER);
 
+        // Prepare encoder collection
+        encoders.addAll(Arrays.asList(encoderLeft, encoderRight, encoderFront));
+
+        // Initialize IMU
+        imu = hardwareMap.get(BNO055IMU.class, IMU);
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
+        imu.initialize(parameters);
+
+        // Initialize batter voltage sensor
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
+
+        // Prepare motor directions
+        motorLeftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        motorLeftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        motorRightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        motorRightRear.setDirection(DcMotorEx.Direction.FORWARD);
+
+        // Initialize the components if it is specified
+        if (shouldInitializeComponents) {
+            initializeComponents();
+        }
+    }
+
+    public void initializeComponents() {
         // Setup motors
-        for (DcMotor motor : motors) {
+        for (DcMotorEx motor : motors) {
             // Set all motors to zero power
             motor.setPower(0);
+
             // Motors will break on Zero power
-            motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+
             // Set all motors to run without encoders.
             // May want to use RUN_USING_ENCODERS if encoders are installed.
-            motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        }
+
+        // Setup servos
+        for (Servo servo : servos) {
+            // Set all servos to position 0
+            servo.setPosition(0);
         }
     }
 }

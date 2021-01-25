@@ -5,8 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
-
 import java.util.Locale;
 
 @TeleOp(name = "Motor Tester")
@@ -30,7 +28,7 @@ public class MotorTester extends OpMode {
 
         this.motorIndex = 0;
         this.staticMotors = false;
-        this.staticMotorOutput = new float[robot.motors.length];
+        this.staticMotorOutput = new float[robot.motors.size()];
         this.motorGranularity = 0.2f;
 
         // Send telemetry message to signify robot waiting;
@@ -90,17 +88,17 @@ public class MotorTester extends OpMode {
         }
 
         // Set power to inputs
-        for (int i = 0; i < robot.motors.length; i++)
-            robot.motors[i].setPower(inputs[i]);
+        for (int i = 0; i < robot.motors.size(); i++)
+            robot.motors.get(i).setPower(inputs[i]);
 
         // Print input telemetry, power level bars
         telemetry.addData("Started", Util.getHumanDuration((float) runTime.seconds()) + " ago");
-        for (int i = 0; i < robot.motors.length; i++)
+        for (int i = 0; i < robot.motors.size(); i++)
             telemetry.addLine(Telemetry.createLevel((float) inputs[i]));
 
         // Encoder information
-        for (int i = 0; i < robot.motors.length; i++) {
-            DcMotor motor = robot.motors[i];
+        for (int i = 0; i < robot.motors.size(); i++) {
+            DcMotor motor = robot.motors.get(i);
             if (motor != null) {
                 int encoderPosition = motor.getCurrentPosition();
                 telemetry.addLine(String.format(Locale.ENGLISH, "Motor %d: %d TPS", i + 1, encoderPosition - this.encoderPositions[i]));
