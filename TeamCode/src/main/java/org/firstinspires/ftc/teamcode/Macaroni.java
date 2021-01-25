@@ -20,8 +20,10 @@ public class Macaroni extends OpMode {
 
     boolean lowerWobble = false;
     boolean upperWobble = false;
-    boolean lastLowerWobbleChange = false;
-    boolean lastUpperWobbleChange = false;
+    boolean beltStopper = false;
+    boolean lastLowerWobbleState = false;
+    boolean lastUpperWobbleState = false;
+    boolean lastBeltStopperState = false;
 
     //run once on init()
     @Override
@@ -109,23 +111,29 @@ public class Macaroni extends OpMode {
             launcherPower = Util.clamp((float) (launcherPower + powerChange), 0, 1);
 
             // toggle launcher motor with back button
-            if (gamepad1.back) toggleLauncher = !toggleLauncher;
+            if (gamepad1.share) toggleLauncher = !toggleLauncher;
         }
 
-        if (gamepad1.b && gamepad1.b != lastLowerWobbleChange) {
+        if (gamepad1.cross && gamepad1.cross != lastBeltStopperState) {
+            robot.beltStopper.setPosition(beltStopper ? 0 : 1);
+            beltStopper = !beltStopper;
+        }
+        lastBeltStopperState = gamepad1.cross;
+
+        if (gamepad1.circle && gamepad1.circle != lastLowerWobbleState) {
                 robot.lowerWobbleServo.setPosition(lowerWobble ? 0 : 1);
                 lowerWobble = !lowerWobble;
         }
-        lastLowerWobbleChange = gamepad1.b;
+        lastLowerWobbleState = gamepad1.circle;
 
-        if (gamepad1.y && gamepad1.y != lastUpperWobbleChange) {
+        if (gamepad1.triangle && gamepad1.triangle != lastUpperWobbleState) {
             robot.upperWobbleServo.setPosition(upperWobble ? 0 : 1);
             upperWobble = !upperWobble;
         }
-        lastUpperWobbleChange = gamepad1.y;
+        lastUpperWobbleState = gamepad1.triangle;
 
         // Gamepad X to spin up launcher motor
-        if (gamepad1.x)
+        if (gamepad1.square)
             robot.launcherMotor.setPower(1);
         else if (toggleLauncher)
             robot.launcherMotor.setPower(launcherPower);
@@ -149,6 +157,8 @@ public class Macaroni extends OpMode {
             robot.outerIntakeMotor.setPower(0);
             robot.beltMotor.setPower(0);
         }
+
+
 
         // Show motor output visually
         telemetry.addData("Started", Util.getHumanDuration((float) runTime.seconds()) + " ago");

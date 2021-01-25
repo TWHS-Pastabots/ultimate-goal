@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode;
  * Referencing Motor and other Sensors via HardwareMap.get should reference the constants here for consistency across the codebase.
  * @author Ryan Walters
  */
-public class ComponentIds {
+public class ComponentIds { 
     // Wheel Motors
     public static final String LEFT_FRONT_MOTOR = "leftFront";
     public static final String RIGHT_FRONT_MOTOR = "rightFront";
@@ -17,7 +17,7 @@ public class ComponentIds {
     public static final String LAUNCHER_MOTOR = "launcherMotor";
     public static final String INNER_INTAKE_MOTOR = "innerIntakeMotor";
     public static final String BELT_MOTOR = "beltMotor";
-    public static final String BELT_STOPPER = "beltStopper";
+    public static final String BELT_STOPPER = "stopperServo";
 
     // Wobble Goal-related Motors & Servos
     public static final String LOWER_WOBBLE_SERVO = "lowerWobbleServo";
