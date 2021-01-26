@@ -114,19 +114,19 @@ public class Macaroni extends OpMode {
             if (gamepad1.share) toggleLauncher = !toggleLauncher;
         }
 
-        if (gamepad1.cross && gamepad1.cross != lastBeltStopperState) {
+        if (gamepad1.cross && !lastBeltStopperState) {
             robot.beltStopper.setPosition(beltStopper ? 0 : 1);
             beltStopper = !beltStopper;
         }
         lastBeltStopperState = gamepad1.cross;
 
-        if (gamepad1.circle && gamepad1.circle != lastLowerWobbleState) {
-                robot.lowerWobbleServo.setPosition(lowerWobble ? 0 : 1);
-                lowerWobble = !lowerWobble;
+        if (gamepad1.circle && !lastLowerWobbleState) {
+            robot.lowerWobbleServo.setPosition(lowerWobble ? 0 : 1);
+            lowerWobble = !lowerWobble;
         }
         lastLowerWobbleState = gamepad1.circle;
 
-        if (gamepad1.triangle && gamepad1.triangle != lastUpperWobbleState) {
+        if (gamepad1.triangle && !lastUpperWobbleState) {
             robot.upperWobbleServo.setPosition(upperWobble ? 0 : 1);
             upperWobble = !upperWobble;
         }
@@ -144,20 +144,16 @@ public class Macaroni extends OpMode {
         // Right trigger to run all intake motors/servos at desired speed
         if (gamepad1.right_trigger > 0) {
             double rt = Util.cubicEasing(gamepad1.right_trigger);
-            robot.innerIntakeMotor.setPower(rt); // Always run at max power
             robot.beltMotor.setPower(rt);
-            robot.outerIntakeMotor.setPower(rt);
+            robot.intakeMotor.setPower(rt);
         } else if (gamepad1.left_trigger > 0) {
             double lt = gamepad1.left_trigger;
-            robot.innerIntakeMotor.setPower(-lt); // Always run at max power
             robot.beltMotor.setPower(-lt);
-            robot.outerIntakeMotor.setPower(-lt);
+            robot.intakeMotor.setPower(-lt);
         } else {
-            robot.innerIntakeMotor.setPower(0);
-            robot.outerIntakeMotor.setPower(0);
+            robot.intakeMotor.setPower(0);
             robot.beltMotor.setPower(0);
         }
-
 
 
         // Show motor output visually

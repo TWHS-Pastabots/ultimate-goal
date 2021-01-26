@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,8 +20,7 @@ public class MacaroniHardware {
     public DcMotor[] motors;
     public DcMotor[] wheels;
 
-    public DcMotor outerIntakeMotor;
-    public DcMotor innerIntakeMotor;
+    public DcMotor intakeMotor;
     public DcMotor beltMotor;
     public Servo beltStopper;
     public DcMotor launcherMotor;
@@ -42,17 +40,15 @@ public class MacaroniHardware {
         leftRearMotor = hwMap.get(DcMotor.class, LEFT_REAR_MOTOR);
         rightRearMotor = hwMap.get(DcMotor.class, MOTOR_RIGHT_REAR);
 
-        outerIntakeMotor = hwMap.get(DcMotor.class, OUTER_INTAKE_MOTOR);
+        intakeMotor = hwMap.get(DcMotor.class, INTAKE_MOTOR);
         launcherMotor = hwMap.get(DcMotor.class, LAUNCHER_MOTOR);
         beltMotor = hwMap.get(DcMotor.class, BELT_MOTOR);
-        innerIntakeMotor = hwMap.get(DcMotor.class, INNER_INTAKE_MOTOR);
 
-        beltStopper = hwMap.get(Servo.class, BELT_STOPPER);
         lowerWobbleServo = hwMap.get(Servo.class, LOWER_WOBBLE_SERVO);
         upperWobbleServo = hwMap.get(Servo.class, UPPER_WOBBLE_SERVO);
 
         wheels = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor};
-        motors = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor, outerIntakeMotor, innerIntakeMotor, launcherMotor, beltMotor};
+        motors = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor, intakeMotor, launcherMotor, beltMotor};
 
         // Motor direction is FORWARD by default
         leftFrontMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -61,8 +57,8 @@ public class MacaroniHardware {
         rightRearMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // These are built reversed
-        beltMotor.setDirection(DcMotor.Direction.FORWARD);
-        outerIntakeMotor.setDirection(DcMotor.Direction.REVERSE);
+        beltMotor.setDirection(DcMotor.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
 
         // Setup motors
         for (DcMotor motor : motors) {

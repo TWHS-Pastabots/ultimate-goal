@@ -20,7 +20,7 @@ public class SpaghettiHardware extends RobotHardware {
         super.init(hardwareMap, false);
 
         // Initialize motors and servos
-        intakeMotor = hardwareMap.get(DcMotorEx.class, OUTER_INTAKE_MOTOR);
+        intakeMotor = hardwareMap.get(DcMotorEx.class, INTAKE_MOTOR);
         launcherServo = hardwareMap.get(Servo.class, LAUNCHER_SERVO);
         launcherMotor = hardwareMap.get(DcMotorEx.class, LAUNCHER_MOTOR);
         wobbleArmMotor = hardwareMap.get(DcMotorEx.class, WOBBLE_ARM_MOTOR);

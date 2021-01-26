@@ -18,12 +18,10 @@ public class ComponentIds {
     public static final String FRONT_ENCODER = "leftRear";
 
     // Launcher-related Motors & Servos
-    public static final String OUTER_INTAKE_MOTOR = "outerIntakeMotor";
+    public static final String INTAKE_MOTOR = "intakeMotor";
     public static final String LAUNCHER_MOTOR = "launcherMotor";
-    public static final String LAUNCHER_SERVO = "launcherServo";
-    public static final String INNER_INTAKE_MOTOR = "innerIntakeMotor";
+    public static final String LAUNCHER_SERVO = "launcherServo";  // Only used in Spaghetti Hardware
     public static final String BELT_MOTOR = "beltMotor";
-    public static final String BELT_STOPPER = "stopperServo";
 
     // Wobble Goal-related Motors & Servos
     public static final String LOWER_WOBBLE_SERVO = "lowerWobbleServo";
