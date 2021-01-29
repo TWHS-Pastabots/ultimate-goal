@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -80,9 +79,9 @@ public class RobotHardware {
 
         // Prepare motor directions
         motorLeftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        motorLeftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        motorLeftRear.setDirection(DcMotorEx.Direction.FORWARD);
         motorRightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        motorRightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        motorRightRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Initialize the components if it is specified
         if (shouldInitializeComponents) {
@@ -100,8 +99,13 @@ public class RobotHardware {
             motor.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
             // Set all motors to run without encoders.
-            // May want to use RUN_USING_ENCODERS if encoders are installed.
-            motor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        }
+
+        // Setup wheels
+        for (DcMotorEx wheel : wheels) {
+            // Set all wheels to run with encoders
+            wheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         }
 
         // Setup servos
