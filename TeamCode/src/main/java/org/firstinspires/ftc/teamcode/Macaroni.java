@@ -20,10 +20,8 @@ public class Macaroni extends OpMode {
 
     boolean lowerWobble = false;
     boolean upperWobble = false;
-    boolean beltStopper = false;
     boolean lastLowerWobbleState = false;
     boolean lastUpperWobbleState = false;
-    boolean lastBeltStopperState = false;
 
     //run once on init()
     @Override
@@ -69,21 +67,16 @@ public class Macaroni extends OpMode {
     // Loop on start()
     @Override
     public void loop() {
-        // Motor multiplier
-//        if (gamepad1.b) slowCon = .4;
-//        if (gamepad1.a) slowCon = .8;
-//        if (gamepad1.x) slowCon = 1.0;
-
         // Apply easing function to all stick inputs
         double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
         double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
         double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
         right_stick_x = gamepad1.right_bumper ? 0.2 : (gamepad1.left_bumper ? -0.2 : right_stick_x);
-        double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
+//        double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
 
         // Mechanum trig math
-        double radius = Math.hypot(left_stick_x, left_stick_y);
-        double ang = Math.atan2(left_stick_y, left_stick_x) - Math.PI / 4;
+        double radius = Math.hypot(left_stick_x, -left_stick_y);
+        double ang = Math.atan2(-left_stick_y, left_stick_x) - Math.PI / 4;
 
         double turnCon = right_stick_x * .75;
 
@@ -113,12 +106,6 @@ public class Macaroni extends OpMode {
             // toggle launcher motor with back button
             if (gamepad1.share) toggleLauncher = !toggleLauncher;
         }
-
-        if (gamepad1.cross && !lastBeltStopperState) {
-            robot.beltStopper.setPosition(beltStopper ? 0 : 1);
-            beltStopper = !beltStopper;
-        }
-        lastBeltStopperState = gamepad1.cross;
 
         if (gamepad1.circle && !lastLowerWobbleState) {
             robot.lowerWobbleServo.setPosition(lowerWobble ? 0 : 1);
