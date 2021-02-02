@@ -22,7 +22,6 @@ public class MacaroniHardware {
 
     public DcMotor intakeMotor;
     public DcMotor beltMotor;
-    public Servo beltStopper;
     public DcMotor launcherMotor;
 
     public Servo upperWobbleServo;
