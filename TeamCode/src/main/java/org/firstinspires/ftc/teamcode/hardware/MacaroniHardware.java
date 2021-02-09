@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import static org.firstinspires.ftc.teamcode.ComponentIds.*;
+import static org.firstinspires.ftc.teamcode.hardware.ComponentIds.*;
 
 /**
  * Formal class for organizing all RobotHardware for usage across different Telop/Autonomous driving modes.
@@ -37,7 +37,7 @@ public class MacaroniHardware {
         leftFrontMotor = hwMap.get(DcMotor.class, LEFT_FRONT_MOTOR);
         rightFrontMotor = hwMap.get(DcMotor.class, RIGHT_FRONT_MOTOR);
         leftRearMotor = hwMap.get(DcMotor.class, LEFT_REAR_MOTOR);
-        rightRearMotor = hwMap.get(DcMotor.class, MOTOR_RIGHT_REAR);
+        rightRearMotor = hwMap.get(DcMotor.class, RIGHT_REAR_MOTOR);
 
         intakeMotor = hwMap.get(DcMotor.class, INTAKE_MOTOR);
         launcherMotor = hwMap.get(DcMotor.class, LAUNCHER_MOTOR);

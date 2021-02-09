@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.ComponentIds.*;
+import static org.firstinspires.ftc.teamcode.hardware.ComponentIds.*;
 
 public class RobotHardware {
     // Primary wheel motors
@@ -54,7 +54,7 @@ public class RobotHardware {
         motorLeftFront = hardwareMap.get(DcMotorEx.class, LEFT_FRONT_MOTOR);
         motorRightFront = hardwareMap.get(DcMotorEx.class, RIGHT_FRONT_MOTOR);
         motorLeftRear = hardwareMap.get(DcMotorEx.class, LEFT_REAR_MOTOR);
-        motorRightRear = hardwareMap.get(DcMotorEx.class, MOTOR_RIGHT_REAR);
+        motorRightRear = hardwareMap.get(DcMotorEx.class, RIGHT_REAR_MOTOR);
 
         // Prepare wheel and motor collections
         wheels = new DcMotorEx[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};

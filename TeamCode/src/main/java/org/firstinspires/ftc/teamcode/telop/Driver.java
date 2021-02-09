@@ -1,22 +1,20 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.telop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "Spaghetti", group = "Linear OpMode")
-public class Spaghetti extends OpMode {
+import org.firstinspires.ftc.teamcode.Telemetry;
+import org.firstinspires.ftc.teamcode.Util;
+import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
+
+@TeleOp(name = "Driver", group = "Linear OpMode")
+public class Driver extends OpMode {
 
     /* Declare OpMode members. */
-    final SpaghettiHardware robot = new SpaghettiHardware();
+    final RobotHardware robot = new RobotHardware();
     final ElapsedTime runTime = new ElapsedTime();
     double slowCon = 0.8;
-
-    private static final double SERVO_ON = 1d;
-    private static final double SERVO_OFF = 0d;
-
-    private static final double INTAKE_ON = 0.5d;
-    private static final double INTAKE_OFF = 0d;
 
     //run once on init()
     @Override
@@ -42,6 +40,11 @@ public class Spaghetti extends OpMode {
     // Loop on start()
     @Override
     public void loop() {
+        // Motor multiplier
+        if (gamepad1.b) slowCon = .4;
+        if (gamepad1.a) slowCon = .8;
+        if (gamepad1.x) slowCon = 1.0;
+
         // Apply easing function to all stick inputs
         double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
         double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
@@ -50,7 +53,7 @@ public class Spaghetti extends OpMode {
 
         // Mechanum trig math
         double radius = Math.hypot(left_stick_x, left_stick_y);
-        double ang = Math.atan2(left_stick_y, -left_stick_x) - Math.PI / 4;
+        double ang = Math.atan2(left_stick_y, left_stick_x) - Math.PI / 4;
 
         double turnCon = right_stick_x * .75;
 
@@ -60,25 +63,12 @@ public class Spaghetti extends OpMode {
         double v3 = (radius * Math.sin(ang) + turnCon) * slowCon;
         double v4 = (radius * Math.cos(ang) - turnCon) * slowCon;
 
+
         // Sets power of motor, spins wheels
         robot.motorLeftFront.setPower(v1);
         robot.motorRightFront.setPower(v2);
         robot.motorLeftRear.setPower(v3);
         robot.motorRightRear.setPower(v4);
-
-        robot.launcherMotor.setPower(Util.cubicEasing(gamepad1.right_trigger));
-
-        if (gamepad1.right_bumper) {
-            robot.launcherServo.setPosition(SERVO_ON);
-        } else {
-            robot.launcherServo.setPosition(SERVO_OFF);
-        }
-
-        if (gamepad1.left_bumper) {
-            robot.intakeMotor.setPower(INTAKE_ON);
-        } else {
-            robot.intakeMotor.setPower(INTAKE_OFF);
-        }
 
         // Show motor output visually
         telemetry.addData("Started", Util.getHumanDuration((float) runTime.seconds()) + " ago");
@@ -96,3 +86,4 @@ public class Spaghetti extends OpMode {
     }
 
 }
+

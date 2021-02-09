@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.Arrays;
 
-import static org.firstinspires.ftc.teamcode.ComponentIds.*;
+import static org.firstinspires.ftc.teamcode.hardware.ComponentIds.*;
 
 public class SpaghettiHardware extends RobotHardware {
     // Miscellaneous robot motors and servos
