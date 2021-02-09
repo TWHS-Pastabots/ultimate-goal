@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.telop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Util;
@@ -31,12 +32,13 @@ public class Macaroni extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot.init(hardwareMap);
         lastControlsUpdate = runTime.seconds();
         dashboard = FtcDashboard.getInstance();
         telemetry = dashboard.getTelemetry();
 
         waitForStart();
+
+        robot.init(hardwareMap);
 
         if (isStopRequested()) return;
 
@@ -119,6 +121,17 @@ public class Macaroni extends LinearOpMode {
         double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
         double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
 
+        if (gamepad1.dpad_up)
+            left_stick_y = -1;
+        else if (gamepad1.dpad_down)
+            left_stick_y = 1;
+
+        if (gamepad1.dpad_right)
+            left_stick_x = 1;
+        else if (gamepad1.dpad_left)
+            left_stick_x = -1;
+
+
         // Left and Right bumper controls (slow rotate)
         right_stick_x = gamepad1.right_bumper ? 0.2 : (gamepad1.left_bumper ? -0.2 : right_stick_x);
 
@@ -139,10 +152,10 @@ public class Macaroni extends LinearOpMode {
         telemetry.addData("rightRear", v4);
 
         // Sets power of motor, spins wheels
-        robot.leftFrontMotor.setPower(v1);
-        robot.rightFrontMotor.setPower(v2);
-        robot.leftRearMotor.setPower(v3);
-        robot.rightRearMotor.setPower(v4);
+        robot.motorLeftFront.setPower(v1);
+        robot.motorRightFront.setPower(v2);
+        robot.motorLeftRear.setPower(v3);
+        robot.motorRightRear.setPower(v4);
     }
 
     /**
