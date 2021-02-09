@@ -18,19 +18,17 @@ public class MacaroniHardware extends RobotHardware {
     public Servo clawServo;
     public Servo armServo;
 
-    HardwareMap hwMap = null;
 
-    /* Initialize standard Hardware interfaces */
-    public void init(HardwareMap hwMap) {
-        // Save reference to Hardware map
-        this.hwMap = hwMap;
+    @Override
+    public void init(HardwareMap hardwareMap) {
+        super.init(hardwareMap, false);
 
-        intakeMotor = hwMap.get(DcMotorEx.class, MacaroniIds.INTAKE_MOTOR);
-        launcherMotor = hwMap.get(DcMotorEx.class, MacaroniIds.LAUNCHER_MOTOR);
-        beltMotor = hwMap.get(DcMotorEx.class, MacaroniIds.BELT_MOTOR);
+        intakeMotor = hardwareMap.get(DcMotorEx.class, MacaroniIds.INTAKE_MOTOR);
+        launcherMotor = hardwareMap.get(DcMotorEx.class, MacaroniIds.LAUNCHER_MOTOR);
+        beltMotor = hardwareMap.get(DcMotorEx.class, MacaroniIds.BELT_MOTOR);
 
-        armServo = hwMap.get(Servo.class, MacaroniIds.ARM_SERVO);
-        clawServo = hwMap.get(Servo.class, MacaroniIds.CLAW_SERVO);
+        armServo = hardwareMap.get(Servo.class, MacaroniIds.ARM_SERVO);
+        clawServo = hardwareMap.get(Servo.class, MacaroniIds.CLAW_SERVO);
 
         motors.addAll(Arrays.asList(intakeMotor, launcherMotor, beltMotor));
         servos.addAll(Arrays.asList(armServo, clawServo));

@@ -11,31 +11,25 @@ import java.util.Arrays;
  * Contains references to HardwareMap and all motors, encoders and sensors used.
  */
 public class RavioliHardware extends RobotHardware {
-
-    // Time function
     public DcMotorEx motorConveyor = null;
     public DcMotorEx motorLauncher = null;
     public DcMotorEx motorIntake = null;
 
     public DcMotorEx motorClaw = null;
     public Servo servoClaw = null;
-
     public Servo servoIntake = null;
 
-    HardwareMap hwMap = null;
+    @Override
+    public void init(HardwareMap hardwareMap) {
+        super.init(hardwareMap, false);
 
-    /* Initialize standard Hardware interfaces */
-    public void init(HardwareMap hwMap) {
-        // Save reference to Hardware map
-        this.hwMap = hwMap;
+        motorConveyor = hardwareMap.get(DcMotorEx.class, RavioliIds.MOTOR_CONVEYOR);
+        motorLauncher = hardwareMap.get(DcMotorEx.class, RavioliIds.MOTOR_LAUNCHER);
+        motorIntake = hardwareMap.get(DcMotorEx.class, RavioliIds.MOTOR_INTAKE);
 
-        motorConveyor = hwMap.get(DcMotorEx.class, RavioliIds.MOTOR_CONVEYOR);
-        motorLauncher = hwMap.get(DcMotorEx.class, RavioliIds.MOTOR_LAUNCHER);
-        motorIntake = hwMap.get(DcMotorEx.class, RavioliIds.MOTOR_INTAKE);
-
-        motorClaw = hwMap.get(DcMotorEx.class, RavioliIds.MOTOR_CLAW);
-        servoClaw = hwMap.get(Servo.class, RavioliIds.SERVO_CLAW);
-        servoIntake = hwMap.get(Servo.class, RavioliIds.INTAKE_LOCK);
+        motorClaw = hardwareMap.get(DcMotorEx.class, RavioliIds.MOTOR_CLAW);
+        servoClaw = hardwareMap.get(Servo.class, RavioliIds.SERVO_CLAW);
+        servoIntake = hardwareMap.get(Servo.class, RavioliIds.INTAKE_LOCK);
 
         motors.addAll(Arrays.asList(motorConveyor, motorLauncher, motorIntake, motorClaw));
         servos.addAll(Arrays.asList(servoClaw, servoIntake));
