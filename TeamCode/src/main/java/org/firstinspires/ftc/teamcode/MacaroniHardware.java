@@ -24,8 +24,8 @@ public class MacaroniHardware {
     public DcMotor beltMotor;
     public DcMotor launcherMotor;
 
-    public Servo upperWobbleServo;
-    public Servo lowerWobbleServo;
+    public Servo clawServo;
+    public Servo armServo;
 
     HardwareMap hwMap = null;
 
@@ -43,8 +43,8 @@ public class MacaroniHardware {
         launcherMotor = hwMap.get(DcMotor.class, LAUNCHER_MOTOR);
         beltMotor = hwMap.get(DcMotor.class, BELT_MOTOR);
 
-        lowerWobbleServo = hwMap.get(Servo.class, LOWER_WOBBLE_SERVO);
-        upperWobbleServo = hwMap.get(Servo.class, UPPER_WOBBLE_SERVO);
+        armServo = hwMap.get(Servo.class, LOWER_WOBBLE_SERVO);
+        clawServo = hwMap.get(Servo.class, UPPER_WOBBLE_SERVO);
 
         wheels = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor};
         motors = new DcMotor[]{leftFrontMotor, rightFrontMotor, leftRearMotor, rightRearMotor, intakeMotor, launcherMotor, beltMotor};

@@ -1,36 +1,33 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.util.Locale;
-
 @TeleOp(name = "Macaroni", group = "Linear OpMode")
 public class Macaroni extends LinearOpMode {
-
-    /* Declare OpMode members. */
     final MacaroniHardware robot = new MacaroniHardware();
     final ElapsedTime runTime = new ElapsedTime();
     double lastControlsUpdate;
-    double slowCon = 0.8;
-    boolean toggleLauncher = false;
-    double launcherPower = 1f;
-    private static final double powerGranularity = 0.05;
 
-    boolean lowerWobble = false;
-    boolean upperWobble = false;
-    boolean lastLowerWobbleState = false;
-    boolean lastUpperWobbleState = false;
+    private static final double powerGranularity = 0.05;
+    double launcherPower = 1f;
+
+    // Wobble Goal Servo states
+    boolean armActive = false; // Current state of the Lower Wobble Goal (Arm)
+    boolean clawActive = false; // Current state of the Upper Wobble Goal (Claw)
+    boolean prevArmState = false;
+    boolean prevClawState = false;
+
+    // Other states
+    boolean toggleLauncher = false;
+    boolean intakeDirection = true;
 
     FtcDashboard dashboard;
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         robot.init(hardwareMap);
         lastControlsUpdate = runTime.seconds();
         dashboard = FtcDashboard.getInstance();
@@ -41,51 +38,108 @@ public class Macaroni extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (opModeIsActive()) {
-            updateDrivetrainMotors();
+            driverControls();
+            operatorControls();
             telemetry.update();
-            updateServos();
-            updateIntake();
-
-            // Poll the controller's inputs 0.33 seconds after the previous poll
-            if ((gamepad1.dpad_up || gamepad1.dpad_down || gamepad1.back || gamepad1.dpad_left || gamepad1.dpad_right) && controllerLoop(0.15)) {
-                if (gamepad1.dpad_left)
-                    launcherPower = 0.65;
-                else if (gamepad1.dpad_right)
-                    launcherPower = 0.75;
-
-                // Change launcher motor power with D-Pad controls
-                double powerChange = gamepad1.dpad_up ? powerGranularity : (gamepad1.dpad_down ? -powerGranularity : 0f);
-                launcherPower = Util.clamp((float) (launcherPower + powerChange), 0, 1);
-
-                // toggle launcher motor with back button
-                if (gamepad1.share) toggleLauncher = !toggleLauncher;
-            }
-
-
-            // Gamepad X to spin up launcher motor
-            if (gamepad1.square) robot.launcherMotor.setPower(1);
-            else if (toggleLauncher) robot.launcherMotor.setPower(launcherPower);
-            else robot.launcherMotor.setPower(0);
-
-
-            // Show motor output visually
         }
     }
 
-    private void updateIntake() {
+    private void operatorControls() {
+        // Lower Wobble (Arm) controls
+        if (gamepad2.x && !prevArmState) {
+            robot.armServo.setPosition(armActive ? 0 : 1);
+            armActive = !armActive;
+        }
+        prevArmState = gamepad2.x;
+
+        // Upper Wobble (Claw) controls
+        if (gamepad2.circle && !prevClawState) {
+            robot.clawServo.setPosition(clawActive ? 0 : 1);
+            clawActive = !clawActive;
+        }
+        prevClawState = gamepad2.circle;
+
+        boolean controllerTouched = true;
+        if (controllerLoop(0.15)) {
+            if (gamepad2.dpad_left)
+                launcherPower = 0.65;
+            else if (gamepad2.dpad_right)
+                launcherPower = 0.75;
+            else if (gamepad2.dpad_up || gamepad2.dpad_down) {
+                // Change launcher motor power with D-Pad controls
+                double powerChange = gamepad2.dpad_up ? powerGranularity : -powerGranularity;
+                launcherPower = Util.clamp((float) (launcherPower + powerChange), 0, 1);
+            } else
+                controllerTouched = false;
+
+            if (!controllerTouched && gamepad2.right_bumper) {
+                intakeDirection = !intakeDirection;
+                controllerTouched = true;
+            }
+
+            if (controllerTouched)
+                lastControlsUpdate = runTime.seconds();
+
+            // Toggle launcher
+            // if (gamepad2.share) toggleLauncher = !toggleLauncher;
+        }
+        telemetry.addData("launcherPower", launcherPower);
+
         // Right trigger to run all intake motors/servos at desired speed
-        if (gamepad1.right_trigger > 0) {
-            double rt = Util.cubicEasing(gamepad1.right_trigger);
-            robot.beltMotor.setPower(rt);
+        if (gamepad2.right_trigger > 0) {
+            robot.beltMotor.setPower(intakeDirection ? 1 : -1);
+            double rt = intakeDirection ? Util.cubicEasing(gamepad2.right_trigger) : -Util.cubicEasing(gamepad2.right_trigger);
             robot.intakeMotor.setPower(rt);
-        } else if (gamepad1.left_trigger > 0) {
-            double lt = gamepad1.left_trigger;
-            robot.beltMotor.setPower(-lt);
-            robot.intakeMotor.setPower(-lt);
         } else {
             robot.intakeMotor.setPower(0);
-            robot.beltMotor.setPower(0);
+            if (gamepad2.left_stick_y != 0)
+                robot.beltMotor.setPower(gamepad2.left_stick_y > 0 ? 1 : -1);
         }
+
+        telemetry.addData("beltMotor", robot.beltMotor.getPower());
+        telemetry.addData("intakeMotor", robot.intakeMotor.getPower());
+        telemetry.addData("beltMotor", gamepad2.left_stick_y);
+        telemetry.addData("launcherMotor", robot.launcherMotor.getPower());
+        robot.launcherMotor.setPower(gamepad2.left_trigger > 0 ? launcherPower : 0);
+    }
+
+    /**
+     * Processes the driver gamepad's controls.
+     * <p>
+     * Left and Right Stick: Move robot
+     * Left and Right Bumpers: Rotate robot slowly
+     */
+    private void driverControls() {
+        // Apply easing function to all stick inputs
+        double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
+        double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
+        double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
+        double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
+
+        // Left and Right bumper controls (slow rotate)
+        right_stick_x = gamepad1.right_bumper ? 0.2 : (gamepad1.left_bumper ? -0.2 : right_stick_x);
+
+        // Mechanum trig math
+        double radius = Math.hypot(left_stick_x, -left_stick_y);
+        double ang = Math.atan2(-left_stick_y, left_stick_x) - Math.PI / 4;
+        double turnCon = right_stick_x * .75;
+
+        // Final motor powers, with multiplier applied
+        double v1 = (radius * Math.cos(ang) + turnCon);
+        double v2 = (radius * Math.sin(ang) - turnCon);
+        double v3 = (radius * Math.sin(ang) + turnCon);
+        double v4 = (radius * Math.cos(ang) - turnCon);
+
+        telemetry.addData("leftFront", v1);
+        telemetry.addData("rightFront", v2);
+        telemetry.addData("leftRear", v3);
+        telemetry.addData("rightRear", v4);
+
+        // Sets power of motor, spins wheels
+        robot.leftFrontMotor.setPower(v1);
+        robot.rightFrontMotor.setPower(v2);
+        robot.leftRearMotor.setPower(v3);
+        robot.rightRearMotor.setPower(v4);
     }
 
     /**
@@ -99,57 +153,9 @@ public class Macaroni extends LinearOpMode {
      * @return True if the controller should be polled now, false if the duration has not yet elapsed.
      */
     public boolean controllerLoop(double duration) {
-        double now = runTime.seconds();
-        if (now - lastControlsUpdate >= duration) {
-            this.lastControlsUpdate = now;
-            return true;
-        }
-        return false;
-    }
-
-    public void updateServos() {
-        if (gamepad1.circle && !lastLowerWobbleState) {
-            robot.lowerWobbleServo.setPosition(lowerWobble ? 0 : 1);
-            lowerWobble = !lowerWobble;
-        }
-        lastLowerWobbleState = gamepad1.circle;
-
-        if (gamepad1.triangle && !lastUpperWobbleState) {
-            robot.upperWobbleServo.setPosition(upperWobble ? 0 : 1);
-            upperWobble = !upperWobble;
-        }
-        lastUpperWobbleState = gamepad1.triangle;
-    }
-
-    public void updateDrivetrainMotors() {
-        // Apply easing function to all stick inputs
-        double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
-        double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
-        double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
-        right_stick_x = gamepad1.right_bumper ? 0.2 : (gamepad1.left_bumper ? -0.2 : right_stick_x);
-        // double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
-
-        // Mechanum trig math
-        double radius = Math.hypot(left_stick_x, -left_stick_y);
-        double ang = Math.atan2(-left_stick_y, left_stick_x) - Math.PI / 4;
-        double turnCon = right_stick_x * .75;
-
-        // Final motor powers, with multiplier applied
-        double v1 = (radius * Math.cos(ang) + turnCon) * slowCon;
-        double v2 = (radius * Math.sin(ang) - turnCon) * slowCon;
-        double v3 = (radius * Math.sin(ang) + turnCon) * slowCon;
-        double v4 = (radius * Math.cos(ang) - turnCon) * slowCon;
-
-        telemetry.addData("v1 leftFront", v1);
-        telemetry.addData("v2 rightFront", v2);
-        telemetry.addData("v3 leftRear", v3);
-        telemetry.addData("v4 rightRear", v4);
-
-        // Sets power of motor, spins wheels
-        robot.leftFrontMotor.setPower(v1);
-        robot.rightFrontMotor.setPower(v2);
-        robot.leftRearMotor.setPower(v3);
-        robot.rightRearMotor.setPower(v4);
+        double waited = runTime.seconds() - lastControlsUpdate;
+        telemetry.addData("controllerLoop", Util.clamp((float) (waited / duration), 0f, 1f));
+        return waited >= duration;
     }
 }
 
