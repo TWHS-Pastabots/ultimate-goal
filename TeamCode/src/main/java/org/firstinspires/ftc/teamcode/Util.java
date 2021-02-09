@@ -53,7 +53,7 @@ public class Util {
     }
 
     /**
-     * A easing function that keeps the sign of the function.
+     * A cubic easing function that keeps the sign of the function.
      *
      * @param number A value in the [<code>0.0</code>, <code>1.0</code>] range.
      * @return A value with the cubic easing function applied
@@ -63,9 +63,21 @@ public class Util {
     }
 
     /**
+     * A square easing function that keeps the sign of the function.
+     *
+     * @param number A value in the [<code>0.0</code>, <code>1.0</code>] range.
+     * @return A value with the square easing function applied.
+     */
+    public static double squareEasing(double number) {
+        if (number > 0) return number * number;
+        else if (number < 0) return -(number * number);
+        return 0.0;
+    }
+
+    /**
      * Helper function for wrapping index values, especially when incrementing and decrementing.
      *
-     * @param i An integer index of any sign or magnitude.
+     * @param i      An integer index of any sign or magnitude.
      * @param length The length of the array you want to wrap indexes around.
      * @return The expected index, accounting for negative and positive wrapping.
      */
@@ -78,8 +90,8 @@ public class Util {
 
     /**
      * @param value The value to be clamped
-     * @param min The maximum in the clamp range
-     * @param max The minimum in the clamp range
+     * @param min   The maximum in the clamp range
+     * @param max   The minimum in the clamp range
      * @return A value within the min/max clamp range - equal to the given value or the closest value within the range.
      */
     public static float clamp(float value, float min, float max) {
