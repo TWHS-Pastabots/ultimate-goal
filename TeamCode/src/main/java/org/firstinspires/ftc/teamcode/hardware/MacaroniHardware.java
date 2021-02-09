@@ -29,8 +29,8 @@ public class MacaroniHardware extends RobotHardware {
         launcherMotor = hwMap.get(DcMotorEx.class, MacaroniIds.LAUNCHER_MOTOR);
         beltMotor = hwMap.get(DcMotorEx.class, MacaroniIds.BELT_MOTOR);
 
-        armServo = hwMap.get(Servo.class, MacaroniIds.LOWER_WOBBLE_SERVO);
-        clawServo = hwMap.get(Servo.class, MacaroniIds.UPPER_WOBBLE_SERVO);
+        armServo = hwMap.get(Servo.class, MacaroniIds.ARM_SERVO);
+        clawServo = hwMap.get(Servo.class, MacaroniIds.CLAW_SERVO);
 
         motors.addAll(Arrays.asList(intakeMotor, launcherMotor, beltMotor));
         servos.addAll(Arrays.asList(armServo, clawServo));
