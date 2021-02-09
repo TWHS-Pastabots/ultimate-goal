@@ -1,5 +1,8 @@
-package org.firstinspires.ftc.teamcode.roadrunner;
+package org.firstinspires.ftc.teamcode.drive.opmode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
@@ -10,15 +13,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants;
-import org.firstinspires.ftc.teamcode.roadrunner.drivetrain.MecanumDriveTrain;
-import org.firstinspires.ftc.teamcode.RobotHardware;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 import java.util.List;
 
-import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.RUN_USING_ENCODER;
-import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstants.kV;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 
 /*
  * This routine is designed to tune the PID coefficients used by the REV Expansion Hubs for closed-
@@ -46,31 +49,20 @@ import static org.firstinspires.ftc.teamcode.roadrunner.drivetrain.DriveConstant
  * Pressing A (on the Xbox and Logitech F310 gamepads, X on the PS4 Dualshock gamepad) will cede
  * control back to the tuning process.
  */
+@Config
 @Autonomous(group = "drive")
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
-
-    private MecanumDriveTrain drive;
 
     enum Mode {
         DRIVER_MODE,
         TUNING_MODE
     }
 
-    private Mode mode;
-
-    private double lastKp = MOTOR_VELO_PID.p;
-    private double lastKi = MOTOR_VELO_PID.i;
-    private double lastKd = MOTOR_VELO_PID.d;
-    private double lastKf = MOTOR_VELO_PID.f;
-
     private static MotionProfile generateProfile(boolean movingForward) {
         MotionState start = new MotionState(movingForward ? 0 : DISTANCE, 0, 0, 0);
         MotionState goal = new MotionState(movingForward ? DISTANCE : 0, 0, 0, 0);
-        return MotionProfileGenerator.generateSimpleMotionProfile(start, goal,
-                DriveConstants.BASE_CONSTRAINTS.maxVel,
-                DriveConstants.BASE_CONSTRAINTS.maxAccel,
-                DriveConstants.BASE_CONSTRAINTS.maxJerk);
+        return MotionProfileGenerator.generateSimpleMotionProfile(start, goal, MAX_VEL, MAX_ACCEL);
     }
 
     @Override
@@ -80,15 +72,16 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
                     "PID is not in use", getClass().getSimpleName());
         }
 
-//        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        RobotHardware robot = new RobotHardware();
-        robot.init(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        drive = new MecanumDriveTrain();
-        drive.init(robot);
+        Mode mode = Mode.TUNING_MODE;
 
-        mode = Mode.TUNING_MODE;
+        double lastKp = MOTOR_VELO_PID.p;
+        double lastKi = MOTOR_VELO_PID.i;
+        double lastKd = MOTOR_VELO_PID.d;
+        double lastKf = MOTOR_VELO_PID.f;
 
         drive.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
 
@@ -136,7 +129,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
                     // update telemetry
                     telemetry.addData("targetVelocity", motionState.getV());
                     for (int i = 0; i < velocities.size(); i++) {
-                        telemetry.addData("velocity" + i, velocities.get(i));
+                        telemetry.addData("measuredVelocity" + i, velocities.get(i));
                         telemetry.addData(
                                 "error" + i,
                                 motionState.getV() - velocities.get(i)

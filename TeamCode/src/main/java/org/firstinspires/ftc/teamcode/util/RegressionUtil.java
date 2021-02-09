@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.roadrunner;
+package org.firstinspires.ftc.teamcode.util;
+
+import androidx.annotation.Nullable;
 
 import com.acmerobotics.roadrunner.kinematics.Kinematics;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -55,7 +55,7 @@ public class RegressionUtil {
         for (int i = 1; i < x.size() - 1; i++) {
             deriv.add(
                     (y.get(i + 1) - y.get(i - 1)) /
-                            (x.get(i + 1) - x.get(i - 1))
+                    (x.get(i + 1) - x.get(i - 1))
             );
         }
         // copy endpoints to pad output
@@ -106,7 +106,7 @@ public class RegressionUtil {
         }
 
         return new RampResult(Math.abs(rampReg.getSlope()), Math.abs(rampReg.getIntercept()),
-                rampReg.getRSquare());
+                              rampReg.getRSquare());
     }
 
     /**
