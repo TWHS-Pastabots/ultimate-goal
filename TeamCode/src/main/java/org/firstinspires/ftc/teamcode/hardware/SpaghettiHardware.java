@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.Arrays;
 
-import static org.firstinspires.ftc.teamcode.hardware.ComponentIds.*;
-
 public class SpaghettiHardware extends RobotHardware {
     // Miscellaneous robot motors and servos
     public DcMotorEx intakeMotor = null;
@@ -21,11 +19,11 @@ public class SpaghettiHardware extends RobotHardware {
         super.init(hardwareMap, false);
 
         // Initialize motors and servos
-        intakeMotor = hardwareMap.get(DcMotorEx.class, INTAKE_MOTOR);
-        launcherServo = hardwareMap.get(Servo.class, LAUNCHER_SERVO);
-        wobbleArmServo = hardwareMap.get(Servo.class, LOWER_WOBBLE_SERVO);
-        launcherMotor = hardwareMap.get(DcMotorEx.class, LAUNCHER_MOTOR);
-        wobbleArmMotor = hardwareMap.get(DcMotorEx.class, WOBBLE_ARM_MOTOR);
+        intakeMotor = hardwareMap.get(DcMotorEx.class, SpaghettiIds.INTAKE_MOTOR);
+        launcherServo = hardwareMap.get(Servo.class, SpaghettiIds.LAUNCHER_SERVO);
+        wobbleArmServo = hardwareMap.get(Servo.class, SpaghettiIds.LOWER_WOBBLE_SERVO);
+        launcherMotor = hardwareMap.get(DcMotorEx.class, SpaghettiIds.LAUNCHER_MOTOR);
+        wobbleArmMotor = hardwareMap.get(DcMotorEx.class, SpaghettiIds.WOBBLE_ARM_MOTOR);
 
         // Setup the motors list
         motors.addAll(Arrays.asList(intakeMotor, launcherMotor, wobbleArmMotor));

@@ -17,21 +17,26 @@ public class ComponentIds {
     public static final String RIGHT_ENCODER = "rightFront";
     public static final String FRONT_ENCODER = "leftRear";
 
-    // Shared Team IDs
-    public static final String IMU = "imu";
+    public static final String IMU = "imu";  // Used by Road Runner Telop only
+}
+
+class MacaroniIds {
     public static final String INTAKE_MOTOR = "intakeMotor";
     public static final String LAUNCHER_MOTOR = "launcherMotor";
     public static final String LOWER_WOBBLE_SERVO = "lowerWobbleServo";
-
-    // Spaghetti Team
-    public static final String WOBBLE_ARM_MOTOR = "wobbleArmMotor";
-    public static final String LAUNCHER_SERVO = "launcherServo";  // Only used in Spaghetti Hardware
-
-    // Macaroni Team
     public static final String BELT_MOTOR = "beltMotor";
     public static final String UPPER_WOBBLE_SERVO = "upperWobbleServo";
+}
 
-    // Ravioli Team
+class SpaghettiIds {
+    public static final String INTAKE_MOTOR = "intakeMotor";
+    public static final String LAUNCHER_MOTOR = "launcherMotor";
+    public static final String LOWER_WOBBLE_SERVO = "lowerWobbleServo";
+    public static final String WOBBLE_ARM_MOTOR = "wobbleArmMotor";
+    public static final String LAUNCHER_SERVO = "launcherServo";  // Only used in Spaghetti Hardware
+}
+
+class RavioliIds {
     public static final String MOTOR_CONVEYOR = "conveyor";
     public static final String MOTOR_LAUNCHER = "launcher";
     public static final String MOTOR_INTAKE = "intake";
