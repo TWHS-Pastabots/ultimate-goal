@@ -151,6 +151,10 @@ public class Macaroni extends LinearOpMode {
         telemetry.addData("leftRear", v3);
         telemetry.addData("rightRear", v4);
 
+        telemetry.addData("leftEncoder", robot.encoderLeft.getCorrectedVelocity());
+        telemetry.addData("rightEncoder", robot.encoderRight.getCorrectedVelocity());
+        telemetry.addData("forwardEncoder", robot.encoderFront.getCorrectedVelocity());
+
         // Sets power of motor, spins wheels
         robot.motorLeftFront.setPower(v1);
         robot.motorRightFront.setPower(v2);

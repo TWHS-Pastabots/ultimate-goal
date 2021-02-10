@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.internal.system.Assert;
+import org.firstinspires.ftc.teamcode.util.Encoder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,10 +25,10 @@ public class RobotHardware {
     public List<DcMotorEx> motors = new ArrayList<>();
 
     // Primary encoders
-    public DcMotorEx encoderLeft = null;
-    public DcMotorEx encoderRight = null;
-    public DcMotorEx encoderFront = null;
-    public List<DcMotorEx> encoders = new ArrayList<>();
+    public Encoder encoderLeft = null;
+    public Encoder encoderRight = null;
+    public Encoder encoderFront = null;
+    public List<Encoder> encoders = new ArrayList<>();
 
     // Servos collection
     public List<Servo> servos = new ArrayList<>();
@@ -61,9 +62,9 @@ public class RobotHardware {
         motors.addAll(Arrays.asList(wheels));
 
         // Initialize encoders
-        encoderLeft = hardwareMap.get(DcMotorEx.class, LEFT_ENCODER);
-        encoderRight = hardwareMap.get(DcMotorEx.class, RIGHT_ENCODER);
-        encoderFront = hardwareMap.get(DcMotorEx.class, FRONT_ENCODER);
+        encoderLeft = new Encoder(hardwareMap.get(DcMotorEx.class, LEFT_ENCODER));
+        encoderRight = new Encoder(hardwareMap.get(DcMotorEx.class, RIGHT_ENCODER));
+        encoderFront = new Encoder(hardwareMap.get(DcMotorEx.class, FRONT_ENCODER));
 
         // Prepare encoder collection
         encoders.addAll(Arrays.asList(encoderLeft, encoderRight, encoderFront));
