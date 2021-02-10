@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.telop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Util;
 import org.firstinspires.ftc.teamcode.hardware.MacaroniHardware;
 
@@ -29,12 +29,13 @@ public class Macaroni extends LinearOpMode {
     boolean intakeDirection = true;
 
     FtcDashboard dashboard;
+    Telemetry dash_telemetry;
 
     @Override
     public void runOpMode() {
         lastControlsUpdate = runTime.seconds();
         dashboard = FtcDashboard.getInstance();
-        telemetry = dashboard.getTelemetry();
+        dash_telemetry = dashboard.getTelemetry();
 
         waitForStart();
 
@@ -45,7 +46,7 @@ public class Macaroni extends LinearOpMode {
         while (opModeIsActive()) {
             driverControls();
             operatorControls();
-            telemetry.update();
+            dash_telemetry.update();
         }
     }
 
@@ -88,7 +89,9 @@ public class Macaroni extends LinearOpMode {
             // Toggle launcher
             // if (gamepad2.share) toggleLauncher = !toggleLauncher;
         }
-        telemetry.addData("launcherPower", launcherPower);
+        dash_telemetry.addData("launcherPower", launcherPower);
+        telemetry.addData("Launcher Power", ((int) (launcherPower * 100)) + "%");
+        telemetry.update();
 
         // Right trigger to run all intake motors/servos at desired speed
         if (gamepad2.right_trigger > 0) {
@@ -97,14 +100,13 @@ public class Macaroni extends LinearOpMode {
             robot.intakeMotor.setPower(rt);
         } else {
             robot.intakeMotor.setPower(0);
-            if (gamepad2.left_stick_y != 0)
-                robot.beltMotor.setPower(gamepad2.left_stick_y > 0 ? 1 : -1);
+            robot.beltMotor.setPower(gamepad2.left_stick_y > 0.05 ? 1 : (gamepad2.left_stick_y < -0.05 ? -1 : 0));
         }
 
-        telemetry.addData("beltMotor", robot.beltMotor.getPower());
-        telemetry.addData("intakeMotor", robot.intakeMotor.getPower());
-        telemetry.addData("beltMotor", gamepad2.left_stick_y);
-        telemetry.addData("launcherMotor", robot.launcherMotor.getPower());
+        dash_telemetry.addData("beltMotor", robot.beltMotor.getPower());
+        dash_telemetry.addData("intakeMotor", robot.intakeMotor.getPower());
+        dash_telemetry.addData("beltMotor", gamepad2.left_stick_y);
+        dash_telemetry.addData("launcherMotor", robot.launcherMotor.getPower());
         robot.launcherMotor.setPower(gamepad2.left_trigger > 0 ? launcherPower : 0);
     }
 
@@ -146,14 +148,14 @@ public class Macaroni extends LinearOpMode {
         double v3 = (radius * Math.sin(ang) + turnCon);
         double v4 = (radius * Math.cos(ang) - turnCon);
 
-        telemetry.addData("leftFront", v1);
-        telemetry.addData("rightFront", v2);
-        telemetry.addData("leftRear", v3);
-        telemetry.addData("rightRear", v4);
+        dash_telemetry.addData("leftFront", v1);
+        dash_telemetry.addData("rightFront", v2);
+        dash_telemetry.addData("leftRear", v3);
+        dash_telemetry.addData("rightRear", v4);
 
-        telemetry.addData("leftEncoder", robot.encoderLeft.getCorrectedVelocity());
-        telemetry.addData("rightEncoder", robot.encoderRight.getCorrectedVelocity());
-        telemetry.addData("forwardEncoder", robot.encoderFront.getCorrectedVelocity());
+        dash_telemetry.addData("leftEncoder", robot.encoderLeft.getCorrectedVelocity());
+        dash_telemetry.addData("rightEncoder", robot.encoderRight.getCorrectedVelocity());
+        dash_telemetry.addData("forwardEncoder", robot.encoderFront.getCorrectedVelocity());
 
         // Sets power of motor, spins wheels
         robot.motorLeftFront.setPower(v1);
@@ -174,7 +176,7 @@ public class Macaroni extends LinearOpMode {
      */
     public boolean controllerLoop(double duration) {
         double waited = runTime.seconds() - lastControlsUpdate;
-        telemetry.addData("controllerLoop", Util.clamp((float) (waited / duration), 0f, 1f));
+        dash_telemetry.addData("controllerLoop", Util.clamp((float) (waited / duration), 0f, 1f));
         return waited >= duration;
     }
 }
