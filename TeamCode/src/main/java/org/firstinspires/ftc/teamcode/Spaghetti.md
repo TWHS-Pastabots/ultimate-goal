@@ -28,19 +28,19 @@ ADB Connect Command
 
 Device configuration
 
-/-------------------/-----------------/---------------/---------/
-/ Component name    / Component ID    / Hub           / Port    /
-/-------------------/-----------------/---------------/---------/
-/ Front left wheel  / `leftFront`     / Control hub   / Motor 0 /
-/ Front right wheel / `rightFront`    / Control hub   / Motor 1 /
-/ Rear left wheel   / `leftRear`      / Control hub   / Motor 2 /
-/ Rear right wheel  / `rightRear`     / Control hub   / Motor 3 /
-/ Left encoder      /                 / Expansion hub / Motor 0 /
-/ Right encoder     /                 / Expansion hub / Motor 1 /
-/ Front encoder     /                 / Expansion hub / Motor 2 /
-/ Intake motor      / `intakeMotor`   / Expansion hub / Motor 0 /
-/ Launcher motor    / `launcherMotor` / Expansion hub / Motor 1 /
-/ Launcher servo    / `launcherServo` / Expansion hub /         /
-/ Arm servo         / `armServo`      / Expansion hub /         /
-/ Claw servo        / `clawServo`     / Expansion hub /         /
-/-------------------/-----------------/---------------/---------/
+| ----------------- | --------------- | ------------- | ------- |
+| Component name    | Component ID    | Hub           | Port    |
+| ----------------- | --------------- | ------------- | ------- |
+| Front left wheel  | `leftFront`     | Control hub   | Motor 0 |
+| Front right wheel | `rightFront`    | Control hub   | Motor 1 |
+| Rear left wheel   | `leftRear`      | Control hub   | Motor 2 |
+| Rear right wheel  | `rightRear`     | Control hub   | Motor 3 |
+| Left encoder      |                 | Expansion hub | Motor 0 |
+| Right encoder     |                 | Expansion hub | Motor 1 |
+| Front encoder     |                 | Expansion hub | Motor 2 |
+| Intake motor      | `intakeMotor`   | Expansion hub | Motor 0 |
+| Launcher motor    | `launcherMotor` | Expansion hub | Motor 1 |
+| Launcher servo    | `launcherServo` | Expansion hub |         |
+| Arm servo         | `armServo`      | Expansion hub |         |
+| Claw servo        | `clawServo`     | Expansion hub |         |
+| ----------------- | --------------- | ------------- | ------- |
