@@ -31,8 +31,8 @@ class MacaroniIds {
 class SpaghettiIds {
     public static final String INTAKE_MOTOR = "intakeMotor";
     public static final String LAUNCHER_MOTOR = "launcherMotor";
-    public static final String WOBBLE_ARM_MOTOR = "wobbleArmMotor";
-    public static final String LOWER_WOBBLE_SERVO = "lowerWobbleServo";
+    public static final String ARM_SERVO = "armServo";
+    public static final String CLAW_SERVO = "clawServo";
     public static final String LAUNCHER_SERVO = "launcherServo";
 }
 

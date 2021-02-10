@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.telop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -9,22 +12,29 @@ import org.firstinspires.ftc.teamcode.Util;
 import org.firstinspires.ftc.teamcode.hardware.SpaghettiHardware;
 
 @TeleOp(name = "Spaghetti", group = "Linear OpMode")
+@Config
 public class Spaghetti extends OpMode {
 
     /* Declare OpMode members. */
-    final SpaghettiHardware robot = new SpaghettiHardware();
-    final ElapsedTime runTime = new ElapsedTime();
-    double slowCon = 0.8;
+    private final SpaghettiHardware robot = new SpaghettiHardware();
+    private FtcDashboard dashboard;
+    private final ElapsedTime runTime = new ElapsedTime();
+    private double slowCon = 0.8;
 
-    private static final double SERVO_ON = 1d;
-    private static final double SERVO_OFF = 0d;
+    private double launcherEndTime = 0.0d;
+    private static double LAUNCHER_SERVO_TIME = 0.25d;
 
-    private static final double INTAKE_ON = 0.5d;
-    private static final double INTAKE_OFF = 0d;
+    private static double SERVO_ON = 1d;
+    private static double SERVO_OFF = 0d;
+
+    private static double INTAKE_ON = 1d;
+    private static double INTAKE_OFF = 0d;
 
     //run once on init()
     @Override
     public void init() {
+        dashboard = FtcDashboard.getInstance();
+
         robot.init(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
@@ -46,11 +56,18 @@ public class Spaghetti extends OpMode {
     // Loop on start()
     @Override
     public void loop() {
+        TelemetryPacket packet = new TelemetryPacket();
+
         // Apply easing function to all stick inputs
         double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
         double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
         double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
         double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
+
+        packet.put("left stick x", left_stick_x);
+        packet.put("left stick y", left_stick_y);
+        packet.put("right stick x", right_stick_x);
+        packet.put("right stick y", right_stick_y);
 
         // Mechanum trig math
         double radius = Math.hypot(left_stick_x, left_stick_y);
@@ -73,16 +90,46 @@ public class Spaghetti extends OpMode {
         robot.launcherMotor.setPower(Util.cubicEasing(gamepad1.right_trigger));
 
         if (gamepad1.right_bumper) {
+            launcherEndTime = getRuntime() + LAUNCHER_SERVO_TIME;
+        }
+
+        if (getRuntime() < launcherEndTime) {
             robot.launcherServo.setPosition(SERVO_ON);
         } else {
             robot.launcherServo.setPosition(SERVO_OFF);
         }
+
+//        if (gamepad1.right_bumper) {
+//            robot.launcherServo.setPosition(SERVO_ON);
+//        } else {
+//            robot.launcherServo.setPosition(SERVO_OFF);
+//        }
+
+        packet.put("launcher servo position", robot.launcherServo.getPosition());
 
         if (gamepad1.left_bumper) {
             robot.intakeMotor.setPower(INTAKE_ON);
         } else {
             robot.intakeMotor.setPower(INTAKE_OFF);
         }
+
+        packet.put("intake motor power", robot.intakeMotor.getPower());
+
+        if (gamepad1.a) {
+            robot.armServo.setPosition(SERVO_ON);
+        } else {
+            robot.armServo.setPosition(SERVO_OFF);
+        }
+
+        packet.put("arm servo position", robot.armServo.getPosition());
+
+        if (gamepad1.b) {
+            robot.clawServo.setPosition(SERVO_ON);
+        } else {
+            robot.clawServo.setPosition(SERVO_OFF);
+        }
+
+        packet.put("claw servo position", robot.clawServo.getPosition());
 
         // Show motor output visually
         telemetry.addData("Started", Util.getHumanDuration((float) runTime.seconds()) + " ago");
@@ -92,6 +139,7 @@ public class Spaghetti extends OpMode {
         telemetry.addLine(Telemetry.createLevel((float) v4));
 
         telemetry.update();
+        dashboard.sendTelemetryPacket(packet);
     }
 
     // run once on stop()
