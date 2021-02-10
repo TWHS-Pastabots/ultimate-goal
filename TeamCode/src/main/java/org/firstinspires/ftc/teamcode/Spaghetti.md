@@ -28,7 +28,6 @@ ADB Connect Command
 
 Device configuration
 
-| ----------------- | --------------- | ------------- | ------- |
 | Component name    | Component ID    | Hub           | Port    |
 | ----------------- | --------------- | ------------- | ------- |
 | Front left wheel  | `leftFront`     | Control hub   | Motor 0 |
@@ -43,4 +42,3 @@ Device configuration
 | Launcher servo    | `launcherServo` | Expansion hub |         |
 | Arm servo         | `armServo`      | Expansion hub |         |
 | Claw servo        | `clawServo`     | Expansion hub |         |
-| ----------------- | --------------- | ------------- | ------- |
