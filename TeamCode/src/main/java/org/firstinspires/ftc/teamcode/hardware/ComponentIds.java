@@ -13,9 +13,9 @@ public class ComponentIds {
     public static final String RIGHT_REAR_MOTOR = "rightRear";
 
     // Encoders
-    public static final String LEFT_ENCODER = "leftFront";
-    public static final String RIGHT_ENCODER = "rightFront";
-    public static final String FRONT_ENCODER = "launcherMotor";
+    public static final String LEFT_ENCODER = "launcherMotor";
+    public static final String RIGHT_ENCODER = "intakeMotor";
+    public static final String FRONT_ENCODER = "beltMotor";
 
     public static final String IMU = "imu";  // Used by Road Runner Telop only
 }
