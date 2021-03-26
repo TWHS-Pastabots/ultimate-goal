@@ -39,6 +39,6 @@ Device configuration
 | Front encoder     |                 | Expansion hub | Motor 2 |
 | Intake motor      | `intakeMotor`   | Expansion hub | Motor 0 |
 | Launcher motor    | `launcherMotor` | Expansion hub | Motor 1 |
-| Launcher servo    | `launcherServo` | Expansion hub |         |
-| Arm servo         | `armServo`      | Expansion hub |         |
-| Claw servo        | `clawServo`     | Expansion hub |         |
+| Launcher servo    | `launcherServo` | Expansion hub | Servo 0 |
+| Arm servo         | `armServo`      | Expansion hub | Servo 1 |
+| Claw servo        | `clawServo`     | Expansion hub | Servo 2 |

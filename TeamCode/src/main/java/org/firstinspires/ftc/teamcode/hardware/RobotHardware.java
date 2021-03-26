@@ -106,7 +106,7 @@ public class RobotHardware {
         // Setup wheels
         for (DcMotorEx wheel : wheels) {
             // Set all wheels to run with encoders
-            wheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+//            wheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         }
 
         // Setup servos
