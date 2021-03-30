@@ -18,7 +18,7 @@ public class Spaghetti extends OpMode {
     public static double ON = 1;
     public static double OFF = 0;
 
-    public static double INTAKE_ON = 0.175; // 0.2325
+    public static double INTAKE_ON = 0.175;
     public static double INTAKE_GEAR_RATIO = 5;
 
     private double lastLaunchTime = 0;
@@ -26,7 +26,6 @@ public class Spaghetti extends OpMode {
     public static double LAUNCHER_POWER = 0.6375;
     public static double MOTOR_MAX_RPM = 6000;
     public static double MOTOR_TICKS_PER_SECOND = 28;
-//    public static double LAUNCHER_MOTOR_SCALE = 0.75d;
 
     /**
      * Convert the motor power level to encoder ticks per second. This takes a {@code [0, 1]} range power level
@@ -44,8 +43,6 @@ public class Spaghetti extends OpMode {
     public static double Y_SCALE = 0.7;
     public static double TURN_SCALE = 0.85;
 
-//    public static Pose2d farPosition = new Pose2d(-39, 48, 0);
-    //    public static Pose2d middlePosition = new Pose2d(-26, 41, 0);
     public static Pose2d middlePosition = new Pose2d(-22.570475172975446, 53.49077586858332, Math.toRadians(-0.862970095));
 
     /* Declare OpMode members. */
@@ -64,10 +61,8 @@ public class Spaghetti extends OpMode {
     @Override
     public void init() {
         robot.init(hardwareMap);
-//        robot.armServo.setPosition(ON);
 
         drive = new SampleMecanumDrive(hardwareMap);
-//        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setPoseEstimate(SpaghettiAutonomous.FINAL_POSITION);
 
         // Send telemetry message to signify robot waiting;
@@ -102,12 +97,6 @@ public class Spaghetti extends OpMode {
             );
         }
 
-//        if (gamepad1.a) {
-//            drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
-//                    .splineToLinearHeading(farPosition, 0)
-//                    .build());
-//        }
-
         if (gamepad1.b) {
             drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
                     .splineToLinearHeading(middlePosition, 90)
@@ -123,9 +112,6 @@ public class Spaghetti extends OpMode {
     }
 
     private void operation() {
-//        robot.launcherMotor.setPower(Util.cubicEasing(gamepad2.right_trigger) * LAUNCHER_MOTOR_SCALE);
-//        robot.launcherMotor.setVelocity(motorPower(LAUNCHER_POWER) * gamepad2.right_trigger);
-//        telemetry.addData("launcher motor actual", robot.launcherMotor.getVelocity());
         motorVelo(robot.launcherMotor, "launcher motor", motorPower(LAUNCHER_POWER) * gamepad2.right_trigger);
 
         if (gamepad2.left_bumper && lastLaunchTime + LAUNCH_TIME * 2 < getRuntime()) {
@@ -137,21 +123,13 @@ public class Spaghetti extends OpMode {
             robot.launcherServo.setPosition(OFF);
         }
 
-//        telemetry.addData("launcher servo position", robot.launcherServo.getPosition());
-
         if (gamepad2.right_bumper) {
             motorVelo(robot.intakeMotor, "intake motor", motorPower(INTAKE_ON) * INTAKE_GEAR_RATIO);
-//            robot.intakeMotor.setVelocity(motorPower(INTAKE_ON) * INTAKE_GEAR_RATIO);
             robot.intakeServo.setPower(ON);
         } else {
-//            robot.intakeMotor.setVelocity(OFF);
             motorVelo(robot.intakeMotor, "intake motor", OFF);
             robot.intakeServo.setPower(OFF);
         }
-
-//        telemetry.addData("intake motor", robot.intakeMotor.getVelocity());
-
-//        telemetry.addData("intake motor power", robot.intakeMotor.getPower());
 
         boolean clawButton = gamepad2.y;
         if (clawButton != previousClawButton) {
@@ -167,8 +145,6 @@ public class Spaghetti extends OpMode {
             previousClawButton = clawButton;
         }
 
-//        telemetry.addData("claw servo position", robot.clawServo.getPosition());
-
         boolean armButton = gamepad2.b;
         if (armButton != previousArmButton) {
             if (armButton) {
@@ -182,8 +158,6 @@ public class Spaghetti extends OpMode {
 
             previousArmButton = armButton;
         }
-
-//        telemetry.addData("arm servo position", robot.armServo.getPosition());
 
         boolean intakeButton = gamepad2.a;
         if (intakeButton != previousIntakeButton) {
@@ -200,8 +174,6 @@ public class Spaghetti extends OpMode {
 
             previousIntakeButton = intakeButton;
         }
-
-//        telemetry.addData("intake state", intakeState);
     }
 
     private void motorVelo(DcMotorEx motor, String name, double amount) {
