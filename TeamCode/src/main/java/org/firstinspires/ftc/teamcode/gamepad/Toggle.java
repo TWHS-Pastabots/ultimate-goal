@@ -20,7 +20,7 @@ public class Toggle implements RawBooleanStrategy {
     /**
      * Defaults to responding to state change during the button down tick.
      */
-    Toggle() {
+    public Toggle() {
     }
 
     @Override

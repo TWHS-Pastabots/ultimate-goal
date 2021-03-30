@@ -8,6 +8,8 @@ public class SingleDown implements PolledStrategy {
     private boolean state = false; // The current state of the strategy.
     private boolean polled = false; // Whether or not the current variable state has been read.
 
+    public SingleDown() {}
+
     @Override
     public void update(boolean next) {
         // If the last state was off and it's now on, the key was pressed.

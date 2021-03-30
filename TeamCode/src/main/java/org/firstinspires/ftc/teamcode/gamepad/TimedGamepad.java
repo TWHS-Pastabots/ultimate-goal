@@ -49,7 +49,9 @@ public class TimedGamepad {
     public InstallableFloat[] installableFloats;
     public InstallableBoolean[] installableBooleans;
 
-    TimedGamepad() {
+    public TimedGamepad(Gamepad gamepad) {
+        this.gamepad = gamepad;
+
         left_stick_x = new InstallableFloat();
         left_stick_y = new InstallableFloat();
         right_stick_x = new InstallableFloat();

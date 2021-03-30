@@ -20,14 +20,14 @@ public class SpacedTicks implements PolledStrategy {
     /**
      * Defaults to 0.25 second activation interval.
      */
-    SpacedTicks() {
+    public SpacedTicks() {
         this(0.25);
     }
 
     /**
      * @param interval The amount of time that should pass in between each state activation.
      */
-    SpacedTicks(double interval) {
+    public SpacedTicks(double interval) {
         this.interval = Math.max(0, interval);
         time = new ElapsedTime();
     }

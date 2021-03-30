@@ -8,6 +8,8 @@ public class SingleUp implements PolledStrategy {
     private boolean state = false; // The current state of the button.
     private boolean polled = false; // Whether or not the current variable state has been read.
 
+    public SingleUp() {}
+
     @Override
     public void update(boolean next) {
         // If the last state was on and it's now off, the key was released.

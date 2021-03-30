@@ -4,28 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
-class InstallableBoolean {
-    private List<BooleanStrategy> installed = new ArrayList<>();
-    private boolean initial = false;
-
-    public InstallableBoolean() {
-    }
-
-    public void installStrategy(BooleanStrategy booleanStrategy) {
-        installed.add(booleanStrategy);
-    }
-
-    public void update(boolean next) {
-        if (installed.size() > 0) {
-            for (BooleanStrategy booleanStrategy : installed)
-                booleanStrategy.update(next);
-        }
-    }
-}
-
-
-class InstallableFloat {
+public class InstallableFloat {
     private List<FloatStrategy> installed = new ArrayList<>();
     private float initial = 0f;
 

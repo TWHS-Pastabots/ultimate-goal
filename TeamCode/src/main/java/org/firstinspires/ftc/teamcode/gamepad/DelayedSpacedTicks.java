@@ -14,7 +14,7 @@ public class DelayedSpacedTicks extends SpacedTicks implements PolledStrategy {
     /**
      * Defaults to a 0.3 second delay and a 0.25 second activation interval.
      */
-    DelayedSpacedTicks() {
+    public DelayedSpacedTicks() {
         this(0.3, 0.25);
     }
 
@@ -22,7 +22,7 @@ public class DelayedSpacedTicks extends SpacedTicks implements PolledStrategy {
      * @param delay    The amount of time that must pass before activations occur on an interval.
      * @param interval The amount of time that should pass in between each state activation.
      */
-    DelayedSpacedTicks(double delay, double interval) {
+    public DelayedSpacedTicks(double delay, double interval) {
         super(interval);
         this.delay = Math.max(0, delay);
     }
@@ -32,7 +32,7 @@ public class DelayedSpacedTicks extends SpacedTicks implements PolledStrategy {
      * @param interval        The amount of time that should pass in between each state activation.
      * @param initialActivate Whether or not it should activate on the initial button press.
      */
-    DelayedSpacedTicks(double delay, double interval, boolean initialActivate) {
+    public DelayedSpacedTicks(double delay, double interval, boolean initialActivate) {
         this(delay, interval);
         this.initialActivate = initialActivate;
     }
