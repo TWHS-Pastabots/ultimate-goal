@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.hardware.ComponentIds;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
 
@@ -48,10 +49,12 @@ import static org.firstinspires.ftc.team16911.drive.DriveConstants.*;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(5, 3, 1);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 0, 0);
+//    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0.1);
+//    public static PIDCoefficients HEADING_PID = new PIDCoefficients(17.6, 0, 1);
 
-    public static double LATERAL_MULTIPLIER = 1; // 1.340782123 // 1.034482759
+    public static double LATERAL_MULTIPLIER = 1.394053055;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -122,10 +125,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         // upward (normal to the floor) using a command like the following:
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront = hardwareMap.get(DcMotorEx.class, ComponentIds.LEFT_FRONT_MOTOR);
+        leftRear = hardwareMap.get(DcMotorEx.class, ComponentIds.LEFT_REAR_MOTOR);
+        rightRear = hardwareMap.get(DcMotorEx.class, ComponentIds.RIGHT_REAR_MOTOR);
+        rightFront = hardwareMap.get(DcMotorEx.class, ComponentIds.RIGHT_FRONT_MOTOR);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
