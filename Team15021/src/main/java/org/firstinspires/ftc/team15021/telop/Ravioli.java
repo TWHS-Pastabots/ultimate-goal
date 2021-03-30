@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.team15021.telop;
 
-
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.hardware.RavioliHardware;
+import org.firstinspires.ftc.team15021.hardware.RavioliHardware;
 import org.firstinspires.ftc.teamcode.Telemetry;
 import org.firstinspires.ftc.teamcode.Util;
-import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 @TeleOp(name = "Ravioli", group = "Linear OpMode")
 public class Ravioli extends OpMode {
@@ -81,7 +78,7 @@ public class Ravioli extends OpMode {
         if (gamepad2.dpad_up) vConveyor = 1.0;
         else if (gamepad2.dpad_down) vConveyor = -1.0;
         else if (gamepad1.left_bumper) vConveyor = -1.0;
-        else if ( gamepad1.right_bumper ) vConveyor = 1.0;
+        else if (gamepad1.right_bumper) vConveyor = 1.0;
         else vConveyor = 0.0;
 
         robot.servoClaw.setPosition(gamepad2.left_trigger);
@@ -91,7 +88,7 @@ public class Ravioli extends OpMode {
         else if (gamepad2.dpad_right) vServoMotor = -0.35;
         else vServoMotor = 0.0;
 
-        if ( gamepad2.touchpad ) robot.servoIntake.setPosition(0.6);
+        if (gamepad2.touchpad) robot.servoIntake.setPosition(0.6);
         else robot.servoIntake.setPosition(0);
 
 
@@ -115,7 +112,7 @@ public class Ravioli extends OpMode {
         telemetry.addLine(Telemetry.createLevel((float) v3));
         telemetry.addLine(Telemetry.createLevel((float) v4));
 
-        telemetry.addLine("Launcher Power: " + (int)(vLauncher * 100) + "%" + "\nLauncher Max Power: " + (int)(vLauncherMult * 100) + "%");
+        telemetry.addLine("Launcher Power: " + (int) (vLauncher * 100) + "%" + "\nLauncher Max Power: " + (int) (vLauncherMult * 100) + "%");
 //        telemetry.addLine("Servo Position: " + robot.servoPos);
 
         telemetry.update();
