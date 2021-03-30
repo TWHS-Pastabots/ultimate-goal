@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.teamcode.auton.SpaghettiAutonomous;
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.hardware.SpaghettiHardware;
+import org.firstinspires.ftc.team16910.auton.SpaghettiAutonomous;
+import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 
 @TeleOp(name = "Spaghetti", group = "Linear OpMode")
 @Config

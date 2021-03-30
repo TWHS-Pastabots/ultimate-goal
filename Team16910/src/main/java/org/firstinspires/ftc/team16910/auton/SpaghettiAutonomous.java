@@ -7,9 +7,9 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.hardware.SpaghettiHardware;
-import org.firstinspires.ftc.teamcode.telop.Spaghetti;
+import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
+import org.firstinspires.ftc.team16910.telop.Spaghetti;
 
 @Config
 @Autonomous(name = "Spaghetti Autonomous", preselectTeleOp = "Spaghetti")
