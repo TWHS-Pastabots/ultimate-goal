@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.gamepad;
+package org.firstinspires.ftc.team16910.gamepad;
 
 /**
  * A strategy is a method of interacting and retrieving specific button and joystick activities from
