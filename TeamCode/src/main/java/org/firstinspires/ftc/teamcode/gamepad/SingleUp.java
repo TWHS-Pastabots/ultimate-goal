@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.gamepad;
 
 /**
- * The SingleUp Boolean Strategy fires on the tick that the button is released.
+ * The SingleUp Strategy fires on the tick that the button is released.
  */
 public class SingleUp implements PolledStrategy {
     private boolean previous = false; // The last state of the button.
@@ -29,9 +29,12 @@ public class SingleUp implements PolledStrategy {
      * @see #update(boolean)
      */
     public boolean poll() {
-        if (!polled)
+        if (polled)
+            return false;
+        else {
+            polled = true;
             return state;
-        return false;
+        }
     }
 
     /**

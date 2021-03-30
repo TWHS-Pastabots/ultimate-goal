@@ -45,6 +45,10 @@ public class TimedGamepad {
     public InstallableBoolean ps; // Alike to Xbox button Guide
     public InstallableBoolean touchpad;
 
+    // Installable lists for iterating - only contains non-duplicate instances
+    public InstallableFloat[] installableFloats;
+    public InstallableBoolean[] installableBooleans;
+
     TimedGamepad() {
         left_stick_x = new InstallableFloat();
         left_stick_y = new InstallableFloat();
@@ -79,6 +83,11 @@ public class TimedGamepad {
         ps = guide;
 
         touchpad = new InstallableBoolean();
+
+        installableFloats = new InstallableFloat[]{left_stick_x, left_stick_y, right_stick_x, right_stick_y,
+                left_trigger, right_trigger};
+        installableBooleans = new InstallableBoolean[]{dpad_up, dpad_down, dpad_left, dpad_right,
+                x, y, a, b, back, start, guide, touchpad};
     }
 
     public void tick() {
