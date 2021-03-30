@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
+
 import java.util.Arrays;
 
 /**
@@ -28,7 +30,7 @@ public class MacaroniHardware extends RobotHardware {
         beltMotor = hardwareMap.get(DcMotorEx.class, MacaroniIds.BELT_MOTOR);
 
         armServo = hardwareMap.get(Servo.class, MacaroniIds.ARM_SERVO);
-        clawServo = hardwareMap.get(Servo.class, MacaroniIds.CLAW_SERVO);
+        // clawServo = hardwareMap.get(Servo.class, MacaroniIds.CLAW_SERVO);
 
         motors.addAll(Arrays.asList(intakeMotor, launcherMotor, beltMotor));
         servos.addAll(Arrays.asList(armServo, clawServo));

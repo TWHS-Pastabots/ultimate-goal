@@ -7,8 +7,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.hardware.MacaroniHardware;
+import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
 
 /*
  * This is a simple routine to test translational drive capabilities.
@@ -59,7 +59,7 @@ public class MacaroniBasic extends LinearOpMode {
         sleep(400);
         robot.armServo.setPosition(0.6);
         sleep(700);
-        robot.leftClawServo.setPosition(1);
+//        robot.leftClawServo.setPosition(1);
         sleep(1100);
 
         // Drive back to launching line
