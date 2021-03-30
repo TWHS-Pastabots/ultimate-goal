@@ -22,7 +22,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
     public static double ARM_TIME = 500;
     public static double CLAW_TIME = 250;
 
-    public static double LAUNCHER_POWER = 0.55;
+    public static double LAUNCHER_POWER = 0.56;
     public static double LAUNCHER_SPINUP = 1000;
     public static double LAUNCHER_LAUNCH = 250;
 

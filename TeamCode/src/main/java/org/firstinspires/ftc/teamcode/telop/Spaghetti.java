@@ -18,7 +18,7 @@ public class Spaghetti extends OpMode {
     public static double ON = 1;
     public static double OFF = 0;
 
-    public static double INTAKE_ON = 0.15; // 0.2325
+    public static double INTAKE_ON = 0.175; // 0.2325
     public static double INTAKE_GEAR_RATIO = 5;
 
     private double lastLaunchTime = 0;
@@ -110,7 +110,7 @@ public class Spaghetti extends OpMode {
 
         if (gamepad1.b) {
             drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
-                    .splineToLinearHeading(middlePosition, 0)
+                    .splineToLinearHeading(middlePosition, 90)
                     .build());
         }
 

@@ -49,9 +49,9 @@ public class SpaghettiHardware extends RobotHardware {
         intakeServo.setDirection(CRServo.Direction.FORWARD);
 
         // Range scalings
-        launcherServo.scaleRange(0, 0.2);
-        armServo.scaleRange(0.425, 1);
-        clawServo.scaleRange(0.5, 1);
+        launcherServo.scaleRange(0, 0.225);
+        armServo.scaleRange(0.42, 1);
+        clawServo.scaleRange(0.2, 1);
 
         // Initialize the components now that they are setup
         initializeComponents();
