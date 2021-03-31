@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Util;
 import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
+import org.firstinspires.ftc.teamcode.Util;
 
 @TeleOp(name = "Macaroni", group = "Linear OpMode")
 public class Macaroni extends LinearOpMode {
@@ -15,6 +15,7 @@ public class Macaroni extends LinearOpMode {
     final ElapsedTime runTime = new ElapsedTime();
     double lastControlsUpdate;
 
+    double wheelPower = 1;
     private static final double powerGranularity = 0.05;
     double launcherPower = 1f;
 
@@ -23,6 +24,10 @@ public class Macaroni extends LinearOpMode {
     boolean clawActive = false; // Current state of the Upper Wobble Goal (Claw)
     boolean prevArmState = false;
     boolean prevClawState = false;
+
+    // Ring Stopper Servo states
+    boolean ringStopperActive = true;
+    boolean prevRingStopper = true;
 
     // Other states
     boolean toggleLauncher = false;
@@ -40,6 +45,9 @@ public class Macaroni extends LinearOpMode {
         waitForStart();
 
         robot.init(hardwareMap);
+
+        // TODO: Implement Road Runner drivetrain controls
+        // TODO: Motor speed shooting block
 
         if (isStopRequested()) return;
 
@@ -60,10 +68,18 @@ public class Macaroni extends LinearOpMode {
 
         // Upper Wobble (Claw) controls
         if (gamepad2.circle && !prevClawState) {
-            robot.clawServo.setPosition(clawActive ? 0 : 1);
+//            robot.leftClawServo.setPosition(clawActive ? 1 : 0);
+//            robot.rightClawServo.setPosition(clawActive ? 0 : 1);
             clawActive = !clawActive;
         }
         prevClawState = gamepad2.circle;
+
+        // Ring Stopper controls
+        if (gamepad2.triangle && !prevRingStopper) {
+//            robot.ringStopperServo.setPosition(ringStopperActive ? 0 : 1);
+            ringStopperActive = !ringStopperActive;
+        }
+        prevRingStopper = gamepad2.triangle;
 
         boolean controllerTouched = true;
         if (controllerLoop(0.15)) {
@@ -78,11 +94,6 @@ public class Macaroni extends LinearOpMode {
             } else
                 controllerTouched = false;
 
-            if (!controllerTouched && gamepad2.right_bumper) {
-                intakeDirection = !intakeDirection;
-                controllerTouched = true;
-            }
-
             if (controllerTouched)
                 lastControlsUpdate = runTime.seconds();
 
@@ -93,21 +104,29 @@ public class Macaroni extends LinearOpMode {
         telemetry.addData("Launcher Power", ((int) (launcherPower * 100)) + "%");
         telemetry.update();
 
-        // Right trigger to run all intake motors/servos at desired speed
-        if (gamepad2.right_trigger > 0) {
-            robot.beltMotor.setPower(intakeDirection ? 1 : -1);
+        // Intake if Right Trigger
+        if (gamepad1.right_trigger > 0) {
             double rt = intakeDirection ? Util.cubicEasing(gamepad2.right_trigger) : -Util.cubicEasing(gamepad2.right_trigger);
-            robot.intakeMotor.setPower(rt);
-        } else {
-            robot.intakeMotor.setPower(0);
-            robot.beltMotor.setPower(gamepad2.left_stick_y > 0.05 ? 1 : (gamepad2.left_stick_y < -0.05 ? -1 : 0));
+//            robot.intakeMotor.setPower(rt);
         }
 
-        dash_telemetry.addData("beltMotor", robot.beltMotor.getPower());
-        dash_telemetry.addData("intakeMotor", robot.intakeMotor.getPower());
+        // Right trigger to run all intake motors/servos at desired speed
+        if (gamepad1.left_bumper) {
+//            robot.beltMotor.setPower(-1);
+//            robot.intakeMotor.setPower(-1);
+        } else if (gamepad1.right_bumper) {
+//            robot.beltMotor.setPower(1);
+//            robot.intakeMotor.setPower(1);
+        } else {
+//            robot.intakeMotor.setPower(0);
+//            robot.beltMotor.setPower(gamepad2.left_stick_y > 0.05 ? 1 : (gamepad2.left_stick_y < -0.05 ? -1 : 0));
+        }
+
+//        dash_telemetry.addData("beltMotor", robot.beltMotor.getPower());
+//        dash_telemetry.addData("intakeMotor", robot.intakeMotor.getPower());
         dash_telemetry.addData("beltMotor", gamepad2.left_stick_y);
-        dash_telemetry.addData("launcherMotor", robot.launcherMotor.getPower());
-        robot.launcherMotor.setPower(gamepad2.left_trigger > 0 ? launcherPower : 0);
+//        dash_telemetry.addData("launcherMotor", robot.launcherMotor.getPower());
+//        robot.launcherMotor.setPower(gamepad2.left_trigger > 0 ? launcherPower : 0);
     }
 
     /**
@@ -122,6 +141,16 @@ public class Macaroni extends LinearOpMode {
         double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
         double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
         double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
+
+        // Update wheel power multipier
+        if (gamepad1.square)
+            wheelPower = 1;
+        else if (gamepad1.triangle)
+            wheelPower = 0.25;
+        else if (gamepad1.circle)
+            wheelPower = 0.5;
+        else if (gamepad1.cross)
+            wheelPower = 0.75;
 
         if (gamepad1.dpad_up)
             left_stick_y = -1;
@@ -143,10 +172,10 @@ public class Macaroni extends LinearOpMode {
         double turnCon = right_stick_x * .75;
 
         // Final motor powers, with multiplier applied
-        double v1 = (radius * Math.cos(ang) + turnCon);
-        double v2 = (radius * Math.sin(ang) - turnCon);
-        double v3 = (radius * Math.sin(ang) + turnCon);
-        double v4 = (radius * Math.cos(ang) - turnCon);
+        double v1 = (radius * Math.cos(ang) + turnCon) * wheelPower;
+        double v2 = (radius * Math.sin(ang) - turnCon) * wheelPower;
+        double v3 = (radius * Math.sin(ang) + turnCon) * wheelPower;
+        double v4 = (radius * Math.cos(ang) - turnCon) * wheelPower;
 
         dash_telemetry.addData("leftFront", v1);
         dash_telemetry.addData("rightFront", v2);
