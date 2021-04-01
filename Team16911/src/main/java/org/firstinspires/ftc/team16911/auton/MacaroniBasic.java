@@ -16,9 +16,11 @@ import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
 @Config
 @Autonomous(group = "drive")
 public class MacaroniBasic extends LinearOpMode {
+    public static final Pose2d START_POSITION = new Pose2d(-(72 - 10.5), 24);
 
     private static final double LAUNCHER_POWER = 0.80;
-    private static final int PRESPIN_TIME = 2500;
+    private static final double LAUNCHER_POWER = 0.875;
+    private static final int PRESPIN_TIME = 3500;
     private static final int RESPIN_TIME = 1500;
     private static final int RAMP_TIME = 200;
 
@@ -28,73 +30,78 @@ public class MacaroniBasic extends LinearOpMode {
         MacaroniHardware robot = new MacaroniHardware();
         robot.init(hardwareMap);
 
-        Pose2d startPose = new Pose2d(-60, 24, 0);
-        drive.setPoseEstimate(startPose);
+        drive.setPoseEstimate(START_POSITION);
 
-        Trajectory traj1 = drive.trajectoryBuilder(startPose)
-                .forward(90)
-//                .lineTo(new Vector2d(36, 24))
+        Trajectory traj1 = drive.trajectoryBuilder(START_POSITION)
+                .splineToLinearHeading(new Pose2d(36, 14), 0)
                 .build();
 
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .back(31)
+                .splineToLinearHeading(new Pose2d(0, 18), 0)
                 .build();
 
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .strafeLeft(18)
+                .splineToLinearHeading(new Pose2d(12, 24), 0)
                 .build();
 
-        Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
-                .forward(7)
-                .build();
+        telemetry.addData("Status", "Initialized");
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         // Drive forward
+        telemetry.addData("Status", "Driving towards wobble goal placement position");
         drive.followTrajectory(traj1);
 
         // Lower arms and drop wobble goal
-        sleep(400);
-        robot.armServo.setPosition(0.6);
+        telemetry.addData("Status", "Lowering arm");
+        robot.armServo.setPosition(0.2);
         sleep(700);
-//        robot.leftClawServo.setPosition(1);
-        sleep(1100);
 
-        // Drive back to launching line
-        drive.followTrajectory(traj2);
-        drive.followTrajectory(traj3);
-
-        robot.launcherMotor.setPower(Math.max(1, LAUNCHER_POWER + 0.15));
-        sleep(PRESPIN_TIME - 500);
-        robot.launcherMotor.setPower(LAUNCHER_POWER);
+        telemetry.addData("Status", "Opening claws");
+        robot.setClaws(false);
         sleep(500);
 
-        robot.beltMotor.setPower(1);
-        sleep((long) RAMP_TIME);
-        robot.beltMotor.setPower(0);
-        sleep(RESPIN_TIME);
-
-        robot.beltMotor.setPower(1);
-        sleep((long) RAMP_TIME);
-        robot.beltMotor.setPower(0);
-        sleep(RESPIN_TIME);
-
-        robot.beltMotor.setPower(1);
-        sleep((long) RAMP_TIME);
-        robot.beltMotor.setPower(0);
+        telemetry.addData("Status", "Re-opening claws");
+        robot.setClaws(0.2);
         sleep(250);
 
-        robot.launcherMotor.setPower(0);
+        telemetry.addData("Status", "Raising arm");
+        robot.armServo.setPosition(1);
+        sleep(400);
+
+        // Drive back to launching line
+        telemetry.addData("Status", "Moving towards shooting position");
+        drive.followTrajectory(traj2);
+
+        // Prepare for shooting sequence using prespin
+        robot.setLauncherPower(LAUNCHER_POWER);
+        robot.setRingStopper(true);
+        telemetry.addData("Status", "Pre-shooting sequence motor spinup");
+        sleep(PRESPIN_TIME);
+        // Pre-spin ended, shoot them using belt
+        robot.setRingStopper(false);
+        sleep(250);
+        robot.setIntakePower(0.4, 0);
+        telemetry.addData("Status", "Shooting sequence");
+        sleep(3500);
+
+
+        // End shooting sequence, spin down & stop
+        robot.setLauncherPower(0);
+        robot.setIntakePower(0, 0);
+        telemetry.addData("Status", "Ending shooting sequence");
         sleep(500);
 
-        drive.followTrajectory(traj4);
+        // Move back and park on line
+        telemetry.addData("Status", "Moving to parking line");
+        drive.followTrajectory(traj3);
 
         while (!isStopRequested() && opModeIsActive()) {
+            telemetry.addData("Status", "Idle");
             idle();
         }
-        ;
 
         Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.addData("finalX", poseEstimate.getX());
