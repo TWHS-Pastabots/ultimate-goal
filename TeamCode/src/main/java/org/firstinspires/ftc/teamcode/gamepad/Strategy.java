@@ -56,3 +56,23 @@ interface PolledStrategy extends BooleanStrategy {
      */
     boolean peek();
 }
+
+/**
+ * ListenedEventStrategy is for solving a specific type of issue that comes up with manipulating
+ * hardware from multiple sources.
+ * Normally, one might use something like RawBooleanStrategy where you only have a boolean output
+ * and no idea if it has changed or not. This causes issues when using things like setPower or
+ * setPosition on servos. If you simply set the position every tick, only one setPosition works at a
+ * time for the entire program. Using a event-listening based strategy works better and allows multiple
+ * sources to manipulate and use a single piece of hardware during a program.
+ *
+ * When a change in state is seen, it is picked up in the program by constantly listening to the
+ * changed() function's return, which is really just a getter. When changed() returns true,
+ * the program knows the output of read() will have changed from last time, or at the very least,
+ * be necessary as internal state has changed enough to warrant another activation of state.
+ * One can still use read() regardless, which is why ListenedEventStrategy is a interface extension
+ * on RawBooleanStrategy.
+ */
+interface ListenedEventStrategy extends RawBooleanStrategy {
+    boolean changed();
+}
