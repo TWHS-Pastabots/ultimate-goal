@@ -1,6 +1,3 @@
-# Repository specific files
-.idea/**
-
 # Built application files
 *.apk
 *.aar
@@ -89,5 +86,5 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 
-# Generated javadocs
-javadoc/
+.DS_Store
+.idea
