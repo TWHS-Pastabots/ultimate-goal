@@ -179,4 +179,11 @@ public class MacaroniHardware extends RobotHardware {
     public int launcherSpeed() {
         return (int) launcherMotor.getVelocity();
     }
+
+    /**
+     * @param power The speed at which the belt motor should spin.
+     */
+    public void setBeltPower(double power) {
+        beltMotor.setPower(power);
+    }
 }

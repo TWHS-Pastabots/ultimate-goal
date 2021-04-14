@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.team16911.telop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
 import org.firstinspires.ftc.teamcode.Util;
 
 @TeleOp(name = "Macaroni", group = "Linear OpMode")
+@Disabled
 public class Macaroni extends LinearOpMode {
     final MacaroniHardware robot = new MacaroniHardware();
     final ElapsedTime runTime = new ElapsedTime();

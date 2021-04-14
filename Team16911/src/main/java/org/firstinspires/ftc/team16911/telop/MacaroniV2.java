@@ -125,7 +125,9 @@ public class MacaroniV2 extends OpMode {
             LAUNCHER_POWER += 0.05;
         else if (dpad_down.poll())
             LAUNCHER_POWER -= 0.05;
-        LAUNCHER_POWER = Math.max(1, Math.min(0, LAUNCHER_POWER));
+        LAUNCHER_POWER = Math.max(0, Math.min(1, LAUNCHER_POWER));
+
+        robot.setBeltPower(gamepad2.left_stick_y);
 
         telemetry.addData("Prespin Left", robot.prespinTelemetry());
         telemetry.addData("Ring Stopper", (robot.ringStopperActive() ? "Active" : "Inactive"));
