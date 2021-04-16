@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.team16911.hardware.MacaroniIds;
 
-public class MacaroniDrive extends SampleMecanumDrive {
+public class MacaroniDrive extends MacaroniMecanumDrive {
     public Servo leftClawServo;
     public Servo rightClawServo;
 

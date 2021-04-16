@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.team16911.auton.MacaroniAutonomous;
-import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.team16911.drive.MacaroniMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
 import org.firstinspires.ftc.teamcode.gamepad.Lockup;
 import org.firstinspires.ftc.teamcode.gamepad.SingleDown;
@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.gamepad.Toggle;
 @TeleOp(name = "Macaroni", group = "Linear OpMode")
 public class Macaroni extends OpMode {
     // Drivetrain, Robot Hardware and Telemetry controllers
-    private SampleMecanumDrive drive;
+    private MacaroniMecanumDrive drive;
     private final MacaroniHardware robot = new MacaroniHardware();
     private Telemetry dash_telemetry;
 
@@ -46,7 +46,7 @@ public class Macaroni extends OpMode {
         FtcDashboard dashboard = FtcDashboard.getInstance();
         dash_telemetry = dashboard.getTelemetry();
 
-        drive = new SampleMecanumDrive(hardwareMap);
+        drive = new MacaroniMecanumDrive(hardwareMap);
         drive.setPoseEstimate(MacaroniAutonomous.START_POSITION);
         robot.init(hardwareMap);
 
