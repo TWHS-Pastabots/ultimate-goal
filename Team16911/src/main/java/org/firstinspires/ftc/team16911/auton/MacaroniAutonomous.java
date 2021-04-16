@@ -3,6 +3,7 @@ package org.firstinspires.ftc.team16911.auton;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,14 +15,12 @@ import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(name = "Macaroni Autonomous", group = "drive", preselectTeleOp = "Macaroni v2")
+@Autonomous(name = "Macaroni Autonomous", group = "drive", preselectTeleOp = "Macaroni")
 public class MacaroniAutonomous extends LinearOpMode {
     public static final Pose2d START_POSITION = new Pose2d(-(72 - 10.5), 24);
 
-    private static final double LAUNCHER_POWER = 0.875;
-    private static final int PRESPIN_TIME = 3500;
-    private static final int RESPIN_TIME = 1500;
-    private static final int RAMP_TIME = 200;
+    private static final double LAUNCHER_POWER = 0.73;
+    private static final int PRESPIN_TIME = 4300;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,15 +30,15 @@ public class MacaroniAutonomous extends LinearOpMode {
 
         drive.setPoseEstimate(START_POSITION);
 
-        Trajectory traj1 = drive.trajectoryBuilder(START_POSITION)
+        Trajectory moveToWobblePlacement = drive.trajectoryBuilder(START_POSITION)
                 .splineToLinearHeading(new Pose2d(36, 14), 0)
                 .build();
 
-        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .splineToLinearHeading(new Pose2d(0, 18), 0)
+        Trajectory moveBehindShootingLine = drive.trajectoryBuilder(moveToWobblePlacement.end())
+                .lineToLinearHeading(new Pose2d(0, 24))
                 .build();
 
-        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
+        Trajectory parkOnLine = drive.trajectoryBuilder(moveBehindShootingLine.end())
                 .splineToLinearHeading(new Pose2d(12, 24), 0)
                 .build();
 
@@ -51,7 +50,7 @@ public class MacaroniAutonomous extends LinearOpMode {
 
         // Drive forward
         telemetry.addData("Status", "Driving towards wobble goal placement position");
-        drive.followTrajectory(traj1);
+        drive.followTrajectory(moveToWobblePlacement);
 
         // Lower arms and drop wobble goal
         telemetry.addData("Status", "Lowering arm");
@@ -72,7 +71,7 @@ public class MacaroniAutonomous extends LinearOpMode {
 
         // Drive back to launching line
         telemetry.addData("Status", "Moving towards shooting position");
-        drive.followTrajectory(traj2);
+        drive.followTrajectory(moveBehindShootingLine);
 
         // Prepare for shooting sequence using prespin
         robot.setLauncherPower(LAUNCHER_POWER);
@@ -95,7 +94,7 @@ public class MacaroniAutonomous extends LinearOpMode {
 
         // Move back and park on line
         telemetry.addData("Status", "Moving to parking line");
-        drive.followTrajectory(traj3);
+        drive.followTrajectory(parkOnLine);
 
         while (!isStopRequested() && opModeIsActive()) {
             telemetry.addData("Status", "Idle");
