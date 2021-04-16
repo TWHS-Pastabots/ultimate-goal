@@ -185,6 +185,10 @@ public class Macaroni extends OpMode {
     }
 
     private void stats() {
+        Pose2d poseEstimate = drive.getPoseEstimate();
+        dash_telemetry.addData("x", poseEstimate.getX());
+        dash_telemetry.addData("y", poseEstimate.getY());
+        dash_telemetry.addData("heading", poseEstimate.getHeading());
         telemetry.addData("launcherSpeed", robot.launcherSpeed());
     }
 }
