@@ -19,7 +19,7 @@ import java.util.Locale;
 @Config
 public class MacaroniHardware extends RobotHardware {
     private DcMotorEx intakeMotor;
-    private DcMotorEx beltMotor;
+    public DcMotorEx beltMotor;
     private DcMotorEx launcherMotor;
 
     private ElapsedTime launcherElapsed;
@@ -106,19 +106,19 @@ public class MacaroniHardware extends RobotHardware {
      */
     public void tick() {
         // Set the ring stopper
-        if (launcherMotor.getPower() > 0) {
-            boolean stopperActive = ringStopperActive();
-            boolean elapsed = isLauncherReady();
-
-            if (stopperActive && elapsed)
-                // Launcher is ready to go, open ring stopper
-                setRingStopper(false);
-            else if (!stopperActive && !elapsed)
-                // Launcher is not ready, close ring stopper
-                setRingStopper(true);
-        } else
-            // Launcher is not spinning, close ring stopper
-            setRingStopper(true);
+//        if (launcherMotor.getPower() > 0) {
+//            boolean stopperActive = ringStopperActive();
+//            boolean elapsed = isLauncherReady();
+//
+//            if (stopperActive && elapsed)
+//                // Launcher is ready to go, open ring stopper
+//                setRingStopper(false);
+//            else if (!stopperActive && !elapsed)
+//                // Launcher is not ready, close ring stopper
+//                setRingStopper(true);
+//        } else
+//            // Launcher is not spinning, close ring stopper
+//            setRingStopper(true);
     }
 
     /**
