@@ -15,7 +15,7 @@ import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
  */
 @Config
 @Autonomous(name = "Macaroni Autonomous", group = "drive", preselectTeleOp = "Macaroni v2")
-public class MacaroniBasic extends LinearOpMode {
+public class MacaroniAutonomous extends LinearOpMode {
     public static final Pose2d START_POSITION = new Pose2d(-(72 - 10.5), 24);
 
     private static final double LAUNCHER_POWER = 0.875;

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.team16911.auton.MacaroniBasic;
+import org.firstinspires.ftc.team16911.auton.MacaroniAutonomous;
 import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
 import org.firstinspires.ftc.teamcode.gamepad.Lockup;
@@ -47,7 +47,7 @@ public class Macaroni extends OpMode {
         dash_telemetry = dashboard.getTelemetry();
 
         drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(MacaroniBasic.START_POSITION);
+        drive.setPoseEstimate(MacaroniAutonomous.START_POSITION);
         robot.init(hardwareMap);
 
         timedGamepad1 = new TimedGamepad(this.gamepad1);
@@ -160,7 +160,7 @@ public class Macaroni extends OpMode {
         if (!gamepad1_lockup.read()) {
             if (gamepad1.left_bumper) {
                 drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .lineToSplineHeading(MacaroniBasic.START_POSITION)
+                        .lineToSplineHeading(MacaroniAutonomous.START_POSITION)
                         .build());
             } else if (gamepad1.right_bumper) {
                 drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
