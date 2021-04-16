@@ -14,11 +14,10 @@ import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
-@Autonomous(group = "drive")
+@Autonomous(name = "Macaroni Autonomous", group = "drive", preselectTeleOp = "Macaroni v2")
 public class MacaroniBasic extends LinearOpMode {
     public static final Pose2d START_POSITION = new Pose2d(-(72 - 10.5), 24);
 
-    private static final double LAUNCHER_POWER = 0.80;
     private static final double LAUNCHER_POWER = 0.875;
     private static final int PRESPIN_TIME = 3500;
     private static final int RESPIN_TIME = 1500;

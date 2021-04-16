@@ -1,212 +1,190 @@
 package org.firstinspires.ftc.team16911.telop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.team16911.auton.MacaroniBasic;
+import org.firstinspires.ftc.team16911.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
-import org.firstinspires.ftc.teamcode.Util;
+import org.firstinspires.ftc.teamcode.gamepad.Lockup;
+import org.firstinspires.ftc.teamcode.gamepad.SingleDown;
+import org.firstinspires.ftc.teamcode.gamepad.TimedGamepad;
+import org.firstinspires.ftc.teamcode.gamepad.Toggle;
 
 @TeleOp(name = "Macaroni", group = "Linear OpMode")
-public class Macaroni extends LinearOpMode {
-    final MacaroniHardware robot = new MacaroniHardware();
-    final ElapsedTime runTime = new ElapsedTime();
-    double lastControlsUpdate;
+public class Macaroni extends OpMode {
+    // Drivetrain, Robot Hardware and Telemetry controllers
+    private SampleMecanumDrive drive;
+    private final MacaroniHardware robot = new MacaroniHardware();
+    private Telemetry dash_telemetry;
 
-    double wheelPower = 1;
-    private static final double powerGranularity = 0.05;
-    double launcherPower = 1f;
+    // Gamepad State Control
+    private TimedGamepad timedGamepad1;
+    private TimedGamepad timedGamepad2;
+    private Lockup gamepad1_lockup;
+    private Lockup gamepad2_lockup;
+    private Toggle armToggle;
+    private Toggle clawToggle;
+    private Toggle stopperToggle;
+    private SingleDown dpad_up;
+    private SingleDown dpad_down;
 
-    // Wobble Goal Servo states
-    boolean armActive = false; // Current state of the Lower Wobble Goal (Arm)
-    boolean clawActive = false; // Current state of the Upper Wobble Goal (Claw)
-    boolean prevArmState = false;
-    boolean prevClawState = false;
+    // Tele-operated Configuration Constants
+    public static double NUDGE_AMOUNT = 0.5;
+    public static double X_SCALE = 0.7;
+    public static double Y_SCALE = 0.7;
+    public static double TURN_SCALE = 0.85;
 
-    // Ring Stopper Servo states
-    boolean ringStopperActive = true;
-    boolean prevRingStopper = true;
+    public int LAUNCHER_POWER = 100;
 
-    // Other states
-    boolean toggleLauncher = false;
-    boolean intakeDirection = true;
-
-    FtcDashboard dashboard;
-    Telemetry dash_telemetry;
 
     @Override
-    public void runOpMode() {
-        lastControlsUpdate = runTime.seconds();
-        dashboard = FtcDashboard.getInstance();
+    public void init() {
+        FtcDashboard dashboard = FtcDashboard.getInstance();
         dash_telemetry = dashboard.getTelemetry();
 
-        waitForStart();
-
+        drive = new SampleMecanumDrive(hardwareMap);
+        drive.setPoseEstimate(MacaroniBasic.START_POSITION);
         robot.init(hardwareMap);
 
-        // TODO: Implement Road Runner drivetrain controls
-        // TODO: Motor speed shooting block
+        timedGamepad1 = new TimedGamepad(this.gamepad1);
+        timedGamepad2 = new TimedGamepad(this.gamepad2);
 
-        if (isStopRequested()) return;
+        armToggle = new Toggle();
+        clawToggle = new Toggle();
+        stopperToggle = new Toggle();
 
-        while (opModeIsActive()) {
-            driverControls();
-            operatorControls();
-            dash_telemetry.update();
-        }
+        dpad_up = new SingleDown();
+        dpad_down = new SingleDown();
+
+        gamepad1_lockup = new Lockup();
+        gamepad2_lockup = new Lockup();
+
+        timedGamepad1.options.installStrategy(gamepad1_lockup);
+        timedGamepad2.options.installStrategy(gamepad2_lockup);
+
+        timedGamepad2.square.installStrategy(armToggle);
+        timedGamepad2.circle.installStrategy(clawToggle);
+        timedGamepad2.triangle.installStrategy(stopperToggle);
+
+        timedGamepad2.dpad_up.installStrategy(dpad_up);
+        timedGamepad2.dpad_down.installStrategy(dpad_down);
     }
 
-    private void operatorControls() {
-        // Lower Wobble (Arm) controls
-        if (gamepad2.x && !prevArmState) {
-            robot.armServo.setPosition(armActive ? 0 : 1);
-            armActive = !armActive;
-        }
-        prevArmState = gamepad2.x;
+    @Override
+    public void loop() {
+        robot.tick();
+        timed_gamepads();
+        driver();
+        operator();
+        stats();
 
-        // Upper Wobble (Claw) controls
-        if (gamepad2.circle && !prevClawState) {
-//            robot.leftClawServo.setPosition(clawActive ? 1 : 0);
-//            robot.rightClawServo.setPosition(clawActive ? 0 : 1);
-            clawActive = !clawActive;
-        }
-        prevClawState = gamepad2.circle;
-
-        // Ring Stopper controls
-        if (gamepad2.triangle && !prevRingStopper) {
-//            robot.ringStopperServo.setPosition(ringStopperActive ? 0 : 1);
-            ringStopperActive = !ringStopperActive;
-        }
-        prevRingStopper = gamepad2.triangle;
-
-        boolean controllerTouched = true;
-        if (controllerLoop(0.15)) {
-            if (gamepad2.dpad_left)
-                launcherPower = 0.65;
-            else if (gamepad2.dpad_right)
-                launcherPower = 0.75;
-            else if (gamepad2.dpad_up || gamepad2.dpad_down) {
-                // Change launcher motor power with D-Pad controls
-                double powerChange = gamepad2.dpad_up ? powerGranularity : -powerGranularity;
-                launcherPower = Util.clamp((float) (launcherPower + powerChange), 0, 1);
-            } else
-                controllerTouched = false;
-
-            if (controllerTouched)
-                lastControlsUpdate = runTime.seconds();
-
-            // Toggle launcher
-            // if (gamepad2.share) toggleLauncher = !toggleLauncher;
-        }
-        dash_telemetry.addData("launcherPower", launcherPower);
-        telemetry.addData("Launcher Power", ((int) (launcherPower * 100)) + "%");
         telemetry.update();
+        dash_telemetry.update();
+    }
 
-        // Intake if Right Trigger
-        if (gamepad1.right_trigger > 0) {
-            double rt = intakeDirection ? Util.cubicEasing(gamepad2.right_trigger) : -Util.cubicEasing(gamepad2.right_trigger);
-//            robot.intakeMotor.setPower(rt);
-        }
-
-        // Right trigger to run all intake motors/servos at desired speed
-        if (gamepad1.left_bumper) {
-//            robot.beltMotor.setPower(-1);
-//            robot.intakeMotor.setPower(-1);
-        } else if (gamepad1.right_bumper) {
-//            robot.beltMotor.setPower(1);
-//            robot.intakeMotor.setPower(1);
-        } else {
-//            robot.intakeMotor.setPower(0);
-//            robot.beltMotor.setPower(gamepad2.left_stick_y > 0.05 ? 1 : (gamepad2.left_stick_y < -0.05 ? -1 : 0));
-        }
-
-//        dash_telemetry.addData("beltMotor", robot.beltMotor.getPower());
-//        dash_telemetry.addData("intakeMotor", robot.intakeMotor.getPower());
-        dash_telemetry.addData("beltMotor", gamepad2.left_stick_y);
-//        dash_telemetry.addData("launcherMotor", robot.launcherMotor.getPower());
-//        robot.launcherMotor.setPower(gamepad2.left_trigger > 0 ? launcherPower : 0);
+    @Override
+    public void stop() {
+        robot.setRingStopper(false);
     }
 
     /**
-     * Processes the driver gamepad's controls.
-     * <p>
-     * Left and Right Stick: Move robot
-     * Left and Right Bumpers: Rotate robot slowly
+     * Update the TimedGamepad instances.
      */
-    private void driverControls() {
-        // Apply easing function to all stick inputs
-        double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
-        double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
-        double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
-        double right_stick_y = Util.cubicEasing(gamepad1.right_stick_y);
-
-        // Update wheel power multipier
-        if (gamepad1.square)
-            wheelPower = 1;
-        else if (gamepad1.triangle)
-            wheelPower = 0.25;
-        else if (gamepad1.circle)
-            wheelPower = 0.5;
-        else if (gamepad1.cross)
-            wheelPower = 0.75;
-
-        if (gamepad1.dpad_up)
-            left_stick_y = -1;
-        else if (gamepad1.dpad_down)
-            left_stick_y = 1;
-
-        if (gamepad1.dpad_right)
-            left_stick_x = 1;
-        else if (gamepad1.dpad_left)
-            left_stick_x = -1;
-
-
-        // Left and Right bumper controls (slow rotate)
-        right_stick_x = gamepad1.right_bumper ? 0.2 : (gamepad1.left_bumper ? -0.2 : right_stick_x);
-
-        // Mechanum trig math
-        double radius = Math.hypot(left_stick_x, -left_stick_y);
-        double ang = Math.atan2(-left_stick_y, left_stick_x) - Math.PI / 4;
-        double turnCon = right_stick_x * .75;
-
-        // Final motor powers, with multiplier applied
-        double v1 = (radius * Math.cos(ang) + turnCon) * wheelPower;
-        double v2 = (radius * Math.sin(ang) - turnCon) * wheelPower;
-        double v3 = (radius * Math.sin(ang) + turnCon) * wheelPower;
-        double v4 = (radius * Math.cos(ang) - turnCon) * wheelPower;
-
-        dash_telemetry.addData("leftFront", v1);
-        dash_telemetry.addData("rightFront", v2);
-        dash_telemetry.addData("leftRear", v3);
-        dash_telemetry.addData("rightRear", v4);
-
-        dash_telemetry.addData("leftEncoder", robot.encoderLeft.getCorrectedVelocity());
-        dash_telemetry.addData("rightEncoder", robot.encoderRight.getCorrectedVelocity());
-        dash_telemetry.addData("forwardEncoder", robot.encoderFront.getCorrectedVelocity());
-
-        // Sets power of motor, spins wheels
-        robot.motorLeftFront.setPower(v1);
-        robot.motorRightFront.setPower(v2);
-        robot.motorLeftRear.setPower(v3);
-        robot.motorRightRear.setPower(v4);
+    private void timed_gamepads() {
+        timedGamepad1.tick();
+        timedGamepad2.tick();
     }
 
     /**
-     * A simple helper function that assists with spacing out controller input polls.
-     * <p>
-     * Without a proper guard in place, controller input code for button presses will be ran hundreds of
-     * times per second, resulting in strange behavior. By adding a guard that only lets the button input
-     * code run every other fraction of a second, button input is much more reliable for humans.
-     *
-     * @param duration The minimum duration that must be elapsed before the controller loop is ran.
-     * @return True if the controller should be polled now, false if the duration has not yet elapsed.
+     * Processes operator (Gamepad 2) controls.
      */
-    public boolean controllerLoop(double duration) {
-        double waited = runTime.seconds() - lastControlsUpdate;
-        dash_telemetry.addData("controllerLoop", Util.clamp((float) (waited / duration), 0f, 1f));
-        return waited >= duration;
+    private void operator() {
+        // Don't process this when the gamepad is locked up by pressing Gamepad2's Options button.
+        if (!gamepad2_lockup.read()) {
+            // Servo toggles
+            if (armToggle.changed())
+                robot.armServo.setPosition(armToggle.read() ? 0 : 1);
+            if (clawToggle.changed())
+                robot.setClaws(clawToggle.read() ? 0 : 1);
+            if (stopperToggle.changed())
+                robot.setRingStopper(stopperToggle.read());
+        }
+
+        // Spin the launcher with left trigger to the specified launcher power
+        robot.setLauncherPower(gamepad2.left_trigger > 0.5 ? LAUNCHER_POWER / 100.0 : 0.0);
+
+        // Intake with right trigger, outtake with right bumper
+        if (gamepad2.right_trigger > 0.5)
+            robot.setIntakePower(1, 1);
+        else if (gamepad2.right_bumper)
+            robot.setIntakePower(-1, -1);
+        else {
+            robot.setIntakePower(-gamepad2.left_stick_y, 0);
+        }
+
+        // Power change with DPAD up/down
+        if (dpad_up.poll()) LAUNCHER_POWER += 5;
+        else if (dpad_down.poll()) LAUNCHER_POWER -= 5;
+        LAUNCHER_POWER = Math.max(0, Math.min(100, LAUNCHER_POWER));
+
+        telemetry.addData("Prespin Left", robot.prespinTelemetry());
+        telemetry.addData("Ring Stopper", (robot.ringStopperActive() ? "Active" : "Inactive"));
+        telemetry.addData("Launcher Power", ((int) (LAUNCHER_POWER)) + "%");
+    }
+
+    private void driver() {
+        // Nudge controls, dpad + left/righter trigger
+        double x_nudge = gamepad1.dpad_right ? NUDGE_AMOUNT : (gamepad1.dpad_left ? -NUDGE_AMOUNT : 0);
+        double y_nudge = gamepad1.dpad_up ? -NUDGE_AMOUNT : (gamepad1.dpad_down ? NUDGE_AMOUNT : 0);
+        double ang_nudge = gamepad1.left_trigger > 0
+                ? gamepad1.left_trigger * -NUDGE_AMOUNT
+                : gamepad1.right_trigger * NUDGE_AMOUNT;
+
+        // Road runner based controls with left/right stick XY
+        if (!drive.isBusy()) {
+            drive.setWeightedDrivePower(
+                    new Pose2d(
+                            -(gamepad1.left_stick_y * Y_SCALE + y_nudge),
+                            -(gamepad1.left_stick_x * X_SCALE + x_nudge),
+                            -(gamepad1.right_stick_x * TURN_SCALE + ang_nudge)
+                    )
+            );
+        }
+
+        drive.update();
+
+        if (!gamepad1_lockup.read()) {
+            if (gamepad1.left_bumper) {
+                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .lineToSplineHeading(MacaroniBasic.START_POSITION)
+                        .build());
+            } else if (gamepad1.right_bumper) {
+                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .lineToSplineHeading(new Pose2d(0, 0, 0))
+                        .build()
+                );
+            }
+
+            // Drive speed change
+            if (gamepad1.triangle)
+                X_SCALE = Y_SCALE = 0.25;
+            else if (gamepad1.circle)
+                X_SCALE = Y_SCALE = 0.5;
+            else if (gamepad1.cross)
+                X_SCALE = Y_SCALE = 0.75;
+            else if (gamepad1.square)
+                X_SCALE = Y_SCALE = 1.0;
+        }
+
+        telemetry.addData("X Scale", ((int) (X_SCALE * 100)) + "%");
+        telemetry.addData("Y Scale", ((int) (Y_SCALE * 100)) + "%");
+    }
+
+    private void stats() {
+        telemetry.addData("launcherSpeed", robot.launcherSpeed());
     }
 }
-
