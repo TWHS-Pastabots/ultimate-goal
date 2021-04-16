@@ -13,13 +13,10 @@ public class SingleDown implements PolledStrategy {
     @Override
     public void update(boolean next) {
         // If the last state was off and it's now on, the key was pressed.
-        if (!previous && next)
-            state = true;
-        else {
-            // Clear states.
-            state = false;
-            polled = false;
-        }
+        state = !previous && next;
+
+        // Clear polled state.
+        polled = false;
 
         previous = next;
     }
