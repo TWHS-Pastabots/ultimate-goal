@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team16910.telop;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -114,13 +115,24 @@ public class Spaghetti extends OpMode {
 
         // Check if the drive train is busy, i.e. running a trajectory
         if (!drive.isBusy()) {
+            // Read the current pose from the drive train
+            Pose2d poseEstimate = drive.getPoseEstimate();
+
+            // Create a vector from the inputs and rotate it by the inverse of the heading of the robot
+            // so that inputs are relative to the field rather than the robot
+            // see: https://www.learnroadrunner.com/advanced.html#field-centric-drive
+            Vector2d input = new Vector2d(
+                    -(gamepad1.left_stick_y * Y_SCALE + y_nudge),
+                    -(gamepad1.left_stick_x * X_SCALE + x_nudge)
+            ).rotated(-poseEstimate.getHeading());
+
             // Set the drive train power using the weighted method so that
             // if the numbers end up too large, they are scaled to actually
             // work well with the drive train
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            -(gamepad1.left_stick_y * Y_SCALE + y_nudge),
-                            -(gamepad1.left_stick_x * X_SCALE + x_nudge),
+                            input.getX(),
+                            input.getY(),
                             -(gamepad1.right_stick_x * TURN_SCALE + ang_nudge)
                     )
             );
