@@ -88,3 +88,6 @@ lint/tmp/
 
 .DS_Store
 .idea
+
+# vuforia keys
+Team16910/src/main/java/org/firstinspires/ftc/team16910/auton/VuforiaKey.java
