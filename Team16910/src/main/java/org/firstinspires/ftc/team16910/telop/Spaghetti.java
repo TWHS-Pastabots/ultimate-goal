@@ -132,6 +132,7 @@ public class Spaghetti extends OpMode {
                 // we can leave it because it isn't actually required, just something
                 // that is there and can be used if needed
                 // TODO: remove this
+                // SEE: https://www.learnroadrunner.com/advanced.html#using-road-runner-in-teleop
                 drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
                         .splineToLinearHeading(middlePosition, Math.toRadians(90))
                         .build());
