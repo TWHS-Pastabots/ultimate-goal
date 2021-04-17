@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.localization.ThreeTrackingWheelLocalizer;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.teamcode.util.Encoder;
 
 import java.util.Arrays;
@@ -31,11 +32,11 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public static double WHEEL_RADIUS = 1.1811; // in
     public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 11; // in; distance between the left and right wheels // 11.00571800516269
+    public static double LATERAL_DISTANCE = 11.149770981880215; // in; distance between the left and right wheels
     public static double FORWARD_OFFSET = 6; // in; offset of the lateral wheel
 
-    public static double X_MULTIPLIER = 1; // Multiplier in the X direction // 0.999916674
-    public static double Y_MULTIPLIER = 1; // Multiplier in the Y direction // 0.996346729
+    public static double X_MULTIPLIER = 1.006429969; // Multiplier in the X direction // 0.999916674
+    public static double Y_MULTIPLIER = 1.014827761; // Multiplier in the Y direction // 0.996346729
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
@@ -52,7 +53,6 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         leftEncoder.setDirection(Encoder.Direction.REVERSE);
-        rightEncoder.setDirection(Encoder.Direction.REVERSE);
     }
 
     public static double encoderTicksToInches(double ticks) {

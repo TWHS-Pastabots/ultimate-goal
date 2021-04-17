@@ -18,11 +18,11 @@ public class Spaghetti extends OpMode {
     public static double ON = 1;
     public static double OFF = 0;
 
-    public static double INTAKE_ON = 0.175;
+    public static double INTAKE_ON = 0.15;
     public static double INTAKE_GEAR_RATIO = 5;
 
     private double lastLaunchTime = 0;
-    public static double LAUNCH_TIME = 0.3;
+    public static double LAUNCH_TIME = 0.6;
     public static double LAUNCHER_POWER = 0.6375;
     public static double MOTOR_MAX_RPM = 6000;
     public static double MOTOR_TICKS_PER_SECOND = 28;
@@ -98,12 +98,23 @@ public class Spaghetti extends OpMode {
         }
 
         if (gamepad1.b) {
-            drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
-                    .splineToLinearHeading(middlePosition, 90)
-                    .build());
+            try {
+                // NOTE: apparently this is like super not recommended, but I guess
+                // we can leave it because it isn't actually required, just something
+                // that is there and can be used if needed
+                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
+                        .splineToLinearHeading(middlePosition, Math.toRadians(90))
+                        .build());
+            } catch (Exception e) {
+                telemetry.addData("Error trying to follow trajectory", e);
+            }
         }
 
-        drive.update();
+        try {
+            drive.update();
+        } catch (Exception e) {
+            telemetry.addData("Error trying to update drive", e);
+        }
 
         Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.addData("x", poseEstimate.getX());
