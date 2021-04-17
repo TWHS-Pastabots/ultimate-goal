@@ -153,6 +153,8 @@ public class Spaghetti extends OpMode {
             }
         }
 
+        // TODO: implement the concept from: https://github.com/NoahBres/road-runner-quickstart/blob/advanced-examples/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/advanced/TeleOpAlignWithPoint.java
+
         // Try the update to the drive train. This is surrounded by a try
         // block in case anything goes wrong in RoadRunner and it, for
         // whatever reason, throws an error. This makes sure the teleop
