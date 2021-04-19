@@ -48,10 +48,10 @@ import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0); // 8, 0, 0
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0); // 5, 3, 1
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7, 0, 0.1); // 8, 0, 0
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 0); // 5, 3, 1
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 1.306240929;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -65,25 +65,25 @@ public class SampleMecanumDrive extends MecanumDrive {
         FOLLOW_TRAJECTORY
     }
 
-    private FtcDashboard dashboard;
-    private NanoClock clock;
+    private final FtcDashboard dashboard;
+    private final NanoClock clock;
 
     private Mode mode;
 
-    private PIDFController turnController;
+    private final PIDFController turnController;
     private MotionProfile turnProfile;
     private double turnStart;
 
-    private TrajectoryVelocityConstraint velConstraint;
-    private TrajectoryAccelerationConstraint accelConstraint;
-    private TrajectoryFollower follower;
+    private final TrajectoryVelocityConstraint velConstraint;
+    private final TrajectoryAccelerationConstraint accelConstraint;
+    private final TrajectoryFollower follower;
 
-    private LinkedList<Pose2d> poseHistory;
+    private final LinkedList<Pose2d> poseHistory;
 
-    private DcMotorEx leftFront, leftRear, rightRear, rightFront;
-    private List<DcMotorEx> motors;
+    private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
+    private final List<DcMotorEx> motors;
 
-    private VoltageSensor batteryVoltageSensor;
+    private final VoltageSensor batteryVoltageSensor;
 
     private Pose2d lastPoseOnTurn;
 
@@ -106,7 +106,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         ));
         accelConstraint = new ProfileAccelerationConstraint(MAX_ACCEL);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+                new Pose2d(0.5, 0.5, Math.toRadians(1.0)), 0.5);
 
         poseHistory = new LinkedList<>();
 
@@ -117,10 +117,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
-
-        // TODO: if your hub is mounted vertically, remap the IMU axes so that the z-axis points
-        // upward (normal to the floor) using a command like the following:
-        // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
@@ -145,12 +141,8 @@ public class SampleMecanumDrive extends MecanumDrive {
             setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        // TODO: reverse any motors using DcMotor.setDirection()
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightRear.setDirection(DcMotor.Direction.REVERSE);
-
-        // TODO: if desired, use setLocalizer() to change the localization method
-        // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
 
         setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
