@@ -8,7 +8,7 @@ import org.firstinspires.ftc.team16911.hardware.MacaroniIds;
 
 public class MacaroniDrive extends MacaroniMecanumDrive {
     public Servo leftClawServo;
-    public Servo rightClawServo;
+    public Servo clawServo;
 
     public Servo armServo;
     public Servo ringStopperServo;
@@ -25,8 +25,7 @@ public class MacaroniDrive extends MacaroniMecanumDrive {
         beltMotor = hardwareMap.get(DcMotorEx.class, MacaroniIds.BELT_MOTOR);
 
         armServo = hardwareMap.get(Servo.class, MacaroniIds.ARM_SERVO);
-        leftClawServo = hardwareMap.get(Servo.class, MacaroniIds.LEFT_CLAW_SERVO);
-        rightClawServo = hardwareMap.get(Servo.class, MacaroniIds.RIGHT_CLAW_SERVO);
+        clawServo = hardwareMap.get(Servo.class, MacaroniIds.CLAW_SERVO);
 
         ringStopperServo = hardwareMap.get(Servo.class, MacaroniIds.RING_STOPPER_SERVO);
 
@@ -40,7 +39,6 @@ public class MacaroniDrive extends MacaroniMecanumDrive {
     }
 
     public void setClaws(double position) {
-        leftClawServo.setPosition(1 - position);
-        rightClawServo.setPosition(position);
+        clawServo.setPosition(position);
     }
 }

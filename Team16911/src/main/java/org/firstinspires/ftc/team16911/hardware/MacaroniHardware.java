@@ -25,8 +25,7 @@ public class MacaroniHardware extends RobotHardware {
     private ElapsedTime launcherElapsed;
     private double launcherWait = 0.0;
 
-    private Servo leftClawServo;
-    private Servo rightClawServo;
+    private Servo clawServo;
     public Servo armServo;
     private Servo ringStopperServo;
 
@@ -42,12 +41,11 @@ public class MacaroniHardware extends RobotHardware {
         beltMotor = hardwareMap.get(DcMotorEx.class, MacaroniIds.BELT_MOTOR);
 
         armServo = hardwareMap.get(Servo.class, MacaroniIds.ARM_SERVO);
-        leftClawServo = hardwareMap.get(Servo.class, MacaroniIds.LEFT_CLAW_SERVO);
-        rightClawServo = hardwareMap.get(Servo.class, MacaroniIds.RIGHT_CLAW_SERVO);
+        clawServo = hardwareMap.get(Servo.class, MacaroniIds.CLAW_SERVO);
         ringStopperServo = hardwareMap.get(Servo.class, MacaroniIds.RING_STOPPER_SERVO);
 
         motors.addAll(Arrays.asList(intakeMotor, launcherMotor, beltMotor));
-        servos.addAll(Arrays.asList(armServo, leftClawServo, rightClawServo, ringStopperServo));
+        servos.addAll(Arrays.asList(armServo, clawServo, ringStopperServo));
 
         // Wheel directions
         motorRightFront.setDirection(DcMotorEx.Direction.REVERSE);
@@ -74,8 +72,7 @@ public class MacaroniHardware extends RobotHardware {
      * @param position 1.0 closes the claws, 0.0 opens them as wide as possible.
      */
     public void setClaws(double position) {
-        leftClawServo.setPosition(1 - position);
-        rightClawServo.setPosition(position);
+        clawServo.setPosition(position);
     }
 
     /**
