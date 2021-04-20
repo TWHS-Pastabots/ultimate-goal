@@ -91,3 +91,5 @@ lint/tmp/
 
 # vuforia keys
 Team16910/src/main/java/org/firstinspires/ftc/team16910/auton/VuforiaKey.java
+
+Team16910/src/main/assets/Vuforia.key
