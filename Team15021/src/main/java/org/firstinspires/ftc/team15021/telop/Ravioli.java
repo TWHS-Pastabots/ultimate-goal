@@ -5,21 +5,30 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team15021.hardware.RavioliHardware;
-import org.firstinspires.ftc.teamcode.Telemetry;
 import org.firstinspires.ftc.teamcode.Util;
 
-@TeleOp(name = "Ravioli", group = "Linear OpMode")
-public class Ravioli extends OpMode {
+import java.text.DecimalFormat;
 
+
+@TeleOp(name = "Driver", group = "Linear OpMode")
+public class Ravioli extends OpMode {
     /* Declare OpMode members. */
     final RavioliHardware robot = new RavioliHardware();
     final ElapsedTime runTime = new ElapsedTime();
+
+    private String front;
+    private String back;
+    private String right;
+    private String left;
+
     double slowCon = 1.0;
 
     double vLauncher = 0.0;
-    double vLauncherMult = 1.0;
+    double vLauncherMult = 0.70;
     double vConveyor = 0.0;
     double vServoMotor = 0.0;
+
+    DecimalFormat df = new DecimalFormat("#.##");
 
     //run once on init()
     @Override
@@ -45,6 +54,7 @@ public class Ravioli extends OpMode {
     // Loop on start()
     @Override
     public void loop() {
+
         // Motor multiplier
         if (gamepad1.b) slowCon = 0.25;
         if (gamepad1.a) slowCon = 0.5;
@@ -54,7 +64,7 @@ public class Ravioli extends OpMode {
         // Apply easing function to all stick inputs
         double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
         double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
-        double right_stick_x = Util.squareEasing(gamepad1.right_stick_x);
+        double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
 
         // Mechanum trig math
         double radius = Math.hypot(left_stick_x, left_stick_y);
@@ -68,12 +78,21 @@ public class Ravioli extends OpMode {
         double v3 = (radius * Math.sin(ang) + turnCon) * slowCon;
         double v4 = (radius * Math.cos(ang) - turnCon) * slowCon;
 
+//        double leftPower = Util.cubicEasing(gamepad1.right_stick_x);
+//        double rightPower = Util.cubicEasing(-gamepad1.right_stick_x);
+//        double vertical = Util.cubicEasing(gamepad1.left_stick_y);
+
+
         // Launcher and Conveyor Powers (R Trigger = Launcher, Up Button = Conveyor - Can be changed)
-        if (gamepad2.b) vLauncherMult = 0.25;
-        if (gamepad2.a) vLauncherMult = 0.5;
-        if (gamepad2.x) vLauncherMult = 0.75;
-        if (gamepad2.y) vLauncherMult = 1.0;
-        vLauncher = gamepad2.right_trigger * vLauncherMult;
+        //if (gamepad2.b) vLauncherMult = 0.25;
+        if (gamepad2.square) vLauncherMult = 0.60;
+        if (gamepad2.circle) vLauncherMult = 0.65;
+        if (gamepad2.triangle) vLauncherMult = 0.70;
+
+        if (gamepad2.left_bumper)
+            vLauncher = -gamepad2.right_trigger * vLauncherMult;
+        else
+            vLauncher = gamepad2.right_trigger * vLauncherMult;
 
         if (gamepad2.dpad_up) vConveyor = 1.0;
         else if (gamepad2.dpad_down) vConveyor = -1.0;
@@ -81,14 +100,15 @@ public class Ravioli extends OpMode {
         else if (gamepad1.right_bumper) vConveyor = 1.0;
         else vConveyor = 0.0;
 
-        robot.servoClaw.setPosition(gamepad2.left_trigger);
+        robot.servoClaw.setPosition(1 - gamepad2.left_trigger);
 
         //servoMotor = left: up, right: down
-        if (gamepad2.dpad_left) vServoMotor = 0.35;
-        else if (gamepad2.dpad_right) vServoMotor = -0.35;
-        else vServoMotor = 0.0;
+        //if (gamepad2.dpad_left) vServoMotor = 0.35;
+        //else if (gamepad2.dpad_right) vServoMotor = -0.35;
+        //else vServoMotor = 0.0;
+        vServoMotor = gamepad2.right_stick_y * .5;
 
-        if (gamepad2.touchpad) robot.servoIntake.setPosition(0.6);
+        if (gamepad2.cross) robot.servoIntake.setPosition(0.6);
         else robot.servoIntake.setPosition(0);
 
 
@@ -97,6 +117,7 @@ public class Ravioli extends OpMode {
         robot.motorRightFront.setPower(-v2);
         robot.motorLeftRear.setPower(-v3);
         robot.motorRightRear.setPower(-v4);
+
 
         // Sets powers of Launcher and Conveyor Motors
         robot.motorLauncher.setPower(vLauncher);
@@ -107,13 +128,11 @@ public class Ravioli extends OpMode {
 
         // Show motor output visually
         telemetry.addData("Started", Util.getHumanDuration((float) runTime.seconds()) + " ago");
-        telemetry.addLine(Telemetry.createLevel((float) v1));
-        telemetry.addLine(Telemetry.createLevel((float) v2));
-        telemetry.addLine(Telemetry.createLevel((float) v3));
-        telemetry.addLine(Telemetry.createLevel((float) v4));
+        // telemetry.addLine(Telemetry.createLevel((float) v1));
+        // telemetry.addLine(Telemetry.createLevel((float) v2));
+        // telemetry.addLine(Telemetry.createLevel((float) v3));
+        // telemetry.addLine(Telemetry.createLevel((float) v4));
 
-        telemetry.addLine("Launcher Power: " + (int) (vLauncher * 100) + "%" + "\nLauncher Max Power: " + (int) (vLauncherMult * 100) + "%");
-//        telemetry.addLine("Servo Position: " + robot.servoPos);
 
         telemetry.update();
     }
@@ -122,5 +141,4 @@ public class Ravioli extends OpMode {
     @Override
     public void stop() {
     }
-
 }
