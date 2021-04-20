@@ -6,12 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.team16911.R;
-import org.firstinspires.ftc.team16911.auton.MacaroniAutonomous;
-import org.firstinspires.ftc.team16911.auton.VuforiaKey;
 import org.firstinspires.ftc.team16911.drive.MacaroniMecanumDrive;
 import org.firstinspires.ftc.team16911.drive.PoseStorage;
 import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
@@ -19,6 +16,7 @@ import org.firstinspires.ftc.teamcode.gamepad.Lockup;
 import org.firstinspires.ftc.teamcode.gamepad.SingleDown;
 import org.firstinspires.ftc.teamcode.gamepad.TimedGamepad;
 import org.firstinspires.ftc.teamcode.gamepad.Toggle;
+import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
 @TeleOp(name = "Macaroni", group = "Linear OpMode")
 public class Macaroni extends OpMode {
@@ -86,7 +84,7 @@ public class Macaroni extends OpMode {
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
 
-        parameters.vuforiaLicenseKey = VuforiaKey.KEY;
+        parameters.vuforiaLicenseKey = AssetUtil.loadVuforiaKey();;
         parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         vuforia = ClassFactory.getInstance().createVuforia(parameters);

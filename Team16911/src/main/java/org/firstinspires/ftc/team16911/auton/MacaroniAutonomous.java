@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.team16911.drive.MacaroniMecanumDrive;
 import org.firstinspires.ftc.team16911.drive.PoseStorage;
 import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
+import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
 import java.util.List;
 
@@ -153,7 +154,7 @@ public class MacaroniAutonomous extends LinearOpMode {
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = VuforiaKey.KEY;
+        parameters.vuforiaLicenseKey = AssetUtil.loadVuforiaKey();;
         parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         vuforia = ClassFactory.getInstance().createVuforia(parameters);

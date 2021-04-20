@@ -89,5 +89,12 @@ lint/tmp/
 .DS_Store
 .idea
 
-# vuforia keys
-Team16910/src/main/java/org/firstinspires/ftc/team16910/auton/VuforiaKey.java
+# Vuforia keys
+Team16910/src/main/assets/Vuforia.key
+Team16911/src/main/assets/Vuforia.key
+
+# Ignore UltimateGoal Tensorflow Models
+    Team16911/src/main/java/org/firstinspires/ftc/team16911/auton/UltimateGoal.tflite
+
+
+Team16911/src/main/java/org/firstinspires/ftc/team16911/auton/UltimateGoal.tflite
