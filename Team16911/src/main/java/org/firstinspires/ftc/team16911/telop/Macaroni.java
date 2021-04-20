@@ -5,9 +5,15 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.team16911.R;
 import org.firstinspires.ftc.team16911.auton.MacaroniAutonomous;
+import org.firstinspires.ftc.team16911.auton.VuforiaKey;
 import org.firstinspires.ftc.team16911.drive.MacaroniMecanumDrive;
+import org.firstinspires.ftc.team16911.drive.PoseStorage;
 import org.firstinspires.ftc.team16911.hardware.MacaroniHardware;
 import org.firstinspires.ftc.teamcode.gamepad.Lockup;
 import org.firstinspires.ftc.teamcode.gamepad.SingleDown;
@@ -19,7 +25,7 @@ public class Macaroni extends OpMode {
     // Drivetrain, Robot Hardware and Telemetry controllers
     private MacaroniMecanumDrive drive;
     private final MacaroniHardware robot = new MacaroniHardware();
-    private Telemetry dash_telemetry;
+    private VuforiaLocalizer vuforia;
 
     // Gamepad State Control
     private TimedGamepad timedGamepad1;
@@ -33,10 +39,10 @@ public class Macaroni extends OpMode {
     private SingleDown dpad_down;
 
     // Tele-operated Configuration Constants
-    public static double NUDGE_AMOUNT = 0.5;
+    public static double NUDGE_AMOUNT = 0.15;
     public static double X_SCALE = 0.7;
     public static double Y_SCALE = 0.7;
-    public static double TURN_SCALE = 0.85;
+    public static double TURN_SCALE = 0.45;
 
     public int LAUNCHER_POWER = 100;
 
@@ -44,10 +50,9 @@ public class Macaroni extends OpMode {
     @Override
     public void init() {
         FtcDashboard dashboard = FtcDashboard.getInstance();
-        dash_telemetry = dashboard.getTelemetry();
 
         drive = new MacaroniMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(MacaroniAutonomous.START_POSITION);
+        drive.setPoseEstimate(PoseStorage.currentPose);
         robot.init(hardwareMap);
 
         timedGamepad1 = new TimedGamepad(this.gamepad1);
@@ -72,6 +77,19 @@ public class Macaroni extends OpMode {
 
         timedGamepad2.dpad_up.installStrategy(dpad_up);
         timedGamepad2.dpad_down.installStrategy(dpad_down);
+
+        initVuforia();
+
+        dashboard.startCameraStream(vuforia, 0);
+    }
+
+    private void initVuforia() {
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
+
+        parameters.vuforiaLicenseKey = VuforiaKey.KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
 
     @Override
@@ -80,10 +98,8 @@ public class Macaroni extends OpMode {
         timed_gamepads();
         driver();
         operator();
-        stats();
 
         telemetry.update();
-        dash_telemetry.update();
     }
 
     @Override
@@ -158,16 +174,16 @@ public class Macaroni extends OpMode {
         drive.update();
 
         if (!gamepad1_lockup.read()) {
-            if (gamepad1.left_bumper) {
-                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .lineToSplineHeading(MacaroniAutonomous.START_POSITION)
-                        .build());
-            } else if (gamepad1.right_bumper) {
-                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .lineToSplineHeading(new Pose2d(0, 0, 0))
-                        .build()
-                );
-            }
+//            if (gamepad1.left_bumper) {
+//                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
+//                        .lineToSplineHeading(MacaroniAutonomous.START_POSITION)
+//                        .build());
+//            } else if (gamepad1.right_bumper) {
+//                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
+//                        .lineToSplineHeading(new Pose2d(0, 0, 0))
+//                        .build()
+//                );
+//            }
 
             // Drive speed change
             if (gamepad1.triangle)
@@ -182,13 +198,7 @@ public class Macaroni extends OpMode {
 
         telemetry.addData("X Scale", ((int) (X_SCALE * 100)) + "%");
         telemetry.addData("Y Scale", ((int) (Y_SCALE * 100)) + "%");
-    }
-
-    private void stats() {
-        Pose2d poseEstimate = drive.getPoseEstimate();
-        dash_telemetry.addData("x", poseEstimate.getX());
-        dash_telemetry.addData("y", poseEstimate.getY());
-        dash_telemetry.addData("heading", poseEstimate.getHeading());
+        telemetry.addData("Turn Scale", ((int) (TURN_SCALE * 100)) + "%");
         telemetry.addData("launcherSpeed", robot.launcherSpeed());
     }
 }
