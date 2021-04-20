@@ -14,9 +14,11 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.team16910.R;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.team16910.telop.Spaghetti;
+import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
 import java.util.List;
 
@@ -223,9 +225,9 @@ public class SpaghettiAutonomous extends LinearOpMode {
      *
      */
     private void initVuforia() {
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
 
-        parameters.vuforiaLicenseKey = VuforiaKey.KEY;
+        parameters.vuforiaLicenseKey = AssetUtil.loadVuforiaKey();
         parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
