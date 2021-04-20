@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 import java.util.Locale;
 
 @TeleOp(name = "Motor Tester")
+@Disabled
 public class MotorTester extends OpMode {
 
     final RobotHardware robot = new RobotHardware();
