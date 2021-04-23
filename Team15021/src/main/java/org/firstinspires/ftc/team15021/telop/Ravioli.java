@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Util;
 import java.text.DecimalFormat;
 
 
-@TeleOp(name = "Driver", group = "Linear OpMode")
+@TeleOp(name = "Ravioli", group = "Linear OpMode")
 public class Ravioli extends OpMode {
     /* Declare OpMode members. */
     final RavioliHardware robot = new RavioliHardware();
