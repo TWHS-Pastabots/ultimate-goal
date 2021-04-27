@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
@@ -26,10 +27,9 @@ public class AssetUtil {
     public static String getAsset(String filename) {
         try {
             AssetManager assetManager = AppUtil.getDefContext().getAssets();
-            AssetFileDescriptor afd = assetManager.openFd(filename);
 
-            try (FileInputStream fis = afd.createInputStream()) {
-                return getFileContents(fis, "UTF-8");
+            try (InputStream is = assetManager.open(filename)) {
+                return getFileContents(is, "UTF-8");
             }
         } catch (IOException e) {
             throw new RuntimeException("Unable to get file " + filename, e);
@@ -38,13 +38,13 @@ public class AssetUtil {
 
     /**
      * TODO(BSFishy): Document this
-     * @param fis
+     * @param is
      * @param encoding
      * @return
      * @throws IOException
      */
-    public static String getFileContents(FileInputStream fis, String encoding) throws IOException {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(fis, encoding))) {
+    public static String getFileContents(InputStream is, String encoding) throws IOException {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding))) {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = br.readLine()) != null) {
