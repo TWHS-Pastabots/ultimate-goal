@@ -19,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.team16910.R;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
+import org.firstinspires.ftc.team16910.telop.PoseStorage;
 import org.firstinspires.ftc.team16910.telop.Spaghetti;
 import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
@@ -104,7 +105,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
     public static double CLAW_TIME = 400;
 
     // Launcher-related constants
-    public static double LAUNCHER_POWER = 0.56;
+    public static double LAUNCHER_POWER = 0.6; // 0.56
     public static double LAUNCHER_SPINUP = 1000;
     public static double LAUNCHER_LAUNCH = 600;
 
@@ -181,7 +182,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
         }
 
         // Set the final position constant so it can be used in other opmodes
-        FINAL_POSITION = drive.getPoseEstimate();
+//        PoseStorage.position = drive.getPoseEstimate();
 
         // Idle until the opmode should stop
         while (!isStopRequested()) {
@@ -226,6 +227,11 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
     }
 
     private void addTelemetry() {
+        Pose2d poseEstimate = drive.getPoseEstimate();
+        telemetry.addData("x", "%.02f", poseEstimate.getX());
+        telemetry.addData("y", "%.02f", poseEstimate.getY());
+        telemetry.addData("heading", "%.02f", poseEstimate.getHeading());
+
         telemetry.addData("state", currentState);
         if (currentState == State.Sleeping) {
             telemetry.addData("time left", "%.02f", duration - timer.seconds());
@@ -241,6 +247,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
             case PowerShot:
                 telemetry.addData("stage", powerShotStage);
                 telemetry.addData("launcher state", launcherState);
+                telemetry.addData("launcher power", Spaghetti.toMotorPower(robot.launcherMotor.getVelocity()));
 
                 break;
             case Finished:
@@ -327,7 +334,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
 
                 break;
             case SpinUpLauncher:
-                robot.launcherMotor.setVelocity(Spaghetti.motorPower(LAUNCHER_POWER));
+                robot.launcherMotor.setVelocity(Spaghetti.fromMotorPower(LAUNCHER_POWER));
 
                 sleepState(LAUNCHER_SPINUP);
                 powerShotStage = PowerShotStage.LaunchPowerShot1;
@@ -417,7 +424,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                 break;
             case MovingToFinalPosition:
                 if (!drive.isBusy()) {
-                    FINAL_POSITION = drive.getPoseEstimate();
+                    PoseStorage.position = drive.getPoseEstimate();
                     finishedStage = FinishedStage.Idle;
                 }
 

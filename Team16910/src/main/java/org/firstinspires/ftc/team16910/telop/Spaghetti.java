@@ -1,21 +1,40 @@
 package org.firstinspires.ftc.team16910.telop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
-import org.firstinspires.ftc.team16910.auton.SpaghettiAutonomous;
+import org.firstinspires.ftc.team16910.drive.DriveConstants;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
+import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 @TeleOp(name = "Spaghetti", group = "Linear OpMode")
 @Config
 public class Spaghetti extends OpMode {
+    private enum Mode {
+        DriverControl,
+        AlignToPoint,
+    }
+
+    public static double DRAWING_TARGET_RADIUS = 2;
+    private Mode currentMode = Mode.DriverControl;
+    private final PIDFController headingController = new PIDFController(SampleMecanumDrive.HEADING_PID);
+    private Vector2d targetPosition = GOAL_POSITION;
+    public static Vector2d GOAL_POSITION = new Vector2d(72, 36);
+    public static Vector2d POWER_SHOT_POSITION = new Vector2d(72, 12);
+
     // The small amount to move the robot for fine-tuned movements
     public static double NUDGE_AMOUNT = 0.25;
+    public static double TARGET_NUDGE_AMOUNT = 6;
 
     // Useful symbolic on and off constants
     public static double ON = 1;
@@ -38,7 +57,7 @@ public class Spaghetti extends OpMode {
      * Convert the motor power level to encoder ticks per second. This takes a {@code [0, 1]} range power level
      * and manipulates its numeric value to convert it into a velocity that can be used by
      * {@link DcMotorEx#setVelocity(double)}.
-     *
+     * <p>
      * What this actually does is takes the maximum motor RPM from {@link #MOTOR_MAX_RPM} and converts it to
      * the max rotations per second by dividing it by {@code 60}. It then multiplies it by the power level specified
      * to get the target number of rotations per second and then multiplies it by {@link #MOTOR_TICKS_PER_SECOND}
@@ -47,13 +66,27 @@ public class Spaghetti extends OpMode {
      * @param power the power level as a decimal
      * @return motor ticks per second
      */
-    public static double motorPower(double power) {
-        return MOTOR_MAX_RPM / 60 * power * MOTOR_TICKS_PER_SECOND;
+    public static double fromMotorPower(double power) {
+//        return MOTOR_MAX_RPM / 60 * power * MOTOR_TICKS_PER_SECOND;
+        return fromMotorPower(power, MOTOR_MAX_RPM, MOTOR_TICKS_PER_SECOND);
+    }
+
+    public static double fromMotorPower(double power, double maxRpm, double ticksPerSecond) {
+        return maxRpm / 60 * power * ticksPerSecond;
+    }
+
+    public static double toMotorPower(double ticks) {
+//        return ticks / MOTOR_TICKS_PER_SECOND / (MOTOR_MAX_RPM / 60);
+        return toMotorPower(ticks, MOTOR_MAX_RPM, MOTOR_TICKS_PER_SECOND);
+    }
+
+    public static double toMotorPower(double ticks, double maxRpm, double ticksPerSecond) {
+        return ticks / ticksPerSecond / (maxRpm / 60);
     }
 
     // Constants that scale the input power so movement isn't super jerky
-    public static double X_SCALE = 0.7;
-    public static double Y_SCALE = 0.7;
+    public static double X_SCALE = 0.9;
+    public static double Y_SCALE = 0.9;
     public static double TURN_SCALE = 0.85;
 
     // A position that is useful for launching rings from
@@ -76,14 +109,21 @@ public class Spaghetti extends OpMode {
     private boolean previousArmButton = false;
     private boolean armState = false;
 
+    private FtcDashboard dashboard;
+
     @Override
     public void init() {
+        dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
         // Initialize the robot hardware
         robot.init(hardwareMap);
 
         // Initialize the drive train
         drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(SpaghettiAutonomous.FINAL_POSITION);
+        drive.setPoseEstimate(PoseStorage.position);
+
+        headingController.setInputBounds(-Math.PI, Math.PI);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");
@@ -95,80 +135,149 @@ public class Spaghetti extends OpMode {
 
     @Override
     public void loop() {
+        TelemetryPacket packet = new TelemetryPacket();
+
         // Separate the movement and operation code into two separate functions
         // so that it is easier to understand the separation
-        movement();
+        movement(packet);
         operation();
 
         // Update the telemetry
+        dashboard.sendTelemetryPacket(packet);
         telemetry.update();
     }
 
     /**
      *
      */
-    private void movement() {
+    private void movement(TelemetryPacket packet) {
+        Canvas fieldOverlay = packet.fieldOverlay();
+        telemetry.addData("mode", currentMode);
+
+        if (gamepad1.right_bumper) {
+            targetPosition = GOAL_POSITION;
+        } else if (gamepad1.left_bumper) {
+            targetPosition = POWER_SHOT_POSITION;
+        }
+
+        // Draw the target on the field
+        fieldOverlay.setStroke("#dd2c00");
+        fieldOverlay.strokeCircle(targetPosition.getX(), targetPosition.getY(), DRAWING_TARGET_RADIUS);
+
         // Calculate nudge amounts for all of the axis
         double x_nudge = gamepad1.dpad_right ? NUDGE_AMOUNT : (gamepad1.dpad_left ? -NUDGE_AMOUNT : 0);
         double y_nudge = gamepad1.dpad_up ? -NUDGE_AMOUNT : (gamepad1.dpad_down ? NUDGE_AMOUNT : 0);
-        double ang_nudge = gamepad1.right_bumper ? NUDGE_AMOUNT : (gamepad1.left_bumper ? -NUDGE_AMOUNT : 0);
+//        double ang_nudge = gamepad1.right_bumper ? NUDGE_AMOUNT : (gamepad1.left_bumper ? -NUDGE_AMOUNT : 0);
+        double ang_nudge = gamepad1.right_trigger * NUDGE_AMOUNT + gamepad1.left_trigger * -NUDGE_AMOUNT;
 
-        // Check if the drive train is busy, i.e. running a trajectory
-        if (!drive.isBusy()) {
-            // Read the current pose from the drive train
-            Pose2d poseEstimate = drive.getPoseEstimate();
+        // Update he localizer
+        drive.getLocalizer().update();
 
-            // Create a vector from the inputs and rotate it by the inverse of the heading of the robot
-            // so that inputs are relative to the field rather than the robot
-            // see: https://www.learnroadrunner.com/advanced.html#field-centric-drive
-            Vector2d input = new Vector2d(
-                    -(gamepad1.left_stick_y * Y_SCALE + y_nudge),
-                    -(gamepad1.left_stick_x * X_SCALE + x_nudge)
-            ).rotated(-poseEstimate.getHeading());
+        // Read the current pose from the drive train
+        Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
 
-            // Set the drive train power using the weighted method so that
-            // if the numbers end up too large, they are scaled to actually
-            // work well with the drive train
-            drive.setWeightedDrivePower(
-                    new Pose2d(
-                            input.getX(),
-                            input.getY(),
-                            -(gamepad1.right_stick_x * TURN_SCALE + ang_nudge)
-                    )
-            );
+        // Create a vector from the inputs and rotate it by the inverse of the heading of the robot
+        // so that inputs are relative to the field rather than the robot
+        // see: https://www.learnroadrunner.com/advanced.html#field-centric-drive
+        Vector2d fieldFrameInput = new Vector2d(
+                -(gamepad1.left_stick_y * Y_SCALE + y_nudge),
+                -(gamepad1.left_stick_x * X_SCALE + x_nudge)
+        );
+
+        Vector2d robotFrameInput = fieldFrameInput
+                .rotated(-poseEstimate.getHeading())
+                .rotated(Math.toRadians(-90));
+
+        double headingInput = 0;
+        switch (currentMode) {
+            case DriverControl:
+                if (gamepad1.square) {
+                    currentMode = Mode.AlignToPoint;
+                }
+
+//                drivePower = new Pose2d(
+//                        robotFrameInput.getX(),
+//                        robotFrameInput.getY(),
+//                        -(gamepad1.right_stick_x * TURN_SCALE + ang_nudge)
+//                );
+                headingInput = -(gamepad1.right_stick_x * TURN_SCALE + ang_nudge);
+
+                break;
+            case AlignToPoint:
+                if (gamepad1.triangle) {
+                    currentMode = Mode.DriverControl;
+                }
+
+                Vector2d targetNudge = new Vector2d(
+                        -(gamepad1.right_stick_y * Y_SCALE),
+                        -(gamepad1.right_stick_x * X_SCALE)
+                ).times(TARGET_NUDGE_AMOUNT).rotated(Math.toRadians(-90));
+
+                targetPosition = targetPosition.plus(targetNudge);
+
+                Vector2d difference = targetPosition.minus(poseEstimate.vec());
+                double theta = difference.angle();
+
+                double thetaFF = -fieldFrameInput.rotated(-Math.PI / 2).dot(difference) / (difference.norm() * difference.norm());
+
+                headingController.setTargetPosition(theta);
+
+                headingInput = (headingController.update(poseEstimate.getHeading())
+                        * DriveConstants.kV + thetaFF)
+                        * DriveConstants.TRACK_WIDTH;
+
+                // Draw lines to target
+                fieldOverlay.setStroke("#b89eff");
+                fieldOverlay.strokeLine(targetPosition.getX(), targetPosition.getY(), poseEstimate.getX(), poseEstimate.getY());
+                fieldOverlay.setStroke("#ffce7a");
+                fieldOverlay.strokeLine(targetPosition.getX(), targetPosition.getY(), targetPosition.getX(), poseEstimate.getY());
+                fieldOverlay.strokeLine(targetPosition.getX(), poseEstimate.getY(), poseEstimate.getX(), poseEstimate.getY());
+
+                break;
         }
 
-        if (gamepad1.b) {
-            try {
-                // NOTE: apparently this is like super not recommended, but I guess
-                // we can leave it because it isn't actually required, just something
-                // that is there and can be used if needed
-                // TODO: remove this
-                // SEE: https://www.learnroadrunner.com/advanced.html#using-road-runner-in-teleop
-                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
-                        .splineToLinearHeading(middlePosition, Math.toRadians(90))
-                        .build());
-            } catch (Exception e) {
-                telemetry.addData("Error trying to follow trajectory", e);
-            }
-        }
+        // Draw bot on canvas
+        fieldOverlay.setStroke("#3F51B5");
+        DashboardUtil.drawRobot(fieldOverlay, poseEstimate);
+
+        // Set the drive train power using the weighted method so that
+        // if the numbers end up too large, they are scaled to actually
+        // work well with the drive train
+        drive.setWeightedDrivePower(new Pose2d(robotFrameInput, headingInput));
+
+        headingController.update(poseEstimate.getHeading());
+
+//        if (gamepad1.b) {
+//            try {
+//                // NOTE: apparently this is like super not recommended, but I guess
+//                // we can leave it because it isn't actually required, just something
+//                // that is there and can be used if needed
+//                // TODO: remove this
+//                // SEE: https://www.learnroadrunner.com/advanced.html#using-road-runner-in-teleop
+//                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
+//                        .splineToLinearHeading(middlePosition, Math.toRadians(90))
+//                        .build());
+//            } catch (Exception e) {
+//                telemetry.addData("Error trying to follow trajectory", e);
+//            }
+//        }
 
         // TODO: implement the concept from: https://github.com/NoahBres/road-runner-quickstart/blob/advanced-examples/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/advanced/TeleOpAlignWithPoint.java
 
-        // Try the update to the drive train. This is surrounded by a try
-        // block in case anything goes wrong in RoadRunner and it, for
-        // whatever reason, throws an error. This makes sure the teleop
-        // and/or phone doesn't crash, which actually happened to us
-        // in a match :(
-        try {
-            // Update the drive train to actually set the motor powers
-            drive.update();
-        } catch (Exception e) {
-            telemetry.addData("Error trying to update drive", e);
-        }
+//        // Try the update to the drive train. This is surrounded by a try
+//        // block in case anything goes wrong in RoadRunner and it, for
+//        // whatever reason, throws an error. This makes sure the teleop
+//        // and/or phone doesn't crash, which actually happened to us
+//        // in a match :(
+//        try {
+//            // Update the drive train to actually set the motor powers
+//            drive.update();
+//        } catch (Exception e) {
+//            telemetry.addData("Error trying to update drive", e);
+//        }
 
         // Write some telemetry, which is sometimes useful for debugging
-        Pose2d poseEstimate = drive.getPoseEstimate();
+//        Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.addData("x", poseEstimate.getX());
         telemetry.addData("y", poseEstimate.getY());
         telemetry.addData("heading", poseEstimate.getHeading());
@@ -179,7 +288,7 @@ public class Spaghetti extends OpMode {
      */
     private void operation() {
         // Set the motor velocity for the launcher motor
-        motorVelo(robot.launcherMotor, "launcher motor", motorPower(LAUNCHER_POWER) * gamepad2.right_trigger);
+        motorVelo(robot.launcherMotor, "launcher motor", fromMotorPower(LAUNCHER_POWER) * gamepad2.right_trigger);
 
         // Check if the launcher button is pressed, and the launcher should run
         if (gamepad2.left_bumper && lastLaunchTime + LAUNCH_TIME * 2 < getRuntime()) {
@@ -198,7 +307,7 @@ public class Spaghetti extends OpMode {
         // Check if the intake should be turned on
         if (gamepad2.right_bumper) {
             // Turn on the intake motor using velocity, and turn on the intake servo
-            motorVelo(robot.intakeMotor, "intake motor", motorPower(INTAKE_ON) * INTAKE_GEAR_RATIO);
+            motorVelo(robot.intakeMotor, "intake motor", fromMotorPower(INTAKE_ON) * INTAKE_GEAR_RATIO);
             robot.intakeServo.setPower(ON);
         } else {
             // Turn off the intake motor, and turn off the intake servo
@@ -279,7 +388,6 @@ public class Spaghetti extends OpMode {
     }
 
     /**
-     *
      * @param motor
      * @param name
      * @param amount

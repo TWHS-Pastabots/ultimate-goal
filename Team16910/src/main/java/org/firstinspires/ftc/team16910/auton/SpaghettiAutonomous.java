@@ -17,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.team16910.R;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
+import org.firstinspires.ftc.team16910.telop.PoseStorage;
 import org.firstinspires.ftc.team16910.telop.Spaghetti;
 import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
@@ -177,7 +178,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
      */
     private void launchPowerShots() {
         // Spin up the launcher motor and pause until it can spin to full speed
-        robot.launcherMotor.setVelocity(Spaghetti.motorPower(LAUNCHER_POWER));
+        robot.launcherMotor.setVelocity(Spaghetti.fromMotorPower(LAUNCHER_POWER));
         sleep((long) LAUNCHER_SPINUP);
 
         // Launch the rings and move to the correct positions
@@ -213,7 +214,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
         drive.followTrajectory(toFinish);
 
         // Set the final position constant so it can be used in other opmodes
-        FINAL_POSITION = drive.getPoseEstimate();
+        PoseStorage.position = drive.getPoseEstimate();
 
         // Idle until the opmode should stop
         while (!isStopRequested()) {
