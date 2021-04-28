@@ -33,9 +33,6 @@ public class RobotHardware {
     // Servos collection
     public List<Servo> servos = new ArrayList<>();
 
-    // IMU
-    public BNO055IMU imu = null;
-
     // Battery voltage sensor
     public VoltageSensor batteryVoltageSensor = null;
 
@@ -69,12 +66,6 @@ public class RobotHardware {
         // Prepare encoder collection
         encoders.addAll(Arrays.asList(encoderLeft, encoderRight, encoderFront));
 
-        // Initialize IMU
-        imu = hardwareMap.get(BNO055IMU.class, IMU);
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
-
         // Initialize batter voltage sensor
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -101,12 +92,6 @@ public class RobotHardware {
 
             // Set all motors to run without encoders.
             motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        }
-
-        // Setup wheels
-        for (DcMotorEx wheel : wheels) {
-            // Set all wheels to run with encoders
-//            wheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         }
 
         // Setup servos
