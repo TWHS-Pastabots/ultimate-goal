@@ -13,7 +13,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.team16910.R;
@@ -21,9 +27,17 @@ import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
 import org.firstinspires.ftc.team16910.telop.PoseStorage;
 import org.firstinspires.ftc.team16910.telop.Spaghetti;
+import org.firstinspires.ftc.team16910.util.TfodUtil;
+import org.firstinspires.ftc.team16910.util.VuforiaUtil;
 import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XZY;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 
 @Config
 @Autonomous(name = "Spaghetti Autonomous V2", preselectTeleOp = "Spaghetti")
@@ -88,13 +102,34 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
 
     private LauncherState launcherState = LauncherState.Extend;
 
-    // Vuforia/TFOD related variables
-    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
-    private static final String QUAD_LABEL = "Quad";
-    private static final String SINGLE_LABEL = "Single";
-    public static double MIN_CONFIDENCE = 0.6;
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
+//    // Vuforia/TFOD related variables
+//    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+//    private static final String QUAD_LABEL = "Quad";
+//    private static final String SINGLE_LABEL = "Single";
+//    public static double MIN_CONFIDENCE = 0.6;
+//    private VuforiaLocalizer vuforia;
+//    private TFObjectDetector tfod;
+//
+    private final VuforiaUtil vuforia = new VuforiaUtil(true);
+    private final TfodUtil tfod = new TfodUtil(vuforia);
+    private final ElapsedTime vuforiaTimer = new ElapsedTime();
+    public static double VUFORIA_TIME = 0.5f;
+//    private static final float mmPerInch = 25.4f;
+//    private static final float mmTargetHeight = (6) * mmPerInch;
+//    private static final float halfField = 72 * mmPerInch;
+//    private static final float quadField = 36 * mmPerInch;
+//    private OpenGLMatrix lastLocation = null;
+//    private boolean targetVisible = false;
+//    private float phoneXRotate = 0;
+//    private float phoneYRotate = 90;
+//    private float phoneZRotate = 0;
+//    private List<VuforiaTrackable> allTrackables = new ArrayList<>();
+//    private final float CAMERA_FORWARD_DISPLACEMENT = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
+//    private final float CAMERA_VERTICAL_DISPLACEMENT = 7.25f * mmPerInch;   // eg: Camera is 8 Inches above ground
+//    private final float CAMERA_LEFT_DISPLACEMENT = 7.5f * mmPerInch;     // eg: Camera is ON the robot's center line
+//    private VuforiaTrackables targetsUltimateGoal;
+    private int vuforiaTracks = 0;
+    private int vuforiaFound = 0;
 
     // Useful symbolic on and off constants
     public static double ON = 1;
@@ -142,7 +177,9 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
         drive.setPoseEstimate(new Pose2d(-62.358, 48.24, 0));
 
         // Activate TFOD
-        activateTfod();
+        vuforia.activate(hardwareMap);
+        tfod.activate(hardwareMap);
+//        activateTfod();
 
         // Initialize the arm
         robot.clawServo.setPosition(ON);
@@ -160,11 +197,13 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
         prepareTrajectories();
 
         while (opModeIsActive()) {
-            // TODO: detect vuforia here
+            if (!drive.isBusy() || currentState == State.Sleeping) {
+                detectVuforia();
+            }
 
             addTelemetry();
 
-            switch(currentState) {
+            switch (currentState) {
                 case Sleeping:
                     if (timer.milliseconds() >= duration) {
                         currentState = State.Running;
@@ -180,6 +219,9 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
             drive.update();
             telemetry.update();
         }
+
+        tfod.deactivate();
+        vuforia.deactivate();
 
         // Set the final position constant so it can be used in other opmodes
 //        PoseStorage.position = drive.getPoseEstimate();
@@ -226,6 +268,62 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                 .build();
     }
 
+    private void detectVuforia() {
+        if (vuforiaTimer.seconds() < VUFORIA_TIME) {
+            return;
+        }
+
+        vuforiaTimer.reset();
+        vuforiaTracks++;
+
+        Pose2d pose = vuforia.getPosition();
+        if (pose == null) {
+            return;
+        }
+
+        vuforiaFound++;
+        drive.setPoseEstimate(pose);
+    }
+
+//    private void detectVuforia() {
+//        if (vuforiaTimer.seconds() < VUFORIA_TIME) {
+//            return;
+//        }
+//
+//        vuforiaTimer.reset();
+//        vuforiaTracks++;
+//
+//        targetVisible = false;
+//        for (VuforiaTrackable trackable : allTrackables) {
+//            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+//                targetVisible = true;
+//
+//                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+//                if (robotLocationTransform != null) {
+//                    lastLocation = robotLocationTransform;
+//                }
+//
+//                break;
+//            }
+//        }
+//
+//        if (targetVisible) {
+//            vuforiaFound++;
+//
+//            VectorF translation = lastLocation.getTranslation();
+//
+//            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+//
+//            Pose2d pose = new Pose2d(
+//                    translation.get(0) / mmPerInch,
+//                    translation.get(1) / mmPerInch,
+//                    Math.toRadians(rotation.thirdAngle)
+//            );
+//
+//            drive.setPoseEstimate(pose);
+//        }
+//    }
+
     private void addTelemetry() {
         Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.addData("x", "%.02f", poseEstimate.getX());
@@ -234,7 +332,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
 
         telemetry.addData("state", currentState);
         if (currentState == State.Sleeping) {
-            telemetry.addData("time left", "%.02f", duration - timer.seconds());
+            telemetry.addData("time", timer.toString());
         }
 
         telemetry.addData("action", currentAction);
@@ -253,6 +351,9 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
             case Finished:
                 break;
         }
+
+        telemetry.addData("vuforia tracks", vuforiaTracks);
+        telemetry.addData("vuforia found", vuforiaFound);
     }
 
     private void runState() {
@@ -443,102 +544,165 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
         currentState = State.Sleeping;
     }
 
-    /**
-     *
-     */
-    private void initVuforia() {
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
-
-        parameters.vuforiaLicenseKey = AssetUtil.loadVuforiaKey();
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    /**
-     *
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = (float) MIN_CONFIDENCE;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, QUAD_LABEL, SINGLE_LABEL);
-    }
-
-    /**
-     *
-     */
-    private void activateTfod() {
-        // Initialize Vuforia and TFOD
-        initVuforia();
-        initTfod();
-
-        // Activate TFOD if it can be activated
-        if (tfod != null) {
-            tfod.activate();
-        }
-    }
-
-    /**
-     *
-     */
-    @SuppressLint("DefaultLocale")
     private void detectRings() {
-        if (tfod != null) {
-            ElapsedTime time = new ElapsedTime();
-            String label = null;
+        TfodUtil.Rings rings = tfod.getRings();
 
-            // Loop while the opmode is active but only for a maximum of 5 seconds
-            while (opModeIsActive() && time.seconds() < 5) {
-                // Get a list of recognitions from TFOD
-                List<Recognition> updatedRecognitions = tfod.getRecognitions();
-
-                // Make sure we are able to get recognitions
-                if (updatedRecognitions != null) {
-                    // Clear telemetry and add a bit of data
-                    telemetry.clear();
-                    telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                    // Check if we only have one recognition. This is to ensure that we
-                    // don't mistake a false-positive recognition with the actual rings
-                    if (updatedRecognitions.size() == 1) {
-                        // Get the recognition and remember its label
-                        Recognition recognition = updatedRecognitions.get(0);
-                        label = recognition.getLabel();
-
-                        // Break out of the loop because we've found the rings
-                        break;
-                    } else {
-                        // Log how many recognitions we've found (useful for debugging)
-                        telemetry.addLine(String.format("Found %d recognitions", updatedRecognitions.size()));
-                        telemetry.update();
-                    }
-                }
-            }
-
-            // Check the label and store the position we need to drive to
-            if (label == null) {
+        switch (rings) {
+            case None:
                 wobbleGoalPosition = WOBBLE_GOAL_1;
-            } else if (label.equals(SINGLE_LABEL)) {
+
+                break;
+            case Single:
                 wobbleGoalPosition = WOBBLE_GOAL_2;
-
-                // Store the tangent for this position, because if we don't, the robot might drive
-                // on top of the ring, which will mess up the encoders and put it in the wrong
-                // position. This actually happened to us in a match :(
                 wobbleGoalTangent = WOBBLE_GOAL_2_TANGENT;
-            } else if (label.equals(QUAD_LABEL)) {
-                wobbleGoalPosition = WOBBLE_GOAL_3;
-            } else {
-                wobbleGoalPosition = WOBBLE_GOAL_1;
-            }
 
-            // Display some more telemetry information, which is, again, useful for debugging
-            telemetry.addData("tensorflow time", time.seconds());
-            telemetry.addData("recognition label", label);
-            telemetry.addLine(String.format("moving to goal at (%.1f, %.1f)", wobbleGoalPosition.getX(), wobbleGoalPosition.getY()));
-            telemetry.update();
+                break;
+            case Quad:
+                wobbleGoalPosition = WOBBLE_GOAL_3;
+
+                break;
         }
     }
+
+//    /**
+//     *
+//     */
+//    private void initVuforia() {
+//        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
+//
+//        parameters.vuforiaLicenseKey = AssetUtil.loadVuforiaKey();
+//        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+////        parameters.useExtendedTracking = true;
+//
+//        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+//
+//        targetsUltimateGoal = this.vuforia.loadTrackablesFromAsset("UltimateGoal");
+//        VuforiaTrackable blueTowerGoalTarget = targetsUltimateGoal.get(0);
+//        blueTowerGoalTarget.setName("Blue Tower Goal Target");
+//        VuforiaTrackable redTowerGoalTarget = targetsUltimateGoal.get(1);
+//        redTowerGoalTarget.setName("Red Tower Goal Target");
+//        VuforiaTrackable redAllianceTarget = targetsUltimateGoal.get(2);
+//        redAllianceTarget.setName("Red Alliance Target");
+//        VuforiaTrackable blueAllianceTarget = targetsUltimateGoal.get(3);
+//        blueAllianceTarget.setName("Blue Alliance Target");
+//        VuforiaTrackable frontWallTarget = targetsUltimateGoal.get(4);
+//        frontWallTarget.setName("Front Wall Target");
+//
+//        allTrackables.addAll(targetsUltimateGoal);
+//
+//        redAllianceTarget.setLocation(OpenGLMatrix
+//                .translation(0, -halfField, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
+//
+//        blueAllianceTarget.setLocation(OpenGLMatrix
+//                .translation(0, halfField, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+//        frontWallTarget.setLocation(OpenGLMatrix
+//                .translation(-halfField, 0, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
+//
+//        blueTowerGoalTarget.setLocation(OpenGLMatrix
+//                .translation(halfField, quadField, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+//        redTowerGoalTarget.setLocation(OpenGLMatrix
+//                .translation(halfField, -quadField, mmTargetHeight)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+//
+//        OpenGLMatrix cameraLocationOnRobot = OpenGLMatrix
+//                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+//                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XZY, DEGREES, 90, 90, 0));
+//
+//        for (VuforiaTrackable trackable : allTrackables) {
+//            ((VuforiaTrackableDefaultListener) trackable.getListener()).setCameraLocationOnRobot(parameters.cameraName, cameraLocationOnRobot);
+//        }
+//    }
+//
+//    /**
+//     *
+//     */
+//    private void initTfod() {
+//        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+//                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+//        tfodParameters.minResultConfidence = (float) MIN_CONFIDENCE;
+//        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+//        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, QUAD_LABEL, SINGLE_LABEL);
+//    }
+//
+//    /**
+//     *
+//     */
+//    private void activateTfod() {
+//        // Initialize Vuforia and TFOD
+//        initVuforia();
+//        initTfod();
+//
+//        targetsUltimateGoal.activate();
+//
+//        // Activate TFOD if it can be activated
+//        if (tfod != null) {
+//            tfod.activate();
+//        }
+//    }
+
+//    /**
+//     *
+//     */
+//    @SuppressLint("DefaultLocale")
+//    private void detectRings() {
+//        if (tfod != null) {
+//            ElapsedTime time = new ElapsedTime();
+//            String label = null;
+//
+//            // Loop while the opmode is active but only for a maximum of 5 seconds
+//            while (opModeIsActive() && time.seconds() < 5) {
+//                // Get a list of recognitions from TFOD
+//                List<Recognition> updatedRecognitions = tfod.getRecognitions();
+//
+//                // Make sure we are able to get recognitions
+//                if (updatedRecognitions != null) {
+//                    // Clear telemetry and add a bit of data
+//                    telemetry.clear();
+//                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+//
+//                    // Check if we only have one recognition. This is to ensure that we
+//                    // don't mistake a false-positive recognition with the actual rings
+//                    if (updatedRecognitions.size() == 1) {
+//                        // Get the recognition and remember its label
+//                        Recognition recognition = updatedRecognitions.get(0);
+//                        label = recognition.getLabel();
+//
+//                        // Break out of the loop because we've found the rings
+//                        break;
+//                    } else {
+//                        // Log how many recognitions we've found (useful for debugging)
+//                        telemetry.addLine(String.format("Found %d recognitions", updatedRecognitions.size()));
+//                        telemetry.update();
+//                    }
+//                }
+//            }
+//
+//            // Check the label and store the position we need to drive to
+//            if (label == null) {
+//                wobbleGoalPosition = WOBBLE_GOAL_1;
+//            } else if (label.equals(SINGLE_LABEL)) {
+//                wobbleGoalPosition = WOBBLE_GOAL_2;
+//
+//                // Store the tangent for this position, because if we don't, the robot might drive
+//                // on top of the ring, which will mess up the encoders and put it in the wrong
+//                // position. This actually happened to us in a match :(
+//                wobbleGoalTangent = WOBBLE_GOAL_2_TANGENT;
+//            } else if (label.equals(QUAD_LABEL)) {
+//                wobbleGoalPosition = WOBBLE_GOAL_3;
+//            } else {
+//                wobbleGoalPosition = WOBBLE_GOAL_1;
+//            }
+//
+//            // Display some more telemetry information, which is, again, useful for debugging
+//            telemetry.addData("tensorflow time", time.seconds());
+//            telemetry.addData("recognition label", label);
+//            telemetry.addLine(String.format("moving to goal at (%.1f, %.1f)", wobbleGoalPosition.getX(), wobbleGoalPosition.getY()));
+//            telemetry.update();
+//        }
+//    }
 }

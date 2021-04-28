@@ -19,6 +19,7 @@ public class SpaghettiHardware extends RobotHardware {
     public Servo leftIntakeServo = null;
     public Servo rightIntakeServo = null;
     public CRServo intakeServo = null;
+    public DcMotorEx launcherAidMotor = null;
 
     @Override
     public void init(HardwareMap hardwareMap) {
@@ -33,9 +34,10 @@ public class SpaghettiHardware extends RobotHardware {
         leftIntakeServo = hardwareMap.get(Servo.class, SpaghettiIds.LEFT_INTAKE_SERVO);
         rightIntakeServo = hardwareMap.get(Servo.class, SpaghettiIds.RIGHT_INTAKE_SERVO);
         intakeServo = hardwareMap.get(CRServo.class, SpaghettiIds.INTAKE_SERVO);
+        launcherAidMotor = hardwareMap.get(DcMotorEx.class, SpaghettiIds.LAUNCHER_AID_MOTOR);
 
         // Setup the motors list
-        motors.addAll(Arrays.asList(intakeMotor, launcherMotor));
+        motors.addAll(Arrays.asList(intakeMotor, launcherMotor, launcherAidMotor));
 
         // Setup the servos list
         servos.addAll(Arrays.asList(launcherServo, armServo, clawServo, leftIntakeServo, rightIntakeServo));
@@ -49,9 +51,10 @@ public class SpaghettiHardware extends RobotHardware {
         leftIntakeServo.setDirection(Servo.Direction.FORWARD);
         rightIntakeServo.setDirection(Servo.Direction.FORWARD);
         intakeServo.setDirection(CRServo.Direction.FORWARD);
+        launcherAidMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
         // Range scalings
-        launcherServo.scaleRange(0, 0.18);
+        launcherServo.scaleRange(0, 0.19);
         armServo.scaleRange(0.025, 0.5);
         clawServo.scaleRange(0.2, 1);
 

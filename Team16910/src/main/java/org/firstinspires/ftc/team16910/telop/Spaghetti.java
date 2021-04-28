@@ -11,10 +11,12 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16910.drive.DriveConstants;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
+import org.firstinspires.ftc.team16910.util.VuforiaUtil;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 @TeleOp(name = "Spaghetti", group = "Linear OpMode")
@@ -52,6 +54,8 @@ public class Spaghetti extends OpMode {
     // Constants related to the motors we're using
     public static double MOTOR_MAX_RPM = 6000;
     public static double MOTOR_TICKS_PER_SECOND = 28;
+
+    public static double LAUNCHER_AID_POWER = 0.7;
 
     /**
      * Convert the motor power level to encoder ticks per second. This takes a {@code [0, 1]} range power level
@@ -97,6 +101,10 @@ public class Spaghetti extends OpMode {
     private final SpaghettiHardware robot = new SpaghettiHardware();
     private SampleMecanumDrive drive;
 
+    private VuforiaUtil vuforia = new VuforiaUtil(true);
+    private final ElapsedTime vuforiaTimer = new ElapsedTime();
+    public static double VUFORIA_TIME = 0.5;
+
     // State tracking variables for the intake
     private boolean previousIntakeButton = false;
     private boolean intakeState = true;
@@ -125,6 +133,8 @@ public class Spaghetti extends OpMode {
 
         headingController.setInputBounds(-Math.PI, Math.PI);
 
+        vuforia.activate(hardwareMap);
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");
     }
@@ -137,6 +147,8 @@ public class Spaghetti extends OpMode {
     public void loop() {
         TelemetryPacket packet = new TelemetryPacket();
 
+        updateVuforia();
+
         // Separate the movement and operation code into two separate functions
         // so that it is easier to understand the separation
         movement(packet);
@@ -145,6 +157,26 @@ public class Spaghetti extends OpMode {
         // Update the telemetry
         dashboard.sendTelemetryPacket(packet);
         telemetry.update();
+    }
+
+    @Override
+    public void stop() {
+        vuforia.deactivate();
+    }
+
+    private void updateVuforia() {
+        if (vuforiaTimer.seconds() < VUFORIA_TIME) {
+            return;
+        }
+
+        vuforiaTimer.reset();
+
+        Pose2d pose = vuforia.getPosition();
+        if (pose == null) {
+            return;
+        }
+
+        drive.setPoseEstimate(pose);
     }
 
     /**
@@ -195,11 +227,6 @@ public class Spaghetti extends OpMode {
                     currentMode = Mode.AlignToPoint;
                 }
 
-//                drivePower = new Pose2d(
-//                        robotFrameInput.getX(),
-//                        robotFrameInput.getY(),
-//                        -(gamepad1.right_stick_x * TURN_SCALE + ang_nudge)
-//                );
                 headingInput = -(gamepad1.right_stick_x * TURN_SCALE + ang_nudge);
 
                 break;
@@ -247,37 +274,7 @@ public class Spaghetti extends OpMode {
 
         headingController.update(poseEstimate.getHeading());
 
-//        if (gamepad1.b) {
-//            try {
-//                // NOTE: apparently this is like super not recommended, but I guess
-//                // we can leave it because it isn't actually required, just something
-//                // that is there and can be used if needed
-//                // TODO: remove this
-//                // SEE: https://www.learnroadrunner.com/advanced.html#using-road-runner-in-teleop
-//                drive.followTrajectoryAsync(drive.trajectoryBuilder(drive.getPoseEstimate())
-//                        .splineToLinearHeading(middlePosition, Math.toRadians(90))
-//                        .build());
-//            } catch (Exception e) {
-//                telemetry.addData("Error trying to follow trajectory", e);
-//            }
-//        }
-
-        // TODO: implement the concept from: https://github.com/NoahBres/road-runner-quickstart/blob/advanced-examples/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/drive/advanced/TeleOpAlignWithPoint.java
-
-//        // Try the update to the drive train. This is surrounded by a try
-//        // block in case anything goes wrong in RoadRunner and it, for
-//        // whatever reason, throws an error. This makes sure the teleop
-//        // and/or phone doesn't crash, which actually happened to us
-//        // in a match :(
-//        try {
-//            // Update the drive train to actually set the motor powers
-//            drive.update();
-//        } catch (Exception e) {
-//            telemetry.addData("Error trying to update drive", e);
-//        }
-
         // Write some telemetry, which is sometimes useful for debugging
-//        Pose2d poseEstimate = drive.getPoseEstimate();
         telemetry.addData("x", poseEstimate.getX());
         telemetry.addData("y", poseEstimate.getY());
         telemetry.addData("heading", poseEstimate.getHeading());
@@ -289,6 +286,10 @@ public class Spaghetti extends OpMode {
     private void operation() {
         // Set the motor velocity for the launcher motor
         motorVelo(robot.launcherMotor, "launcher motor", fromMotorPower(LAUNCHER_POWER) * gamepad2.right_trigger);
+
+        double launcherAidPower = (gamepad2.dpad_up ? 1 : 0) * LAUNCHER_AID_POWER
+                + (gamepad2.dpad_down ? 1 : 0) * -LAUNCHER_AID_POWER;
+        robot.launcherAidMotor.setPower(launcherAidPower);
 
         // Check if the launcher button is pressed, and the launcher should run
         if (gamepad2.left_bumper && lastLaunchTime + LAUNCH_TIME * 2 < getRuntime()) {
