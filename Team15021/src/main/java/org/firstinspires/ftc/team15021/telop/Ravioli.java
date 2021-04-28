@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.team15021.telop;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.team15021.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team15021.hardware.RavioliHardware;
 import org.firstinspires.ftc.teamcode.Util;
 
@@ -14,6 +16,7 @@ import java.text.DecimalFormat;
 public class Ravioli extends OpMode {
     /* Declare OpMode members. */
     final RavioliHardware robot = new RavioliHardware();
+    private SampleMecanumDrive drive;
     final ElapsedTime runTime = new ElapsedTime();
 
     private String front;
@@ -61,23 +64,6 @@ public class Ravioli extends OpMode {
         if (gamepad1.x) slowCon = 0.75;
         if (gamepad1.y) slowCon = 1.0;
 
-        // Apply easing function to all stick inputs
-        double left_stick_y = Util.cubicEasing(gamepad1.left_stick_y);
-        double left_stick_x = Util.cubicEasing(gamepad1.left_stick_x);
-        double right_stick_x = Util.cubicEasing(gamepad1.right_stick_x);
-
-        // Mechanum trig math
-        double radius = Math.hypot(left_stick_x, left_stick_y);
-        double ang = Math.atan2(left_stick_y, left_stick_x) - Math.PI / 4;
-
-        double turnCon = -right_stick_x * .75;
-
-        // Final motor powers, with multiplier applied
-        double v1 = (radius * Math.cos(ang) + turnCon) * slowCon;
-        double v2 = (radius * Math.sin(ang) - turnCon) * slowCon;
-        double v3 = (radius * Math.sin(ang) + turnCon) * slowCon;
-        double v4 = (radius * Math.cos(ang) - turnCon) * slowCon;
-
 //        double leftPower = Util.cubicEasing(gamepad1.right_stick_x);
 //        double rightPower = Util.cubicEasing(-gamepad1.right_stick_x);
 //        double vertical = Util.cubicEasing(gamepad1.left_stick_y);
@@ -113,10 +99,13 @@ public class Ravioli extends OpMode {
 
 
         // Sets power of motor, spins wheels
-        robot.motorLeftFront.setPower(-v1);
-        robot.motorRightFront.setPower(-v2);
-        robot.motorLeftRear.setPower(-v3);
-        robot.motorRightRear.setPower(-v4);
+        drive.setWeightedDrivePower(
+                new Pose2d(
+                        -gamepad1.left_stick_y,
+                        -gamepad1.left_stick_x,
+                        -gamepad1.right_stick_x
+                )
+        );
 
 
         // Sets powers of Launcher and Conveyor Motors
@@ -134,6 +123,7 @@ public class Ravioli extends OpMode {
         // telemetry.addLine(Telemetry.createLevel((float) v4));
 
 
+        drive.update();
         telemetry.update();
     }
 
