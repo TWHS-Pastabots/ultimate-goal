@@ -36,9 +36,9 @@ public class VuforiaUtil {
     private static final float quadField = 36 * mmPerInch;
     private OpenGLMatrix lastLocation = null;
     private boolean targetVisible = false;
-    private float phoneXRotate = 0;
-    private float phoneYRotate = 90;
-    private float phoneZRotate = 0;
+    private final float phoneXRotate = 0;
+    private final float phoneYRotate = 90;
+    private final float phoneZRotate = 0;
     private List<VuforiaTrackable> allTrackables = new ArrayList<>();
     public float CAMERA_FORWARD_DISPLACEMENT = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot-center
     public float CAMERA_VERTICAL_DISPLACEMENT = 7.25f * mmPerInch;   // eg: Camera is 8 Inches above ground
@@ -65,6 +65,7 @@ public class VuforiaUtil {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(R.id.cameraMonitorViewId);
 
         parameters.vuforiaLicenseKey = AssetUtil.loadVuforiaKey();
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
         parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         vuforia = ClassFactory.getInstance().createVuforia(parameters);

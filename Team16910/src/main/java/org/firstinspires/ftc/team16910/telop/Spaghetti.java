@@ -36,7 +36,7 @@ public class Spaghetti extends OpMode {
 
     // The small amount to move the robot for fine-tuned movements
     public static double NUDGE_AMOUNT = 0.25;
-    public static double TARGET_NUDGE_AMOUNT = 6;
+    public static double TARGET_NUDGE_AMOUNT = 1;
 
     // Useful symbolic on and off constants
     public static double ON = 1;
@@ -49,13 +49,13 @@ public class Spaghetti extends OpMode {
     // Variables used for the launcher
     private double lastLaunchTime = 0;
     public static double LAUNCH_TIME = 0.6;
-    public static double LAUNCHER_POWER = 0.6375;
+    public static double LAUNCHER_POWER = 0.675;
 
     // Constants related to the motors we're using
     public static double MOTOR_MAX_RPM = 6000;
     public static double MOTOR_TICKS_PER_SECOND = 28;
 
-    public static double LAUNCHER_AID_POWER = 0.7;
+    public static double LAUNCHER_AID_POWER = 0.5;
 
     /**
      * Convert the motor power level to encoder ticks per second. This takes a {@code [0, 1]} range power level
@@ -93,17 +93,19 @@ public class Spaghetti extends OpMode {
     public static double Y_SCALE = 0.9;
     public static double TURN_SCALE = 0.85;
 
-    // A position that is useful for launching rings from
-    // TODO: this should be deleted because it's super not recommended
-    public static Pose2d middlePosition = new Pose2d(-22.570475172975446, 53.49077586858332, Math.toRadians(-0.862970095));
+//    // A position that is useful for launching rings from
+//    // TODO: this should be deleted because it's super not recommended
+//    public static Pose2d middlePosition = new Pose2d(-22.570475172975446, 53.49077586858332, Math.toRadians(-0.862970095));
 
     // Hardware-related variables
     private final SpaghettiHardware robot = new SpaghettiHardware();
     private SampleMecanumDrive drive;
 
-    private VuforiaUtil vuforia = new VuforiaUtil(true);
-    private final ElapsedTime vuforiaTimer = new ElapsedTime();
-    public static double VUFORIA_TIME = 0.5;
+//    private VuforiaUtil vuforia = new VuforiaUtil(true);
+//    private final ElapsedTime vuforiaTimer = new ElapsedTime();
+//    public static double VUFORIA_TIME = 0.75;
+//    private int vuforiaTracks = 0;
+//    private int vuforiaFinds = 0;
 
     // State tracking variables for the intake
     private boolean previousIntakeButton = false;
@@ -133,7 +135,7 @@ public class Spaghetti extends OpMode {
 
         headingController.setInputBounds(-Math.PI, Math.PI);
 
-        vuforia.activate(hardwareMap);
+//        vuforia.activate(hardwareMap);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");
@@ -147,44 +149,49 @@ public class Spaghetti extends OpMode {
     public void loop() {
         TelemetryPacket packet = new TelemetryPacket();
 
-        updateVuforia();
+//        updateVuforia();
 
         // Separate the movement and operation code into two separate functions
         // so that it is easier to understand the separation
         movement(packet);
-        operation();
+        operation(packet);
+
+//        telemetry.addData("vuforia tracks", vuforiaTracks);
+//        telemetry.addData("vuforia finds", vuforiaFinds);
 
         // Update the telemetry
         dashboard.sendTelemetryPacket(packet);
-        telemetry.update();
+//        telemetry.update();
     }
 
     @Override
     public void stop() {
-        vuforia.deactivate();
+//        vuforia.deactivate();
     }
 
-    private void updateVuforia() {
-        if (vuforiaTimer.seconds() < VUFORIA_TIME) {
-            return;
-        }
-
-        vuforiaTimer.reset();
-
-        Pose2d pose = vuforia.getPosition();
-        if (pose == null) {
-            return;
-        }
-
-        drive.setPoseEstimate(pose);
-    }
+//    private void updateVuforia() {
+//        if (vuforiaTimer.seconds() < VUFORIA_TIME) {
+//            return;
+//        }
+//
+//        vuforiaTracks++;
+//        vuforiaTimer.reset();
+//
+//        Pose2d pose = vuforia.getPosition();
+//        if (pose == null) {
+//            return;
+//        }
+//
+//        vuforiaFinds++;
+//        drive.setPoseEstimate(pose);
+//    }
 
     /**
      *
      */
     private void movement(TelemetryPacket packet) {
         Canvas fieldOverlay = packet.fieldOverlay();
-        telemetry.addData("mode", currentMode);
+        packet.put("mode", currentMode);
 
         if (gamepad1.right_bumper) {
             targetPosition = GOAL_POSITION;
@@ -199,7 +206,6 @@ public class Spaghetti extends OpMode {
         // Calculate nudge amounts for all of the axis
         double x_nudge = gamepad1.dpad_right ? NUDGE_AMOUNT : (gamepad1.dpad_left ? -NUDGE_AMOUNT : 0);
         double y_nudge = gamepad1.dpad_up ? -NUDGE_AMOUNT : (gamepad1.dpad_down ? NUDGE_AMOUNT : 0);
-//        double ang_nudge = gamepad1.right_bumper ? NUDGE_AMOUNT : (gamepad1.left_bumper ? -NUDGE_AMOUNT : 0);
         double ang_nudge = gamepad1.right_trigger * NUDGE_AMOUNT + gamepad1.left_trigger * -NUDGE_AMOUNT;
 
         // Update he localizer
@@ -220,6 +226,7 @@ public class Spaghetti extends OpMode {
                 .rotated(-poseEstimate.getHeading())
                 .rotated(Math.toRadians(-90));
 
+        Vector2d vectorInput = new Vector2d();
         double headingInput = 0;
         switch (currentMode) {
             case DriverControl:
@@ -227,6 +234,7 @@ public class Spaghetti extends OpMode {
                     currentMode = Mode.AlignToPoint;
                 }
 
+                vectorInput = fieldFrameInput;
                 headingInput = -(gamepad1.right_stick_x * TURN_SCALE + ang_nudge);
 
                 break;
@@ -249,6 +257,7 @@ public class Spaghetti extends OpMode {
 
                 headingController.setTargetPosition(theta);
 
+                vectorInput = robotFrameInput;
                 headingInput = (headingController.update(poseEstimate.getHeading())
                         * DriveConstants.kV + thetaFF)
                         * DriveConstants.TRACK_WIDTH;
@@ -270,22 +279,22 @@ public class Spaghetti extends OpMode {
         // Set the drive train power using the weighted method so that
         // if the numbers end up too large, they are scaled to actually
         // work well with the drive train
-        drive.setWeightedDrivePower(new Pose2d(robotFrameInput, headingInput));
+        drive.setWeightedDrivePower(new Pose2d(vectorInput, headingInput));
 
         headingController.update(poseEstimate.getHeading());
 
         // Write some telemetry, which is sometimes useful for debugging
-        telemetry.addData("x", poseEstimate.getX());
-        telemetry.addData("y", poseEstimate.getY());
-        telemetry.addData("heading", poseEstimate.getHeading());
+        packet.put("x", poseEstimate.getX());
+        packet.put("y", poseEstimate.getY());
+        packet.put("heading", poseEstimate.getHeading());
     }
 
     /**
      *
      */
-    private void operation() {
+    private void operation(TelemetryPacket packet) {
         // Set the motor velocity for the launcher motor
-        motorVelo(robot.launcherMotor, "launcher motor", fromMotorPower(LAUNCHER_POWER) * gamepad2.right_trigger);
+        motorVelo(packet, robot.launcherMotor, "launcher motor", fromMotorPower(LAUNCHER_POWER) * gamepad2.right_trigger);
 
         double launcherAidPower = (gamepad2.dpad_up ? 1 : 0) * LAUNCHER_AID_POWER
                 + (gamepad2.dpad_down ? 1 : 0) * -LAUNCHER_AID_POWER;
@@ -308,11 +317,11 @@ public class Spaghetti extends OpMode {
         // Check if the intake should be turned on
         if (gamepad2.right_bumper) {
             // Turn on the intake motor using velocity, and turn on the intake servo
-            motorVelo(robot.intakeMotor, "intake motor", fromMotorPower(INTAKE_ON) * INTAKE_GEAR_RATIO);
+            motorVelo(packet, robot.intakeMotor, "intake motor", fromMotorPower(INTAKE_ON) * INTAKE_GEAR_RATIO);
             robot.intakeServo.setPower(ON);
         } else {
             // Turn off the intake motor, and turn off the intake servo
-            motorVelo(robot.intakeMotor, "intake motor", OFF);
+            motorVelo(packet, robot.intakeMotor, "intake motor", OFF);
             robot.intakeServo.setPower(OFF);
         }
 
@@ -393,7 +402,7 @@ public class Spaghetti extends OpMode {
      * @param name
      * @param amount
      */
-    private void motorVelo(DcMotorEx motor, String name, double amount) {
+    private void motorVelo(TelemetryPacket packet, DcMotorEx motor, String name, double amount) {
         // Set the motor's velocity to the specified amount
         motor.setVelocity(amount);
 
@@ -403,8 +412,8 @@ public class Spaghetti extends OpMode {
         double error = Math.abs(target - actual) / target;
 
         // Log all of the information to telemetry. This is often very useful for debugging
-        telemetry.addData(String.format("%s target velocity", name), target);
-        telemetry.addData(String.format("%s actual velocity", name), actual);
-        telemetry.addData(String.format("%s velocity error", name), error);
+        packet.put(String.format("%s target velocity", name), target);
+        packet.put(String.format("%s actual velocity", name), actual);
+        packet.put(String.format("%s velocity error", name), error);
     }
 }

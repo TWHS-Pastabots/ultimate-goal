@@ -56,7 +56,7 @@ public class RobotHardware {
 
         // Prepare wheel and motor collections
         wheels = new DcMotorEx[]{motorLeftFront, motorRightFront, motorLeftRear, motorRightRear};
-        motors.addAll(Arrays.asList(wheels));
+//        motors.addAll(Arrays.asList(wheels));
 
         // Initialize encoders
         encoderLeft = new Encoder(hardwareMap.get(DcMotorEx.class, LEFT_ENCODER));
@@ -70,10 +70,10 @@ public class RobotHardware {
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         // Prepare motor directions
-        motorLeftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        motorLeftRear.setDirection(DcMotorEx.Direction.FORWARD);
-        motorRightFront.setDirection(DcMotorEx.Direction.REVERSE);
-        motorRightRear.setDirection(DcMotorEx.Direction.REVERSE);
+//        motorLeftFront.setDirection(DcMotorEx.Direction.FORWARD);
+//        motorLeftRear.setDirection(DcMotorEx.Direction.FORWARD);
+//        motorRightFront.setDirection(DcMotorEx.Direction.REVERSE);
+//        motorRightRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Initialize the components if it is specified
         if (shouldInitializeComponents) {

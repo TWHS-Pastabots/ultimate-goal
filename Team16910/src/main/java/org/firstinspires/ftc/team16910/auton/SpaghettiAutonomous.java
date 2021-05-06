@@ -2,8 +2,11 @@ package org.firstinspires.ftc.team16910.auton;
 
 import android.annotation.SuppressLint;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -30,7 +33,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
-    public static double MIN_CONFIDENCE = 0.6;
+    public static double MIN_CONFIDENCE = 0.65;
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
 
@@ -43,17 +46,26 @@ public class SpaghettiAutonomous extends LinearOpMode {
     public static double CLAW_TIME = 400;
 
     // Launcher-related constants
-    public static double LAUNCHER_POWER = 0.56;
-    public static double LAUNCHER_SPINUP = 1000;
+    public static double LAUNCHER_POWER = 0.925; // 0.56
+    public static double LAUNCHER_TARGET = Spaghetti.fromMotorPower(LAUNCHER_POWER);
+    public static double LAUNCHER_THRESHOLD = 0.05;
+    public static double LAUNCHER_SPINUP = 2.5;
+    public static double LAUNCHER_STABILIZATION_TIMEOUT = 0.25;
+    public static double LAUNCHER_SPINDOWN = 500;
     public static double LAUNCHER_LAUNCH = 600;
 
     // Wobble goal related variables
-    public static Pose2d WOBBLE_GOAL_1 = new Pose2d(-2.5300820012016763, 52.1048583194061, 0);
-    public static Pose2d WOBBLE_GOAL_2 = new Pose2d(20.479536027344817, 28.077649944945843, 0);
+    public static Pose2d WOBBLE_GOAL_1 = new Pose2d(-1.7014121587073083, 55.303271023102646, Math.toRadians(358.8521558517273));
+    public static Pose2d WOBBLE_GOAL_2 = new Pose2d(21.531418267740545, 30.705377032838875, Math.toRadians(3.0078201762876087));
     public static double WOBBLE_GOAL_2_TANGENT = Math.toRadians(-90);
-    public static Pose2d WOBBLE_GOAL_3 = new Pose2d(44.020241167, 51.2568443, 0);
+    public static Pose2d WOBBLE_GOAL_3 = new Pose2d(44.935919028994086, 56.22700991949062, Math.toRadians(4.4929899518084815));
     private Pose2d wobbleGoalPosition;
     private double wobbleGoalTangent = 0;
+
+    public static Vector2d POWER_SHOT_SHIFT = new Vector2d(0, -8);
+    public static Pose2d POWER_SHOT_1 = new Pose2d(-2.316608582048244, 27.561349542087463, 0.08275128001363097);
+    public static Vector2d POWER_SHOT_2 = POWER_SHOT_1.vec().plus(POWER_SHOT_SHIFT);
+    public static Vector2d POWER_SHOT_3 = POWER_SHOT_2.plus(POWER_SHOT_SHIFT);
 
     // The final position of the robot. This is an estimate to begin with,
     // but is set at the end of the opmode so that it can be used elsewhere,
@@ -61,6 +73,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
     public static Pose2d FINAL_POSITION = new Pose2d(12, 18, 0);
 
     // Hardware-related variables
+    private FtcDashboard dashboard;
     private SpaghettiHardware robot;
     private SampleMecanumDrive drive;
 
@@ -69,6 +82,9 @@ public class SpaghettiAutonomous extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+
         // Don't automatically clear the telemetry
         telemetry.setAutoClear(false);
 
@@ -78,7 +94,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
 
         // Initialize the drive train
         drive = new SampleMecanumDrive(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(-62.358, 48.24, 0));
+        drive.setPoseEstimate(new Pose2d(-63.64800204729765, 46.39877819447857, Math.toRadians(3.5512892424129374)));
 
         // Activate TFOD
         activateTfod();
@@ -94,6 +110,10 @@ public class SpaghettiAutonomous extends LinearOpMode {
 
         // Detect rings using TFOD
         detectRings();
+
+        if (tfod != null) {
+            tfod.shutdown();
+        }
 
         // Prepare the trajectories needed throughout the opmode
         prepareTrajectories();
@@ -135,16 +155,26 @@ public class SpaghettiAutonomous extends LinearOpMode {
                 .forward(-12)
                 .build();
 
+//        toPowerShot1_2 = drive.trajectoryBuilder(toPowerShot1.end())
+//                .splineToLinearHeading(new Pose2d(-2.316608582048244, 27.561349542087463, 0.08275128001363097), Math.toRadians(0))
+//                .build();
+
         toPowerShot1_2 = drive.trajectoryBuilder(toPowerShot1.end())
-                .splineToLinearHeading(new Pose2d(1.7205879405195255, 30.3902133119823317, 0), Math.toRadians(0))
+                .splineToLinearHeading(POWER_SHOT_1, Math.toRadians(0))
                 .build();
 
+//        toPowerShot2 = drive.trajectoryBuilder(toPowerShot1_2.end())
+//                .strafeRight(8)
+//                .build();
         toPowerShot2 = drive.trajectoryBuilder(toPowerShot1_2.end())
-                .strafeRight(8)
+                .lineTo(POWER_SHOT_2)
                 .build();
 
+//        toPowerShot3 = drive.trajectoryBuilder(toPowerShot2.end())
+//                .strafeRight(8)
+//                .build();
         toPowerShot3 = drive.trajectoryBuilder(toPowerShot2.end())
-                .strafeRight(8)
+                .lineTo(POWER_SHOT_3)
                 .build();
 
         toFinish = drive.trajectoryBuilder(toPowerShot3.end())
@@ -179,7 +209,6 @@ public class SpaghettiAutonomous extends LinearOpMode {
     private void launchPowerShots() {
         // Spin up the launcher motor and pause until it can spin to full speed
         robot.launcherMotor.setVelocity(Spaghetti.fromMotorPower(LAUNCHER_POWER));
-        sleep((long) LAUNCHER_SPINUP);
 
         // Launch the rings and move to the correct positions
         launch();
@@ -190,13 +219,32 @@ public class SpaghettiAutonomous extends LinearOpMode {
 
         // Turn the launcher motor off and pause until it is off
         robot.launcherMotor.setPower(OFF);
-        sleep((long) LAUNCHER_SPINUP);
+        sleep((long) LAUNCHER_SPINDOWN);
     }
 
     /**
      *
      */
     private void launch() {
+        ElapsedTime launcherTimer = new ElapsedTime();
+        ElapsedTime stabilizationTimer = new ElapsedTime();
+        while (opModeIsActive() && launcherTimer.seconds() < LAUNCHER_SPINUP) {
+            double launcherVelocity = robot.launcherMotor.getVelocity();
+            double error = Math.abs(LAUNCHER_TARGET - launcherVelocity) / LAUNCHER_TARGET;
+
+            if (error <= LAUNCHER_THRESHOLD) {
+//                break;
+                if (stabilizationTimer.seconds() >= LAUNCHER_STABILIZATION_TIMEOUT) {
+                    break;
+                }
+            } else {
+                stabilizationTimer.reset();
+            }
+        }
+
+        telemetry.addData("launcher motor", Spaghetti.toMotorPower(robot.launcherMotor.getVelocity()));
+        telemetry.update();
+
         // Turn the launcher servo on and pause until it extends all the way
         robot.launcherServo.setPosition(ON);
         sleep((long) LAUNCHER_LAUNCH);
@@ -215,6 +263,8 @@ public class SpaghettiAutonomous extends LinearOpMode {
 
         // Set the final position constant so it can be used in other opmodes
         PoseStorage.position = drive.getPoseEstimate();
+
+        dashboard.stopCameraStream();
 
         // Idle until the opmode should stop
         while (!isStopRequested()) {
@@ -244,6 +294,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
         tfodParameters.minResultConfidence = (float) MIN_CONFIDENCE;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, QUAD_LABEL, SINGLE_LABEL);
+        dashboard.startCameraStream(tfod, 10);
     }
 
     /**
@@ -257,6 +308,8 @@ public class SpaghettiAutonomous extends LinearOpMode {
         // Activate TFOD if it can be activated
         if (tfod != null) {
             tfod.activate();
+
+            tfod.setZoom(1.25, 16.0/9.0);
         }
     }
 

@@ -22,7 +22,7 @@ public class TfodUtil {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
-    public static double MIN_CONFIDENCE = 0.6;
+    public static double MIN_CONFIDENCE = 0.65;
 
     private boolean active;
 
@@ -33,6 +33,10 @@ public class TfodUtil {
         Assert.assertNotNull(vuforia, "Vuforia must not be null");
 
         this.vuforia = vuforia;
+    }
+
+    public TFObjectDetector getTensorFlow() {
+        return tfod;
     }
 
     public boolean isActive() {
@@ -57,6 +61,8 @@ public class TfodUtil {
 
         if (tfod != null) {
             tfod.activate();
+
+            tfod.setZoom(1.25, 16.0/9.0);
         }
 
         active = true;
@@ -102,6 +108,7 @@ public class TfodUtil {
     public void deactivate() {
         if (tfod != null) {
             tfod.deactivate();
+            tfod.shutdown();
         }
 
         active = false;

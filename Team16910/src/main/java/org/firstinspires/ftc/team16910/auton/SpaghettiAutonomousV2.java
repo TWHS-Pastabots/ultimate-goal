@@ -113,7 +113,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
     private final VuforiaUtil vuforia = new VuforiaUtil(true);
     private final TfodUtil tfod = new TfodUtil(vuforia);
     private final ElapsedTime vuforiaTimer = new ElapsedTime();
-    public static double VUFORIA_TIME = 0.5f;
+    public static double VUFORIA_TIME = 0.75f;
 //    private static final float mmPerInch = 25.4f;
 //    private static final float mmTargetHeight = (6) * mmPerInch;
 //    private static final float halfField = 72 * mmPerInch;
@@ -197,7 +197,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
         prepareTrajectories();
 
         while (opModeIsActive()) {
-            if (!drive.isBusy() || currentState == State.Sleeping) {
+            if (!drive.isBusy()) {
                 detectVuforia();
             }
 
