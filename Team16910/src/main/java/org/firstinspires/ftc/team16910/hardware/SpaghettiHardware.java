@@ -1,15 +1,27 @@
 package org.firstinspires.ftc.team16910.hardware;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.team16910.util.MotorUtil;
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 import java.util.Arrays;
 
+@Config
 public class SpaghettiHardware extends RobotHardware {
+    // Useful symbolic on and off constants
+    public static double ON = 1;
+    public static double OFF = 0;
+
+    public static double INTAKE_POWER = 0.15;
+    public static double LAUNCHER_POWER = 0.675;
+    public static double LAUNCHER_AID_POWER = 0.5;
+
     // Miscellaneous robot motors and servos
     public DcMotorEx intakeMotor = null;
     public Servo launcherServo = null;
@@ -20,6 +32,12 @@ public class SpaghettiHardware extends RobotHardware {
     public Servo rightIntakeServo = null;
     public CRServo intakeServo = null;
     public DcMotorEx launcherAidMotor = null;
+
+    private Telemetry telemetry;
+
+    public void setTelemetry(Telemetry telemetry) {
+        this.telemetry = telemetry;
+    }
 
     @Override
     public void init(HardwareMap hardwareMap) {
@@ -69,5 +87,177 @@ public class SpaghettiHardware extends RobotHardware {
         armServo.setPosition(1);
         leftIntakeServo.setPosition(1);
         rightIntakeServo.setPosition(1);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void lowerWobbleArm() {
+        armServo.setPosition(OFF);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void raiseWobbleArm() {
+        armServo.setPosition(ON);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void openClaw() {
+        clawServo.setPosition(OFF);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void closeClaw() {
+        clawServo.setPosition(ON);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void enableIntake() {
+        enableIntake(false);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @param withTelemetry whether or not telemetry should be added
+     */
+    public void enableIntake(boolean withTelemetry) {
+        double target = MotorUtil.fromMotorPower(INTAKE_POWER);
+        intakeMotor.setVelocity(target);
+        intakeServo.setPower(ON);
+
+        if (withTelemetry && telemetry != null) {
+            double velocity = intakeMotor.getVelocity();
+            double error = Math.abs(target - velocity) / target;
+
+            telemetry.addData("intake motor target", "%.02f", target);
+            telemetry.addData("intake motor actual", "%.02f", velocity);
+            telemetry.addData("intake motor error", "%.02f%%", error * 100);
+        }
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void disableIntake() {
+        disableIntake(false);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @param withTelemetry whether or not telemetry should be added
+     */
+    public void disableIntake(boolean withTelemetry) {
+        double target = 0;
+        intakeMotor.setVelocity(target);
+        intakeServo.setPower(ON);
+
+        if (withTelemetry && telemetry != null) {
+            double velocity = intakeMotor.getVelocity();
+            double error = Math.abs(target - velocity) / 1;
+
+            telemetry.addData("intake motor target", "%.02f", target);
+            telemetry.addData("intake motor actual", "%.02f", velocity);
+            telemetry.addData("intake motor error", "%.02f%%", error * 100);
+        }
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void raiseIntake() {
+        leftIntakeServo.setPosition(OFF);
+        rightIntakeServo.setPosition(OFF);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void lowerIntake() {
+        leftIntakeServo.setPosition(ON);
+        rightIntakeServo.setPosition(ON);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void extendLauncherServo() {
+        launcherServo.setPosition(ON);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     */
+    public void retractLauncherServo() {
+        launcherServo.setPosition(OFF);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @param power the amount of power the launcher should spin to
+     */
+    public void spinLauncher(double power) {
+        spinLauncher(power, false);
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @param power the amount of power the launcher should spin to
+     * @param withTelemetry whether or not telemetry should be added
+     */
+    public void spinLauncher(double power, boolean withTelemetry) {
+        spinLauncherRaw(MotorUtil.fromMotorPower(power) * power, withTelemetry);
+//        double target = MotorUtil.fromMotorPower(power) * power;
+//        launcherMotor.setVelocity(target);
+//
+//        if (withTelemetry && telemetry != null) {
+//            double velocity = launcherMotor.getVelocity();
+//            double error = Math.abs(target - velocity) / target;
+//
+//            telemetry.addData("launcher motor target", "%.02f", target);
+//            telemetry.addData("launcher motor actual", "%.02f", velocity);
+//            telemetry.addData("launcher motor error", "%.02f%%", error * 100);
+//        }
+    }
+
+    public void spinLauncherRaw(double power) {
+        spinLauncherRaw(power, false);
+    }
+
+    public void spinLauncherRaw(double power, boolean withTelemetry) {
+        launcherMotor.setVelocity(power);
+
+        if (withTelemetry && telemetry != null) {
+            double velocity = launcherMotor.getVelocity();
+            double error = Math.abs(power - velocity) / power;
+
+            telemetry.addData("launcher motor target", "%.02f", power);
+            telemetry.addData("launcher motor actual", "%.02f", velocity);
+            telemetry.addData("launcher motor error", "%.02f%%", error * 100);
+        }
+    }
+
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @param forward if the motor should spin forward
+     * @param reverse if the motor should spin in reverse
+     */
+    public void spinLauncherAid(boolean forward, boolean reverse) {
+        double launcherAidPower = (forward ? 1 : 0) * LAUNCHER_AID_POWER
+                + (reverse ? 1 : 0) * -LAUNCHER_AID_POWER;
+
+        launcherAidMotor.setPower(launcherAidPower);
     }
 }

@@ -20,14 +20,14 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.team16910.R;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
-import org.firstinspires.ftc.team16910.telop.PoseStorage;
+import org.firstinspires.ftc.team16910.util.PoseStorage;
 import org.firstinspires.ftc.team16910.telop.Spaghetti;
 import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
 import java.util.List;
 
 @Config
-@Autonomous(name = "Spaghetti Autonomous", preselectTeleOp = "Spaghetti")
+@Autonomous(name = "Spaghetti Autonomous", group = Spaghetti.GROUP, preselectTeleOp = Spaghetti.NAME)
 public class SpaghettiAutonomous extends LinearOpMode {
     // Vuforia/TFOD related variables
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -46,7 +46,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
     public static double CLAW_TIME = 400;
 
     // Launcher-related constants
-    public static double LAUNCHER_POWER = 0.925; // 0.56
+    public static double LAUNCHER_POWER = 0.5; // 0.56
     public static double LAUNCHER_TARGET = Spaghetti.fromMotorPower(LAUNCHER_POWER);
     public static double LAUNCHER_THRESHOLD = 0.05;
     public static double LAUNCHER_SPINUP = 2.5;
@@ -318,59 +318,61 @@ public class SpaghettiAutonomous extends LinearOpMode {
      */
     @SuppressLint("DefaultLocale")
     private void detectRings() {
-        if (tfod != null) {
-            ElapsedTime time = new ElapsedTime();
-            String label = null;
+        if (tfod == null) {
+            return;
+        }
 
-            // Loop while the opmode is active but only for a maximum of 5 seconds
-            while (opModeIsActive() && time.seconds() < 5) {
-                // Get a list of recognitions from TFOD
-                List<Recognition> updatedRecognitions = tfod.getRecognitions();
+        ElapsedTime time = new ElapsedTime();
+        String label = null;
 
-                // Make sure we are able to get recognitions
-                if (updatedRecognitions != null) {
-                    // Clear telemetry and add a bit of data
-                    telemetry.clear();
-                    telemetry.addData("# Object Detected", updatedRecognitions.size());
+        // Loop while the opmode is active but only for a maximum of 5 seconds
+        while (opModeIsActive() && time.seconds() < 5) {
+            // Get a list of recognitions from TFOD
+            List<Recognition> updatedRecognitions = tfod.getRecognitions();
 
-                    // Check if we only have one recognition. This is to ensure that we
-                    // don't mistake a false-positive recognition with the actual rings
-                    if (updatedRecognitions.size() == 1) {
-                        // Get the recognition and remember its label
-                        Recognition recognition = updatedRecognitions.get(0);
-                        label = recognition.getLabel();
+            // Make sure we are able to get recognitions
+            if (updatedRecognitions != null) {
+                // Clear telemetry and add a bit of data
+                telemetry.clear();
+                telemetry.addData("# Object Detected", updatedRecognitions.size());
 
-                        // Break out of the loop because we've found the rings
-                        break;
-                    } else {
-                        // Log how many recognitions we've found (useful for debugging)
-                        telemetry.addLine(String.format("Found %d recognitions", updatedRecognitions.size()));
-                        telemetry.update();
-                    }
+                // Check if we only have one recognition. This is to ensure that we
+                // don't mistake a false-positive recognition with the actual rings
+                if (updatedRecognitions.size() == 1) {
+                    // Get the recognition and remember its label
+                    Recognition recognition = updatedRecognitions.get(0);
+                    label = recognition.getLabel();
+
+                    // Break out of the loop because we've found the rings
+                    break;
+                } else {
+                    // Log how many recognitions we've found (useful for debugging)
+                    telemetry.addLine(String.format("Found %d recognitions", updatedRecognitions.size()));
+                    telemetry.update();
                 }
             }
-
-            // Check the label and store the position we need to drive to
-            if (label == null) {
-                wobbleGoalPosition = WOBBLE_GOAL_1;
-            } else if (label.equals(SINGLE_LABEL)) {
-                wobbleGoalPosition = WOBBLE_GOAL_2;
-
-                // Store the tangent for this position, because if we don't, the robot might drive
-                // on top of the ring, which will mess up the encoders and put it in the wrong
-                // position. This actually happened to us in a match :(
-                wobbleGoalTangent = WOBBLE_GOAL_2_TANGENT;
-            } else if (label.equals(QUAD_LABEL)) {
-                wobbleGoalPosition = WOBBLE_GOAL_3;
-            } else {
-                wobbleGoalPosition = WOBBLE_GOAL_1;
-            }
-
-            // Display some more telemetry information, which is, again, useful for debugging
-            telemetry.addData("tensorflow time", time.seconds());
-            telemetry.addData("recognition label", label);
-            telemetry.addLine(String.format("moving to goal at (%.1f, %.1f)", wobbleGoalPosition.getX(), wobbleGoalPosition.getY()));
-            telemetry.update();
         }
+
+        // Check the label and store the position we need to drive to
+        if (label == null) {
+            wobbleGoalPosition = WOBBLE_GOAL_1;
+        } else if (label.equals(SINGLE_LABEL)) {
+            wobbleGoalPosition = WOBBLE_GOAL_2;
+
+            // Store the tangent for this position, because if we don't, the robot might drive
+            // on top of the ring, which will mess up the encoders and put it in the wrong
+            // position. This actually happened to us in a match :(
+            wobbleGoalTangent = WOBBLE_GOAL_2_TANGENT;
+        } else if (label.equals(QUAD_LABEL)) {
+            wobbleGoalPosition = WOBBLE_GOAL_3;
+        } else {
+            wobbleGoalPosition = WOBBLE_GOAL_1;
+        }
+
+        // Display some more telemetry information, which is, again, useful for debugging
+        telemetry.addData("tensorflow time", time.seconds());
+        telemetry.addData("recognition label", label);
+        telemetry.addLine(String.format("moving to goal at (%.1f, %.1f)", wobbleGoalPosition.getX(), wobbleGoalPosition.getY()));
+        telemetry.update();
     }
 }
