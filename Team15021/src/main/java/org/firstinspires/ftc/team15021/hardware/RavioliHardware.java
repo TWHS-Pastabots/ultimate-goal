@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.team15021.hardware;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -39,7 +40,9 @@ public class RavioliHardware extends RobotHardware {
         // Reverse specific motors
         motorConveyor.setDirection(DcMotorEx.Direction.REVERSE);
         motorIntake.setDirection(DcMotorEx.Direction.REVERSE);
+        motorClaw.setDirection(DcMotorEx.Direction.REVERSE);
 
         initializeComponents();
+        motorLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 }

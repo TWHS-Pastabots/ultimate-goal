@@ -31,12 +31,19 @@ public class Ravioli extends OpMode {
     double vConveyor = 0.0;
     double vServoMotor = 0.0;
 
-    DecimalFormat df = new DecimalFormat("#.##");
+    private double moveMult;
+
+    // Constants related to the motors we're using
+    public static double MOTOR_MAX_RPM = 6000;
+    public static double MOTOR_TICKS_PER_SECOND = 28;
 
     //run once on init()
     @Override
     public void init() {
         robot.init(hardwareMap);
+        drive = new SampleMecanumDrive(hardwareMap);
+
+        moveMult = .75;
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Initialized");    //
@@ -64,14 +71,8 @@ public class Ravioli extends OpMode {
         if (gamepad1.x) slowCon = 0.75;
         if (gamepad1.y) slowCon = 1.0;
 
-//        double leftPower = Util.cubicEasing(gamepad1.right_stick_x);
-//        double rightPower = Util.cubicEasing(-gamepad1.right_stick_x);
-//        double vertical = Util.cubicEasing(gamepad1.left_stick_y);
 
-
-        // Launcher and Conveyor Powers (R Trigger = Launcher, Up Button = Conveyor - Can be changed)
-        //if (gamepad2.b) vLauncherMult = 0.25;
-        if (gamepad2.square) vLauncherMult = 0.60;
+        if (gamepad2.square) vLauncherMult = 0.3;
         if (gamepad2.circle) vLauncherMult = 0.65;
         if (gamepad2.triangle) vLauncherMult = 0.70;
 
@@ -86,12 +87,8 @@ public class Ravioli extends OpMode {
         else if (gamepad1.right_bumper) vConveyor = 1.0;
         else vConveyor = 0.0;
 
-        robot.servoClaw.setPosition(1 - gamepad2.left_trigger);
+        robot.servoClaw.setPosition((1 - gamepad2.left_trigger) / 2);
 
-        //servoMotor = left: up, right: down
-        //if (gamepad2.dpad_left) vServoMotor = 0.35;
-        //else if (gamepad2.dpad_right) vServoMotor = -0.35;
-        //else vServoMotor = 0.0;
         vServoMotor = gamepad2.right_stick_y * .5;
 
         if (gamepad2.cross) robot.servoIntake.setPosition(0.6);
@@ -101,12 +98,11 @@ public class Ravioli extends OpMode {
         // Sets power of motor, spins wheels
         drive.setWeightedDrivePower(
                 new Pose2d(
-                        -gamepad1.left_stick_y,
-                        -gamepad1.left_stick_x,
-                        -gamepad1.right_stick_x
+                        -(gamepad1.left_stick_y * moveMult),
+                        -(gamepad1.left_stick_x * moveMult),
+                        -(gamepad1.right_stick_x * moveMult)
                 )
         );
-
 
         // Sets powers of Launcher and Conveyor Motors
         robot.motorLauncher.setPower(vLauncher);
@@ -121,10 +117,29 @@ public class Ravioli extends OpMode {
         // telemetry.addLine(Telemetry.createLevel((float) v2));
         // telemetry.addLine(Telemetry.createLevel((float) v3));
         // telemetry.addLine(Telemetry.createLevel((float) v4));
+        telemetry.addData("Launcher Speed: ", vLauncher);
 
 
         drive.update();
         telemetry.update();
+    }
+
+    public static double fromMotorPower(double power) {
+//        return MOTOR_MAX_RPM / 60 * power * MOTOR_TICKS_PER_SECOND;
+        return fromMotorPower(power, MOTOR_MAX_RPM, MOTOR_TICKS_PER_SECOND);
+    }
+
+    public static double fromMotorPower(double power, double maxRpm, double ticksPerSecond) {
+        return maxRpm / 60 * power * ticksPerSecond;
+    }
+
+    public static double toMotorPower(double ticks) {
+//        return ticks / MOTOR_TICKS_PER_SECOND / (MOTOR_MAX_RPM / 60);
+        return toMotorPower(ticks, MOTOR_MAX_RPM, MOTOR_TICKS_PER_SECOND);
+    }
+
+    public static double toMotorPower(double ticks, double maxRpm, double ticksPerSecond) {
+        return ticks / ticksPerSecond / (maxRpm / 60);
     }
 
     // run once on stop()
