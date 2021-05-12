@@ -17,11 +17,10 @@ import org.firstinspires.ftc.robotcore.internal.system.Assert;
 import org.firstinspires.ftc.team16910.R;
 import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
-import org.firstinspires.ftc.team16910.telop.Spaghetti;
-import org.firstinspires.ftc.team16910.util.Position;
 import org.firstinspires.ftc.team16910.util.MotorUtil;
 import org.firstinspires.ftc.team16910.util.OpmodeUtil;
 import org.firstinspires.ftc.team16910.util.PoseStorage;
+import org.firstinspires.ftc.team16910.util.Position;
 import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
 import java.util.List;
@@ -33,55 +32,37 @@ import static org.firstinspires.ftc.team16910.auton.Position.SAFE_SPOT_DISTANCE;
  */
 @Config
 public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
-    public enum RingCount {
-        None,
-        Single,
-        Quad,
-    }
-
     // Vuforia/TFOD related variables
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
     public static double MIN_CONFIDENCE = 0.65;
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
-
-    // Useful symbolic on and off constants
-    public static double ON = 1;
-    public static double OFF = 0;
-
     // Timings for arm and claw actions
     public static double ARM_TIME = 0.6;
     public static double CLAW_TIME = 0.4;
-
     // Launcher-related constants
-    public static double LAUNCHER_POWER = 0.5; // 0.56
-    public static double LAUNCHER_TARGET = Spaghetti.fromMotorPower(LAUNCHER_POWER);
+    public static double LAUNCHER_POWER = 0.5;
     public static double LAUNCHER_THRESHOLD = 0.05;
     public static double LAUNCHER_SPINUP = 2.5;
     public static double LAUNCHER_STABILIZATION_TIMEOUT = 0.25;
     public static double LAUNCHER_SPINDOWN = 0.5;
     public static double LAUNCHER_LAUNCH = 0.6;
-
     public static double ZOOM_RATIO = 1.25;
     public static double ZOOM_ASPECT_RATIO = 16.0 / 9.0;
-
+    // Trajectories
+    protected Pose2d startPosition;
+    protected Position powerShot1Position, powerShot2Position, powerShot3Position, finishPosition;
+    protected Trajectory toWobbleGoal, toSafeSpot, toPowerShot1, toPowerShot2, toPowerShot3, toFinish;
+    protected boolean performWobbleGoal = true;
+    protected boolean performPowerShots = true;
+    protected boolean performPark = true;
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
     // Hardware-related variables
     private FtcDashboard dashboard;
     private SpaghettiHardware robot;
     private SampleMecanumDrive drive;
-
-    // Trajectories
-    protected Pose2d startPosition;
-    protected Position powerShot1Position, powerShot2Position, powerShot3Position, finishPosition;
-//    protected Trajectory toFinish;
-    protected Trajectory toWobbleGoal, toSafeSpot, toPowerShot1, toPowerShot2, toPowerShot3, toFinish;
     private RingCount ringCount = RingCount.None;
-
-    protected boolean performWobbleGoal = true;
-    protected boolean performPowerShots = true;
-    protected boolean performPark = true;
 
     /**
      * TODO(BSFishy): document this
@@ -124,6 +105,11 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      */
     protected abstract void prepare();
 
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @return the position to move to the wobble goal
+     */
     protected abstract Position getWobbleGoalPosition();
 
     @Override
@@ -149,7 +135,6 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
         activateTfod();
 
         // Initialize the arm
-//        robot.clawServo.setPosition(ON);
         robot.closeClaw();
 
         // Wait until the opmode should start
@@ -180,14 +165,15 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      * TODO(BSFishy): document this
      */
     private void checkPositions() {
-//        Assert.assertNotNull(wobbleGoalPosition, "You must initialize all of the positions including wobble goal");
-//        Assert.assertNotNull(safeSpotPosition, "You must initialize all of the positions including safe spot");
         Assert.assertNotNull(powerShot1Position, "You must initialize all of the positions including power shot 1");
         Assert.assertNotNull(powerShot2Position, "You must initialize all of the positions including power shot 2");
         Assert.assertNotNull(powerShot3Position, "You must initialize all of the positions including power shot 3");
         Assert.assertNotNull(finishPosition, "You must initialize all of the positions including finish");
     }
 
+    /**
+     * TODO(BSFishy): document this
+     */
     private void prepareTrajectories() {
         Pose2d lastPose = drive.getPoseEstimate();
 
@@ -229,6 +215,9 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
         }
     }
 
+    /**
+     * TODO(BSFishy): document this
+     */
     private void run() {
         if (performWobbleGoal) {
             doWobbleGoal();
@@ -243,6 +232,9 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
         }
     }
 
+    /**
+     * TODO(BSFishy): document this
+     */
     private void doWobbleGoal() {
         drive.followTrajectory(toWobbleGoal);
 
@@ -255,6 +247,9 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
         raiseWobbleArm();
     }
 
+    /**
+     * TODO(BSFishy): document this
+     */
     private void doPowerShots() {
         spinUpLauncher();
 
@@ -270,6 +265,9 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
         spinDownLauncher();
     }
 
+    /**
+     * TODO(BSFishy): document this
+     */
     private void doPark() {
         drive.followTrajectory(toFinish);
     }
@@ -278,7 +276,6 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      * TODO(BSFishy): document this
      */
     protected void lowerWobbleArm() {
-//        robot.armServo.setPosition(OFF);
         robot.lowerWobbleArm();
         OpmodeUtil.sleep(ARM_TIME, this);
     }
@@ -287,7 +284,6 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      * TODO(BSFishy): document this
      */
     protected void openClaw() {
-//        robot.clawServo.setPosition(OFF);
         robot.openClaw();
         OpmodeUtil.sleep(CLAW_TIME, this);
     }
@@ -296,7 +292,6 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      * TODO(BSFishy): document this
      */
     protected void closeClaw() {
-//        robot.clawServo.setPosition(ON);
         robot.closeClaw();
         OpmodeUtil.sleep(CLAW_TIME, this);
     }
@@ -305,7 +300,6 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      * TODO(BSFishy): document this
      */
     protected void raiseWobbleArm() {
-//        robot.armServo.setPosition(ON);
         robot.raiseWobbleArm();
         OpmodeUtil.sleep(ARM_TIME, this);
     }
@@ -315,7 +309,6 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      */
     protected void spinUpLauncher() {
         // Spin up the launcher motor and pause until it can spin to full speed
-//        robot.launcherMotor.setVelocity(Spaghetti.fromMotorPower(LAUNCHER_POWER));
         robot.spinLauncherRaw(MotorUtil.fromMotorPower(LAUNCHER_POWER));
     }
 
@@ -325,16 +318,14 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
     protected void launch() {
         MotorUtil.waitToSpinTo(robot.launcherMotor, LAUNCHER_POWER, LAUNCHER_THRESHOLD, LAUNCHER_SPINUP, LAUNCHER_STABILIZATION_TIMEOUT, this);
 
-        telemetry.addData("launcher motor", Spaghetti.toMotorPower(robot.launcherMotor.getVelocity()));
+        telemetry.addData("launcher motor", MotorUtil.toMotorPower(robot.launcherMotor.getVelocity()));
         telemetry.update();
 
         // Turn the launcher servo on and pause until it extends all the way
-//        robot.launcherServo.setPosition(ON);
         robot.extendLauncherServo();
         OpmodeUtil.sleep(LAUNCHER_LAUNCH, this);
 
         // Turn the launcher servo off and pause until it has retracted all the way
-//        robot.launcherServo.setPosition(OFF);
         robot.retractLauncherServo();
         OpmodeUtil.sleep(LAUNCHER_LAUNCH, this);
     }
@@ -344,15 +335,7 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      */
     protected void spinDownLauncher() {
         // Turn the launcher motor off and pause until it is off
-//        robot.launcherMotor.setPower(OFF);
-//        sleep((long) LAUNCHER_SPINDOWN);
-
-        MotorUtil.spinTo(robot.launcherMotor, OFF, LAUNCHER_THRESHOLD, LAUNCHER_SPINDOWN, LAUNCHER_STABILIZATION_TIMEOUT, this);
-//        OpmodeUtil.sleep(LAUNCHER_SPINDOWN, this, () -> {
-//
-//
-//            return false;
-//        });
+        MotorUtil.spinTo(robot.launcherMotor, 0, LAUNCHER_THRESHOLD, LAUNCHER_SPINDOWN, LAUNCHER_STABILIZATION_TIMEOUT, this);
     }
 
     /**
@@ -473,5 +456,11 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
         telemetry.addData("tensorflow time", time.seconds());
         telemetry.addData("recognition label", label);
         telemetry.update();
+    }
+
+    public enum RingCount {
+        None,
+        Single,
+        Quad,
     }
 }

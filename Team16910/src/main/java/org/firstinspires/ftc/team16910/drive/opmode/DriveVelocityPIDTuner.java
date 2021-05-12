@@ -18,7 +18,11 @@ import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 
 import java.util.List;
 
-import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kV;
 
 /*
  * This routine is designed to tune the PID coefficients used by the REV Expansion Hubs for closed-
@@ -51,11 +55,6 @@ import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
 @Disabled
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
-
-    enum Mode {
-        DRIVER_MODE,
-        TUNING_MODE
-    }
 
     private static MotionProfile generateProfile(boolean movingForward) {
         MotionState start = new MotionState(movingForward ? 0 : DISTANCE, 0, 0, 0);
@@ -166,5 +165,10 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
             telemetry.update();
         }
+    }
+
+    enum Mode {
+        DRIVER_MODE,
+        TUNING_MODE
     }
 }

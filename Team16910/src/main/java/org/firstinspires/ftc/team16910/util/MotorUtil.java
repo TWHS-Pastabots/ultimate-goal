@@ -32,8 +32,8 @@ public class MotorUtil {
     /**
      * TODO(BSFishy): document this
      *
-     * @param power the power level as a decimal
-     * @param maxRpm the motor's maximum achievable RPM
+     * @param power          the power level as a decimal
+     * @param maxRpm         the motor's maximum achievable RPM
      * @param ticksPerSecond the motor's encoder's ticks per second
      * @return motor ticks per second
      */
@@ -54,8 +54,8 @@ public class MotorUtil {
     /**
      * TODO(BSFishy): document this
      *
-     * @param ticks the velocity as ticks per second
-     * @param maxRpm the motor's maximum achievable RPM
+     * @param ticks          the velocity as ticks per second
+     * @param maxRpm         the motor's maximum achievable RPM
      * @param ticksPerSecond the motor's encoder's ticks per second
      * @return motor power level
      */
@@ -66,12 +66,12 @@ public class MotorUtil {
     /**
      * TODO(BSFishy): document this
      *
-     * @param motor the motor to spin
-     * @param power the power level to spin to
-     * @param threshold the percent error that is acceptable
-     * @param maxTimeout the maximum amount of time to spend
+     * @param motor         the motor to spin
+     * @param power         the power level to spin to
+     * @param threshold     the percent error that is acceptable
+     * @param maxTimeout    the maximum amount of time to spend
      * @param stableTimeout the amount of time for the speed to be considered stable
-     * @param opMode the opmode that is spinning it
+     * @param opMode        the opmode that is spinning it
      */
     public static void spinTo(DcMotorEx motor, double power, double threshold, double maxTimeout, double stableTimeout, LinearOpMode opMode) {
         spinTo(motor, power, threshold, maxTimeout, stableTimeout, opMode, MOTOR_MAX_RPM, MOTOR_TICKS_PER_SECOND);
@@ -80,46 +80,29 @@ public class MotorUtil {
     /**
      * TODO(BSFishy): document this
      *
-     * @param motor the motor to spin
-     * @param power the power level to spin to
-     * @param threshold the percent error that is acceptable
-     * @param maxTimeout the maximum amount of time to spend
-     * @param stableTimeout the amount of time for the speed to be considered stable
-     * @param opMode the opmode that is spinning it
-     * @param maxRpm the motor's maximum achievable RPM
+     * @param motor          the motor to spin
+     * @param power          the power level to spin to
+     * @param threshold      the percent error that is acceptable
+     * @param maxTimeout     the maximum amount of time to spend
+     * @param stableTimeout  the amount of time for the speed to be considered stable
+     * @param opMode         the opmode that is spinning it
+     * @param maxRpm         the motor's maximum achievable RPM
      * @param ticksPerSecond the motor's encoder's ticks per second
      */
     public static void spinTo(DcMotorEx motor, double power, double threshold, double maxTimeout, double stableTimeout, LinearOpMode opMode, double maxRpm, double ticksPerSecond) {
         motor.setVelocity(fromMotorPower(power, maxRpm, ticksPerSecond));
         waitToSpinTo(motor, power, threshold, maxTimeout, stableTimeout, opMode, maxRpm, ticksPerSecond);
-
-//        double target = fromMotorPower(power, maxRpm, ticksPerSecond);
-//        motor.setVelocity(fromMotorPower(power, maxRpm, ticksPerSecond));
-//
-//        ElapsedTime stabilizationTimer = new ElapsedTime();
-//        OpmodeUtil.sleep(maxTimeout, opMode, () -> {
-//            double velocity = motor.getVelocity();
-//            double error = Math.abs(target - velocity) / target;
-//
-//            if (error <= threshold) {
-//                return stabilizationTimer.seconds() >= stableTimeout;
-//            } else {
-//                stabilizationTimer.reset();
-//            }
-//
-//            return false;
-//        });
     }
 
     /**
      * TODO(BSFishy): document this
      *
-     * @param motor the motor to spin
-     * @param power the power level to spin to
-     * @param threshold the percent error that is acceptable
-     * @param maxTimeout the maximum amount of time to spend
+     * @param motor         the motor to spin
+     * @param power         the power level to spin to
+     * @param threshold     the percent error that is acceptable
+     * @param maxTimeout    the maximum amount of time to spend
      * @param stableTimeout the amount of time for the speed to be considered stable
-     * @param opMode the opmode that is spinning it
+     * @param opMode        the opmode that is spinning it
      */
     public static void waitToSpinTo(DcMotorEx motor, double power, double threshold, double maxTimeout, double stableTimeout, LinearOpMode opMode) {
         waitToSpinTo(motor, power, threshold, maxTimeout, stableTimeout, opMode, MOTOR_MAX_RPM, MOTOR_TICKS_PER_SECOND);
@@ -128,13 +111,13 @@ public class MotorUtil {
     /**
      * TODO(BSFishy): document this
      *
-     * @param motor the motor to spin
-     * @param power the power level to spin to
-     * @param threshold the percent error that is acceptable
-     * @param maxTimeout the maximum amount of time to spend
-     * @param stableTimeout the amount of time for the speed to be considered stable
-     * @param opMode the opmode that is spinning it
-     * @param maxRpm the motor's maximum achievable RPM
+     * @param motor          the motor to spin
+     * @param power          the power level to spin to
+     * @param threshold      the percent error that is acceptable
+     * @param maxTimeout     the maximum amount of time to spend
+     * @param stableTimeout  the amount of time for the speed to be considered stable
+     * @param opMode         the opmode that is spinning it
+     * @param maxRpm         the motor's maximum achievable RPM
      * @param ticksPerSecond the motor's encoder's ticks per second
      */
     public static void waitToSpinTo(DcMotorEx motor, double power, double threshold, double maxTimeout, double stableTimeout, LinearOpMode opMode, double maxRpm, double ticksPerSecond) {

@@ -41,7 +41,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kV;
 
 /*
  * Simple tank drive hardware implementation for REV hardware.
@@ -54,32 +64,21 @@ public class SampleTankDrive extends TankDrive {
 
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
-
-    public enum Mode {
-        IDLE,
-        TURN,
-        FOLLOW_TRAJECTORY
-    }
-
-    private FtcDashboard dashboard;
-    private NanoClock clock;
-
+    private final FtcDashboard dashboard;
+    private final NanoClock clock;
     private Mode mode;
-
-    private PIDFController turnController;
+    private final PIDFController turnController;
     private MotionProfile turnProfile;
     private double turnStart;
-
-    private TrajectoryVelocityConstraint velConstraint;
-    private TrajectoryAccelerationConstraint accelConstraint;
-    private TrajectoryFollower follower;
-
-    private List<Pose2d> poseHistory;
-
-    private List<DcMotorEx> motors, leftMotors, rightMotors;
-    private BNO055IMU imu;
-
-    private VoltageSensor batteryVoltageSensor;
+    private final TrajectoryVelocityConstraint velConstraint;
+    private final TrajectoryAccelerationConstraint accelConstraint;
+    private final TrajectoryFollower follower;
+    private final List<Pose2d> poseHistory;
+    private final List<DcMotorEx> motors;
+    private final List<DcMotorEx> leftMotors;
+    private final List<DcMotorEx> rightMotors;
+    private final BNO055IMU imu;
+    private final VoltageSensor batteryVoltageSensor;
 
     public SampleTankDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH);
@@ -359,5 +358,11 @@ public class SampleTankDrive extends TankDrive {
     @Override
     public double getRawExternalHeading() {
         return imu.getAngularOrientation().firstAngle;
+    }
+
+    public enum Mode {
+        IDLE,
+        TURN,
+        FOLLOW_TRAJECTORY
     }
 }
