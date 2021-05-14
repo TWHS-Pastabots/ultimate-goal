@@ -120,7 +120,9 @@ public class TelemetryHelper implements Telemetry {
 
     @Override
     public boolean update() {
-        dashboard.sendTelemetryPacket(packet);
+        if (packet != null) {
+            dashboard.sendTelemetryPacket(packet);
+        }
 
         return telemetry.update();
     }

@@ -251,6 +251,7 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
      * TODO(BSFishy): document this
      */
     private void doPowerShots() {
+        spinUpLauncherAid();
         spinUpLauncher();
 
         drive.followTrajectory(toPowerShot1);
@@ -262,6 +263,7 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
         drive.followTrajectory(toPowerShot3);
         launch();
 
+        spinDownLauncherAid();
         spinDownLauncher();
     }
 
@@ -310,6 +312,14 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
     protected void spinUpLauncher() {
         // Spin up the launcher motor and pause until it can spin to full speed
         robot.spinLauncherRaw(MotorUtil.fromMotorPower(LAUNCHER_POWER));
+    }
+
+    protected void spinUpLauncherAid() {
+        robot.spinLauncherAid(true, false);
+    }
+
+    protected void spinDownLauncherAid() {
+        robot.spinLauncherAid(false, false);
     }
 
     /**

@@ -41,6 +41,8 @@ public abstract class SpaghettiAutonomousBlue extends AbstractSpaghettiAutonomou
         powerShot1Position = new Position(POWER_SHOT_1);
         powerShot2Position = new Position(POWER_SHOT_2);
         powerShot3Position = new Position(POWER_SHOT_3);
+
+        finishPosition = new Position(getEndPosition());
     }
 
     @Override

@@ -133,7 +133,7 @@ public class SpaghettiHardware extends RobotHardware {
      * @param withTelemetry whether or not telemetry should be added
      */
     public void enableIntake(boolean withTelemetry) {
-        double target = MotorUtil.fromMotorPower(INTAKE_POWER);
+        double target = MotorUtil.fromMotorPower(INTAKE_POWER) * 5;
         intakeMotor.setVelocity(target);
         intakeServo.setPower(ON);
 
@@ -162,7 +162,7 @@ public class SpaghettiHardware extends RobotHardware {
     public void disableIntake(boolean withTelemetry) {
         double target = 0;
         intakeMotor.setVelocity(target);
-        intakeServo.setPower(ON);
+        intakeServo.setPower(OFF);
 
         if (withTelemetry && telemetry != null) {
             double velocity = intakeMotor.getVelocity();
