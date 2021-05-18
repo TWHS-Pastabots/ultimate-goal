@@ -11,20 +11,21 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team16910.auton.SpaghettiAutonomous;
 import org.firstinspires.ftc.team16910.hardware.SpaghettiHardware;
+import org.firstinspires.ftc.team16910.util.MotorUtil;
 
+/**
+ * TODO(BSFishy): document this
+ */
 @Config
 @TeleOp(name = "Launcher Tester", group = Spaghetti.GROUP)
 public class LauncherTester extends LinearOpMode {
-    private FtcDashboard dashboard;
-    private SpaghettiHardware robot;
-
     @SuppressLint("DefaultLocale")
     @Override
-    public void runOpMode() throws InterruptedException {
-        dashboard = FtcDashboard.getInstance();
+    public void runOpMode() {
+        FtcDashboard dashboard = FtcDashboard.getInstance();
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        robot = new SpaghettiHardware();
+        SpaghettiHardware robot = new SpaghettiHardware();
         robot.init(hardwareMap);
 
         telemetry.addLine("Press start to start testing");
@@ -49,11 +50,11 @@ public class LauncherTester extends LinearOpMode {
             double error = Math.abs(SpaghettiAutonomous.LAUNCHER_TARGET - velocity) / SpaghettiAutonomous.LAUNCHER_TARGET;
 
             telemetry.addData("spinned", spinned ? "true" : "false");
-            telemetry.addData("actual speed", "%.02f", Spaghetti.toMotorPower(velocity));
+            telemetry.addData("actual speed", "%.02f", MotorUtil.toMotorPower(velocity));
             telemetry.addData("error", "%.02f%%", error * 100);
 
             if (launching) {
-                robot.launcherMotor.setVelocity(Spaghetti.fromMotorPower(SpaghettiAutonomous.LAUNCHER_POWER));
+                robot.launcherMotor.setVelocity(MotorUtil.fromMotorPower(SpaghettiAutonomous.LAUNCHER_POWER));
                 telemetry.addData("target speed", "%.02f", SpaghettiAutonomous.LAUNCHER_POWER);
 
                 if (!extending && !retracting) {

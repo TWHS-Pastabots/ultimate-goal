@@ -6,7 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.team16910.auton.blue.SpaghettiAutonomousBlue;
 import org.firstinspires.ftc.team16910.telop.Spaghetti;
 
-import static org.firstinspires.ftc.team16910.auton.Position.Blue.*;
+import static org.firstinspires.ftc.team16910.auton.Position.Blue.FINISH_INNER;
+import static org.firstinspires.ftc.team16910.auton.Position.Blue.START_INNER;
 
 /**
  * TODO(BSFishy): document this

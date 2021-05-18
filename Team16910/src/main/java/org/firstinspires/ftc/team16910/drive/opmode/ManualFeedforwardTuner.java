@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfileGenerator;
 import com.acmerobotics.roadrunner.profile.MotionState;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -17,7 +18,12 @@ import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
 
 import java.util.Objects;
 
-import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kV;
 
 /*
  * This routine is designed to tune the open-loop feedforward coefficients. Although it may seem unnecessary,
@@ -38,18 +44,13 @@ import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class ManualFeedforwardTuner extends LinearOpMode {
     public static double DISTANCE = 40; // in
 
-    private FtcDashboard dashboard = FtcDashboard.getInstance();
+    private final FtcDashboard dashboard = FtcDashboard.getInstance();
 
     private SampleMecanumDrive drive;
-
-    enum Mode {
-        DRIVER_MODE,
-        TUNING_MODE
-    }
-
     private Mode mode;
 
     private static MotionProfile generateProfile(boolean movingForward) {
@@ -139,5 +140,10 @@ public class ManualFeedforwardTuner extends LinearOpMode {
 
             telemetry.update();
         }
+    }
+
+    enum Mode {
+        DRIVER_MODE,
+        TUNING_MODE
     }
 }

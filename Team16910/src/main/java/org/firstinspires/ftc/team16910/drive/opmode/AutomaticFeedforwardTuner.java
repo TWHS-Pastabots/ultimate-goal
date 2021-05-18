@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -17,7 +18,9 @@ import org.firstinspires.ftc.teamcode.util.RegressionUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_RPM;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.rpmToVelocity;
 
 /*
  * Op mode for computing kV, kStatic, and kA from various drive routines. For the curious, here's an
@@ -31,6 +34,7 @@ import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
  */
 @Config
 @Autonomous(group = "drive")
+@Disabled
 public class AutomaticFeedforwardTuner extends LinearOpMode {
     public static double MAX_POWER = 0.7;
     public static double DISTANCE = 60; // in

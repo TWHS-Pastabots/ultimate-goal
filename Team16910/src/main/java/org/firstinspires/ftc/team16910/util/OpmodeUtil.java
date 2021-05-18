@@ -13,7 +13,7 @@ public class OpmodeUtil {
      * TODO(BSFishy): document this
      *
      * @param maxTimeout the maximum number of seconds to wait for this task to finish
-     * @param opMode the opmode that is calling this
+     * @param opMode     the opmode that is calling this
      */
     public static void sleep(double maxTimeout, LinearOpMode opMode) {
         sleep(maxTimeout, opMode, () -> false);
@@ -23,8 +23,8 @@ public class OpmodeUtil {
      * TODO(BSFishy): document this
      *
      * @param maxTimeout the maximum number of seconds to wait for this task to finish
-     * @param opMode the opmode that is calling this
-     * @param func the function to run
+     * @param opMode     the opmode that is calling this
+     * @param func       the function to run
      */
     public static void sleep(double maxTimeout, LinearOpMode opMode, Supplier<Boolean> func) {
         ElapsedTime time = new ElapsedTime();

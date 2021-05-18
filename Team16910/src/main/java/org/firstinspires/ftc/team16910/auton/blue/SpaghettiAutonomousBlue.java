@@ -6,7 +6,12 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import org.firstinspires.ftc.team16910.auton.AbstractSpaghettiAutonomous;
 import org.firstinspires.ftc.team16910.util.Position;
 
-import static org.firstinspires.ftc.team16910.auton.Position.Blue.*;
+import static org.firstinspires.ftc.team16910.auton.Position.Blue.POWER_SHOT_1;
+import static org.firstinspires.ftc.team16910.auton.Position.Blue.POWER_SHOT_2;
+import static org.firstinspires.ftc.team16910.auton.Position.Blue.POWER_SHOT_3;
+import static org.firstinspires.ftc.team16910.auton.Position.Blue.WOBBLE_GOAL_A;
+import static org.firstinspires.ftc.team16910.auton.Position.Blue.WOBBLE_GOAL_B;
+import static org.firstinspires.ftc.team16910.auton.Position.Blue.WOBBLE_GOAL_C;
 
 /**
  * TODO(BSFishy): document this

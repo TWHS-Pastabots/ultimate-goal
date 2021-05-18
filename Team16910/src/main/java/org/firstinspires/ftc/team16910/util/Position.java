@@ -31,6 +31,11 @@ public class Position {
         this(pose, DEFAULT_TANGENT);
     }
 
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @param vector the vector to use as a pose
+     */
     public Position(Vector2d vector) {
         this(new Pose2d(vector, 0), DEFAULT_TANGENT);
     }
@@ -47,7 +52,7 @@ public class Position {
     /**
      * TODO(BSFishy): document this
      *
-     * @param pose the pose to use
+     * @param pose    the pose to use
      * @param tangent the tangent to use
      */
     public Position(Pose2d pose, double tangent) {

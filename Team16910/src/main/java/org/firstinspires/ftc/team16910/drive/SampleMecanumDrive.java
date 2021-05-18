@@ -41,7 +41,17 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.firstinspires.ftc.team16910.drive.DriveConstants.*;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_ANG_ACCEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_ANG_VEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MAX_VEL;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.MOTOR_VELO_PID;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.TRACK_WIDTH;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kA;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kStatic;
+import static org.firstinspires.ftc.team16910.drive.DriveConstants.kV;
 
 /*
  * Simple mecanum drive hardware implementation for REV hardware.
@@ -58,33 +68,19 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static double OMEGA_WEIGHT = 1;
 
     public static int POSE_HISTORY_LIMIT = 100;
-
-    public enum Mode {
-        IDLE,
-        TURN,
-        FOLLOW_TRAJECTORY
-    }
-
     private final FtcDashboard dashboard;
     private final NanoClock clock;
-
-    private Mode mode;
-
     private final PIDFController turnController;
-    private MotionProfile turnProfile;
-    private double turnStart;
-
     private final TrajectoryVelocityConstraint velConstraint;
     private final TrajectoryAccelerationConstraint accelConstraint;
     private final TrajectoryFollower follower;
-
     private final LinkedList<Pose2d> poseHistory;
-
     private final DcMotorEx leftFront, leftRear, rightRear, rightFront;
     private final List<DcMotorEx> motors;
-
     private final VoltageSensor batteryVoltageSensor;
-
+    private Mode mode;
+    private MotionProfile turnProfile;
+    private double turnStart;
     private Pose2d lastPoseOnTurn;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
@@ -371,5 +367,11 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public double getRawExternalHeading() {
         return 0;
+    }
+
+    public enum Mode {
+        IDLE,
+        TURN,
+        FOLLOW_TRAJECTORY
     }
 }

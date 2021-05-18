@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.team16910.hardware;
 
+/**
+ * TODO(BSFishy): document this
+ */
 public class SpaghettiIds {
     public static final String INTAKE_MOTOR = "intakeMotor";
     public static final String LAUNCHER_MOTOR = "launcherMotor";

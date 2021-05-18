@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 import java.util.Arrays;
 
+/**
+ * TODO(BSFishy): document this
+ */
 @Config
 public class SpaghettiHardware extends RobotHardware {
     // Useful symbolic on and off constants
@@ -213,28 +216,28 @@ public class SpaghettiHardware extends RobotHardware {
     /**
      * TODO(BSFishy): document this
      *
-     * @param power the amount of power the launcher should spin to
+     * @param power         the amount of power the launcher should spin to
      * @param withTelemetry whether or not telemetry should be added
      */
     public void spinLauncher(double power, boolean withTelemetry) {
-        spinLauncherRaw(MotorUtil.fromMotorPower(power) * power, withTelemetry);
-//        double target = MotorUtil.fromMotorPower(power) * power;
-//        launcherMotor.setVelocity(target);
-//
-//        if (withTelemetry && telemetry != null) {
-//            double velocity = launcherMotor.getVelocity();
-//            double error = Math.abs(target - velocity) / target;
-//
-//            telemetry.addData("launcher motor target", "%.02f", target);
-//            telemetry.addData("launcher motor actual", "%.02f", velocity);
-//            telemetry.addData("launcher motor error", "%.02f%%", error * 100);
-//        }
+        spinLauncherRaw(MotorUtil.fromMotorPower(LAUNCHER_POWER) * power, withTelemetry);
     }
 
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @param power the amount of power the launcher should spin to
+     */
     public void spinLauncherRaw(double power) {
         spinLauncherRaw(power, false);
     }
 
+    /**
+     * TODO(BSFishy): document this
+     *
+     * @param power         the amount of power the launcher should spin to
+     * @param withTelemetry whether or not telemetry should be added
+     */
     public void spinLauncherRaw(double power, boolean withTelemetry) {
         launcherMotor.setVelocity(power);
 
