@@ -39,7 +39,7 @@ import static org.firstinspires.ftc.team15021.drive.DriveConstants.*;
 @Config
 @Autonomous(group = "drive")
 public class ManualFeedforwardTuner extends LinearOpMode {
-    public static double DISTANCE = 10; // in
+    public static double DISTANCE = 60; // in
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
