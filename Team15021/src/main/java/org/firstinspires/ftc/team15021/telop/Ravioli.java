@@ -94,7 +94,8 @@ public class Ravioli extends LinearOpMode {
 
         waitForStart();
 
-        robot.motorClaw.setPower(.75);
+        int clawTarget = 30;
+        double clawSpeed = .8;
 
         while (opModeIsActive() && !isStopRequested()) {
 
@@ -195,21 +196,20 @@ public class Ravioli extends LinearOpMode {
             }
 
             if (gamepad2.right_stick_y > .5) {
-                robot.motorClaw.setTargetPosition(170);
-                telemetry.addLine("arm down");
-                robot.motorClaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.motorClaw.setPower(.75);
-            }
-            else if (gamepad2.right_stick_y < -.5) {
-                robot.motorClaw.setTargetPosition(30);
-                telemetry.addLine("arm up");
-                robot.motorClaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.motorClaw.setPower(.75);
+                clawTarget = 170;
+            } else if (gamepad2.right_stick_y < -.5) {
+                clawTarget = 30;
             }
 
-            telemetry.addData("Right Stick Input: ", gamepad2.right_stick_y);
-            telemetry.addData("Arm Position: ", robot.motorClaw.getCurrentPosition());
-            telemetry.addData("Target Position: ", robot.motorClaw.getTargetPosition());
+            if (Math.abs(clawTarget - robot.motorClaw.getCurrentPosition()) < 30) {
+                clawSpeed = .1;
+            } else {
+                clawSpeed = .8;
+            }
+
+            robot.motorClaw.setTargetPosition(clawTarget);
+            robot.motorClaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.motorClaw.setPower(clawSpeed);
 
             if (gamepad2.cross) robot.servoIntake.setPosition(0.6);
             else robot.servoIntake.setPosition(0);
