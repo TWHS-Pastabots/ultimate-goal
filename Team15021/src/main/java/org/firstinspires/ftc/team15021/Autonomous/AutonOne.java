@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.team15021.Autonomous;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -28,6 +30,10 @@ public class AutonOne extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        telemetry.setAutoClear(false);
+
         // Instantiate robot
         robot = new RavioliHardware();
         robot.init(hardwareMap);
@@ -36,29 +42,62 @@ public class AutonOne extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(new Pose2d(-59.5418686772355, 27.493293851154135, Math.toRadians(358.0072303406526)));
 
-
         // Do shit
         initTrajectories();
+
+        telemetry.addLine("Ready for start");
+        telemetry.update();
+
         waitForStart();
+
+        telemetry.addLine("Started");
+        telemetry.update();
 
         if (isStopRequested()) {
             return;
         }
 
+        telemetry.addLine("Stop was not requested");
+        telemetry.update();
 
         // All movements and doing things
         wobbleStuff();
+
+        telemetry.addLine("Did wobble stuff");
+        telemetry.update();
+
         shootShots();
+
+        telemetry.addLine("Shot shots");
+        telemetry.update();
+
         pickupRing();
+
+        telemetry.addLine("Picked up rings");
+        telemetry.update();
+
         shootFourth();
+
+        telemetry.addLine("Shot fourth");
+        telemetry.update();
+
         drive.followTrajectory(toFinish);
 
+        telemetry.addLine("Went to finish");
+        telemetry.update();
+
         PoseStorage.currentPose = drive.getPoseEstimate();
+
+        telemetry.addLine("Finished");
+        telemetry.update();
 
     }
 
     // Initialize trajectories
     public void initTrajectories() {
+
+        telemetry.addLine("Initializing trajectories");
+        telemetry.update();
 
         // Trajectory to wobble drop off area
         toWobble = drive.trajectoryBuilder(drive.getPoseEstimate())
@@ -77,7 +116,7 @@ public class AutonOne extends LinearOpMode {
 
         // Trajectory to adjust the pickup location
         adjustPickup = drive.trajectoryBuilder(toPickup.end())
-                .forward(-9)
+                .lineTo(new Vector2d(-15, 37))
                 .build();
 
         // Shoots final shot
@@ -95,24 +134,46 @@ public class AutonOne extends LinearOpMode {
     // Drop wobble goal
     public void dropWobble() {
 
+        telemetry.addLine("Setting motor claw power");
+        telemetry.update();
+
         // Drop wobble goal
         robot.motorClaw.setPower(.4);
         sleep(1000);
+
+        telemetry.addLine("Moving servo claw");
+        telemetry.update();
 
         // Open claw
         robot.servoClaw.setPosition(.5);
         sleep(1000);
 
+        telemetry.addLine("Moving back motor claw");
+        telemetry.update();
+
         // Return claw to original place
         robot.motorClaw.setPower(OFF);
+
+        telemetry.addLine("Finished dropping wobble");
+        telemetry.update();
 
     }
 
     // Do all wobble goal maneuvers
     public void wobbleStuff() {
 
+        telemetry.addLine("Moving to wobble");
+        telemetry.update();
+
         drive.followTrajectory(toWobble);
+
+        telemetry.addLine("Dropping wobble");
+        telemetry.update();
+
         dropWobble();
+
+        telemetry.addLine("Dropped wobble");
+        telemetry.update();
 
     }
 

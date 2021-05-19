@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.team15021.PoseStorage;
@@ -29,6 +30,8 @@ public class Ravioli extends LinearOpMode {
 
     private final double ON = 1.0;
     private final double OFF = 0.0;
+
+    private boolean open = true;
 
     private String front;
     private String back;
@@ -90,6 +93,8 @@ public class Ravioli extends LinearOpMode {
         telemetry.addData("Run Time", "reset");
 
         waitForStart();
+
+        robot.motorClaw.setPower(.75);
 
         while (opModeIsActive() && !isStopRequested()) {
 
@@ -179,9 +184,32 @@ public class Ravioli extends LinearOpMode {
             else if (gamepad1.right_trigger > 0) vConveyor = 1.0;
             else vConveyor = 0.0;
 
-            robot.servoClaw.setPosition((1 - gamepad2.left_trigger) / 2);
+            // robot.servoClaw.setPosition((1 - gamepad2.left_trigger) / 2);
+            if (gamepad2.left_trigger > 0 && !open) {
+                robot.servoClaw.setPosition(OFF);
+                open = true;
+            }
+            else if (gamepad2.left_trigger > 0 && open) {
+                robot.servoClaw.setPosition(.5);
+                open = false;
+            }
 
-            vServoMotor = gamepad2.right_stick_y * .5;
+            if (gamepad2.right_stick_y > .5) {
+                robot.motorClaw.setTargetPosition(170);
+                telemetry.addLine("arm down");
+                robot.motorClaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.motorClaw.setPower(.75);
+            }
+            else if (gamepad2.right_stick_y < -.5) {
+                robot.motorClaw.setTargetPosition(30);
+                telemetry.addLine("arm up");
+                robot.motorClaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                robot.motorClaw.setPower(.75);
+            }
+
+            telemetry.addData("Right Stick Input: ", gamepad2.right_stick_y);
+            telemetry.addData("Arm Position: ", robot.motorClaw.getCurrentPosition());
+            telemetry.addData("Target Position: ", robot.motorClaw.getTargetPosition());
 
             if (gamepad2.cross) robot.servoIntake.setPosition(0.6);
             else robot.servoIntake.setPosition(0);

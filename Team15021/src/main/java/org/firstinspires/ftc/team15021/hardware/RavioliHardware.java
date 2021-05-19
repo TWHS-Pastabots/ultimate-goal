@@ -1,11 +1,22 @@
 package org.firstinspires.ftc.team15021.hardware;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.android.util.Size;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.Camera;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureRequest;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraCaptureSession;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraException;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.CameraControl;
 import org.firstinspires.ftc.teamcode.hardware.RobotHardware;
 
 import java.util.ArrayList;
@@ -48,6 +59,8 @@ public class RavioliHardware extends RobotHardware {
         motorLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
 
         initializeComponents();
-        //motorLauncher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorClaw.setTargetPosition(30);
+        motorClaw.setPower(0);
+        motorClaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 }

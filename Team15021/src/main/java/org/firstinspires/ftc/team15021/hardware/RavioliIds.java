@@ -7,4 +7,5 @@ public class RavioliIds {
     public static final String MOTOR_CLAW = "motorClaw";
     public static final String SERVO_CLAW = "servo_claw";
     public static final String INTAKE_LOCK = "intakeLock";
+    public static final String CAMERA = "camera";
 }
