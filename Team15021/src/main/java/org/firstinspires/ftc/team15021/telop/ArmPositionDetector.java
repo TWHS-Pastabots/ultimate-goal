@@ -24,6 +24,8 @@ public class ArmPositionDetector extends LinearOpMode {
         while (!isStopRequested()) {
             telemetry.addData("Arm position", "%.02f", robot.motorClaw.getCurrentPosition());
             telemetry.update();
+
+            idle();
         }
     }
 }
