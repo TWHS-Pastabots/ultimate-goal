@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team16910.auton.red;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.team16910.telop.Spaghetti;
 
@@ -16,6 +17,7 @@ public class RedOuter {
      * TODO(BSFishy): document this
      */
     @Autonomous(name = "Spaghetti Red Outer Full", group = SpaghettiAutonomousRed.GROUP, preselectTeleOp = Spaghetti.NAME)
+    @Disabled
     public static class SpaghettiFull extends SpaghettiAutonomousRed {
         @Override
         public Pose2d getStartPosition() {
@@ -41,6 +43,7 @@ public class RedOuter {
      * TODO(BSFishy): document this
      */
     @Autonomous(name = "Spaghetti Red Outer Park", group = SpaghettiAutonomousRed.GROUP, preselectTeleOp = Spaghetti.NAME)
+    @Disabled
     public static class SpaghettiPark extends SpaghettiAutonomousRed {
         @Override
         public Pose2d getStartPosition() {
@@ -66,6 +69,7 @@ public class RedOuter {
      * TODO(BSFishy): document this
      */
     @Autonomous(name = "Spaghetti Red Outer Power Shot", group = SpaghettiAutonomousRed.GROUP, preselectTeleOp = Spaghetti.NAME)
+    @Disabled
     public static class SpaghettiPowerShot extends SpaghettiAutonomousRed {
         @Override
         public Pose2d getStartPosition() {
@@ -91,6 +95,7 @@ public class RedOuter {
      * TODO(BSFishy): document this
      */
     @Autonomous(name = "Spaghetti Red Outer Wobble Goal", group = SpaghettiAutonomousRed.GROUP, preselectTeleOp = Spaghetti.NAME)
+    @Disabled
     public static class SpaghettiWobbleGoal extends SpaghettiAutonomousRed {
         @Override
         public Pose2d getStartPosition() {

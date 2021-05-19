@@ -24,7 +24,7 @@ import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
  */
 @Config
 @Autonomous(group = "drive")
-@Disabled
+//@Disabled
 public class FollowerPIDTuner extends LinearOpMode {
     public static double DISTANCE = 48; // in
 

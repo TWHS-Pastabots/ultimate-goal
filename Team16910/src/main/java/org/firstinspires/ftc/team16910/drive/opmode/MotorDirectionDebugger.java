@@ -38,7 +38,6 @@ import org.firstinspires.ftc.team16910.drive.SampleMecanumDrive;
  * <p>
  * Uncomment the @Disabled tag below to use this opmode.
  */
-//@Disabled
 @Config
 @TeleOp(group = "drive")
 @Disabled

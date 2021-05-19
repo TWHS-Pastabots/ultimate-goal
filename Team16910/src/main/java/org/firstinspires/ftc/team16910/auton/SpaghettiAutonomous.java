@@ -36,37 +36,45 @@ public class SpaghettiAutonomous extends LinearOpMode {
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
     public static double MIN_CONFIDENCE = 0.65;
+
     // Useful symbolic on and off constants
     public static double ON = 1;
     public static double OFF = 0;
+
     // Timings for arm and claw actions
     public static double ARM_TIME = 600;
     public static double CLAW_TIME = 400;
+
     // Launcher-related constants
-    public static double LAUNCHER_POWER = 0.5; // 0.56
+    public static double LAUNCHER_POWER = 0.56; // 0.56
     public static double LAUNCHER_TARGET = MotorUtil.fromMotorPower(LAUNCHER_POWER);
     public static double LAUNCHER_THRESHOLD = 0.05;
-    public static double LAUNCHER_SPINUP = 2.5;
+    public static double LAUNCHER_SPINUP = 1.5;
     public static double LAUNCHER_STABILIZATION_TIMEOUT = 0.25;
-    public static double LAUNCHER_SPINDOWN = 500;
-    public static double LAUNCHER_LAUNCH = 600;
+    public static double LAUNCHER_SPINDOWN = 0.5;
+    public static double LAUNCHER_LAUNCH = 0.6;
+
     // Wobble goal related variables
     public static Pose2d WOBBLE_GOAL_1 = new Pose2d(-1.7014121587073083, 55.303271023102646, Math.toRadians(358.8521558517273));
     public static Pose2d WOBBLE_GOAL_2 = new Pose2d(21.531418267740545, 30.705377032838875, Math.toRadians(3.0078201762876087));
     public static double WOBBLE_GOAL_2_TANGENT = Math.toRadians(-90);
     public static Pose2d WOBBLE_GOAL_3 = new Pose2d(44.935919028994086, 56.22700991949062, Math.toRadians(4.4929899518084815));
+
     public static Vector2d POWER_SHOT_SHIFT = new Vector2d(0, -8);
     public static Pose2d POWER_SHOT_1 = new Pose2d(-2.316608582048244, 27.561349542087463, 0.08275128001363097);
     public static Vector2d POWER_SHOT_2 = POWER_SHOT_1.vec().plus(POWER_SHOT_SHIFT);
     public static Vector2d POWER_SHOT_3 = POWER_SHOT_2.plus(POWER_SHOT_SHIFT);
+
     // The final position of the robot. This is an estimate to begin with,
     // but is set at the end of the opmode so that it can be used elsewhere,
     // i.e. the Spaghetti teleop
     public static Pose2d FINAL_POSITION = new Pose2d(12, 18, 0);
+
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
     private Pose2d wobbleGoalPosition;
     private double wobbleGoalTangent = 0;
+
     // Hardware-related variables
     private FtcDashboard dashboard;
     private SpaghettiHardware robot;
@@ -204,7 +212,7 @@ public class SpaghettiAutonomous extends LinearOpMode {
 
         // Turn the launcher motor off and pause until it is off
         robot.launcherMotor.setPower(OFF);
-        sleep((long) LAUNCHER_SPINDOWN);
+        sleep((long) LAUNCHER_SPINDOWN * 1000);
     }
 
     /**
@@ -231,11 +239,11 @@ public class SpaghettiAutonomous extends LinearOpMode {
 
         // Turn the launcher servo on and pause until it extends all the way
         robot.launcherServo.setPosition(ON);
-        sleep((long) LAUNCHER_LAUNCH);
+        sleep((long) LAUNCHER_LAUNCH * 1000);
 
         // Turn the launcher servo off and pause until it has retracted all the way
         robot.launcherServo.setPosition(OFF);
-        sleep((long) LAUNCHER_LAUNCH);
+        sleep((long) LAUNCHER_LAUNCH * 1000);
     }
 
     /**

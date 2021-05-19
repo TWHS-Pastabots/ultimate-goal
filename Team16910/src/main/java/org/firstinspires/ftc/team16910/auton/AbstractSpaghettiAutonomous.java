@@ -37,27 +37,34 @@ public abstract class AbstractSpaghettiAutonomous extends LinearOpMode {
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
     public static double MIN_CONFIDENCE = 0.65;
+
     // Timings for arm and claw actions
     public static double ARM_TIME = 0.6;
     public static double CLAW_TIME = 0.4;
+
     // Launcher-related constants
-    public static double LAUNCHER_POWER = 0.5;
-    public static double LAUNCHER_THRESHOLD = 0.05;
-    public static double LAUNCHER_SPINUP = 2.5;
-    public static double LAUNCHER_STABILIZATION_TIMEOUT = 0.25;
-    public static double LAUNCHER_SPINDOWN = 0.5;
-    public static double LAUNCHER_LAUNCH = 0.6;
+    public static double LAUNCHER_POWER = SpaghettiAutonomous.LAUNCHER_POWER;
+    public static double LAUNCHER_THRESHOLD = SpaghettiAutonomous.LAUNCHER_THRESHOLD;
+    public static double LAUNCHER_SPINUP = SpaghettiAutonomous.LAUNCHER_SPINUP;
+    public static double LAUNCHER_STABILIZATION_TIMEOUT = SpaghettiAutonomous.LAUNCHER_STABILIZATION_TIMEOUT;
+    public static double LAUNCHER_SPINDOWN = SpaghettiAutonomous.LAUNCHER_SPINDOWN;
+    public static double LAUNCHER_LAUNCH = SpaghettiAutonomous.LAUNCHER_LAUNCH;
+
     public static double ZOOM_RATIO = 1.25;
     public static double ZOOM_ASPECT_RATIO = 16.0 / 9.0;
+
     // Trajectories
     protected Pose2d startPosition;
     protected Position powerShot1Position, powerShot2Position, powerShot3Position, finishPosition;
     protected Trajectory toWobbleGoal, toSafeSpot, toPowerShot1, toPowerShot2, toPowerShot3, toFinish;
+
     protected boolean performWobbleGoal = true;
     protected boolean performPowerShots = true;
     protected boolean performPark = true;
+
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
+
     // Hardware-related variables
     private FtcDashboard dashboard;
     private SpaghettiHardware robot;
