@@ -91,7 +91,7 @@ public class AutonFour extends LinearOpMode {
     public void dropWobble() {
 
         // Drop wobble goal
-        robot.motorClaw.setPower(.4);
+        robot.motorClaw.setTargetPosition(170);
         sleep(1000);
 
         // Open claw
@@ -99,7 +99,7 @@ public class AutonFour extends LinearOpMode {
         sleep(1000);
 
         // Return claw to original place
-        robot.motorClaw.setPower(OFF);
+        robot.motorClaw.setTargetPosition(30);
 
     }
 

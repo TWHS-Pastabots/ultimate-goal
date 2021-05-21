@@ -55,7 +55,7 @@ public class RavioliHardware extends RobotHardware {
         // Reverse specific motors
         motorConveyor.setDirection(DcMotorEx.Direction.REVERSE);
         motorIntake.setDirection(DcMotorEx.Direction.REVERSE);
-        motorClaw.setDirection(DcMotorEx.Direction.REVERSE);
+        motorClaw.setDirection(DcMotorSimple.Direction.REVERSE);
         motorLauncher.setDirection(DcMotorSimple.Direction.REVERSE);
 
         initializeComponents();

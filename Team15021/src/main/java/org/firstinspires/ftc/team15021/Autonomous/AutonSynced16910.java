@@ -3,8 +3,8 @@ package org.firstinspires.ftc.team15021.Autonomous;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -22,9 +22,8 @@ import org.firstinspires.ftc.teamcode.util.AssetUtil;
 
 import java.util.List;
 
-@com.qualcomm.robotcore.eventloop.opmode.Autonomous(name = "Autonomous")
-public class Autonomous extends LinearOpMode {
-
+@Autonomous(name="Synced Autonomous")
+public class AutonSynced16910 extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String QUAD_LABEL = "Quad";
     private static final String SINGLE_LABEL = "Single";
@@ -43,13 +42,13 @@ public class Autonomous extends LinearOpMode {
     public static Pose2d WOBBLE_GOAL_2 = new Pose2d(24, 30);
     public static double WOBBLE_GOAL_2_TANGENT = Math.toRadians(90);
     public static Pose2d WOBBLE_GOAL_3_A = new Pose2d(24, 30);
-    public static Pose2d WOBBLE_GOAL_3_B = new Pose2d(42, 56);
+    public static Pose2d WOBBLE_GOAL_3_B = new Pose2d(45, 48);
 
     private FtcDashboard dashboard;
     private RavioliHardware robot;
     private SampleMecanumDrive drive;
 
-    private Trajectory toWobble, toWobbleB, toShoot, toPickup, adjustPickup, moveBack,shootLast, toFinish;
+    private Trajectory toWobble, toWobbleB, toShoot, toPickup, adjustPickup, shootLast, toFinish;
 
     private int mode;
 
@@ -119,26 +118,12 @@ public class Autonomous extends LinearOpMode {
 
         // Trajectory to adjust the pickup location
         adjustPickup = drive.trajectoryBuilder(toPickup.end())
-                .lineToLinearHeading(new Pose2d(-15, 37))
-                .build();
-
-        // Moves back to gather more rings
-        moveBack = drive.trajectoryBuilder(adjustPickup.end())
-                .forward(-6)
-                .addTemporalMarker(0.01, () -> {
-                    robot.motorLeftFront.setPower(.2);
-                    robot.motorRightFront.setPower(.2);
-                    robot.motorLeftRear.setPower(.2);
-                    robot.motorRightRear.setPower(.2);
-                })
+                .lineToLinearHeading(new Pose2d(-15, 36))
                 .build();
 
         // Trajectory to shoot final shot
         shootLast = drive.trajectoryBuilder(adjustPickup.end())
                 .lineToLinearHeading(new Pose2d(0, 33))
-                .addTemporalMarker(.1, ()-> {
-                    robot.motorLauncher.setPower(.65);
-                })
                 .build();
 
         // Trajectory to park
@@ -209,36 +194,20 @@ public class Autonomous extends LinearOpMode {
         // Drive to position
         drive.followTrajectory(toPickup);
 
-        if (mode == 3) {
 
-            // Drop intake
-            robot.servoIntake.setPosition(.7);
-            sleep(250);
+        // Adjust the positioning to intake
+        drive.followTrajectory(adjustPickup);
 
-            // Adjust the positioning to intake
-            drive.followTrajectory(adjustPickup);
-
-        }
-
-        else {
-
-            // Adjust the positioning to intake
-            drive.followTrajectory(adjustPickup);
-
-            // Drop intake
-            robot.servoIntake.setPosition(.7);
-            sleep(250);
-        }
+        // Drop intake
+        robot.servoIntake.setPosition(.7);
+        sleep(250);
 
         // Power conveyor belt and intake motor to take in 4th ring
         robot.motorConveyor.setPower(ON);
         robot.motorIntake.setPower(ON);
-        sleep(2000);
 
-//        if (mode == 3) {
-//            // Ring is being taken up here
-//            for (int i = 0; i < 3; i++) drive.followTrajectory(moveBack);
-//        }
+        // Ring is being taken up here
+        sleep(2000);
 
         // Power conveyor off and reset servo
         robot.motorConveyor.setPower(OFF);
@@ -264,8 +233,6 @@ public class Autonomous extends LinearOpMode {
 
         // Goes to shoot position
         drive.followTrajectory(shootLast);
-
-        drive.turn(Math.toRadians(-22));
 
         // Powers conveyor motor to shoot for 3 seconds
         robot.motorConveyor.setPower(ON);
@@ -461,16 +428,6 @@ public class Autonomous extends LinearOpMode {
         shootShots();
 
         telemetry.addLine("Shot shots");
-        telemetry.update();
-
-        pickupRing();
-
-        telemetry.addLine("Picked up rings");
-        telemetry.update();
-
-        shootFourth();
-
-        telemetry.addLine("Shot fourth");
         telemetry.update();
 
         drive.followTrajectory(toFinish);
