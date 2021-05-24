@@ -24,31 +24,42 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 public class Spaghetti extends OpMode {
     public static final String NAME = "Spaghetti";
     public static final String GROUP = "Spaghetti";
+
     public static double DRAWING_TARGET_RADIUS = 2;
     public static Vector2d GOAL_POSITION = new Vector2d(72, 36);
     public static Vector2d POWER_SHOT_POSITION = new Vector2d(72, 12);
+
     // The small amount to move the robot for fine-tuned movements
     public static double NUDGE_AMOUNT = 0.25;
     public static double TARGET_NUDGE_AMOUNT = 1;
     public static double LAUNCH_TIME = 0.6;
+
     // Constants that scale the input power so movement isn't super jerky
     public static double X_SCALE = 0.9;
     public static double Y_SCALE = 0.9;
     public static double TURN_SCALE = 0.85;
+
     private final PIDFController headingController = new PIDFController(SampleMecanumDrive.HEADING_PID);
+
     // Hardware-related variables
     private final SpaghettiHardware robot = new SpaghettiHardware();
     private Mode currentMode = Mode.DriverControl;
+
     private Vector2d targetPosition = GOAL_POSITION;
+
     // Variables used for the launcher
     private double lastLaunchTime = 0;
+
     private SampleMecanumDrive drive;
+
     // State tracking variables for the intake
     private boolean previousIntakeButton = false;
     private boolean intakeState = true;
+
     // State tracking variables for the claw
     private boolean previousClawButton = false;
     private boolean clawState = false;
+
     // State tracking variables for the arm
     private boolean previousArmButton = false;
     private boolean armState = false;

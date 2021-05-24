@@ -58,8 +58,8 @@ import static org.firstinspires.ftc.team16910.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7, 0, 0.1); // 7, 0, 0.1
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 0); // 7, 0, 0
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(7, 0, 1); // 7, 0, 0.1
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(7, 0, 1); // 7, 0, 0
 
     public static double LATERAL_MULTIPLIER = 1.773032067; // 1.306240929
 
@@ -102,7 +102,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         ));
         accelConstraint = new ProfileAccelerationConstraint(MAX_ACCEL);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(1.0)), 1.0);
+                new Pose2d(0.5, 0.5, Math.toRadians(1.0)), 0.5);
 
         poseHistory = new LinkedList<>();
 

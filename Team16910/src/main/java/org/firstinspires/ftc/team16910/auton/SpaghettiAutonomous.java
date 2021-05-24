@@ -46,13 +46,13 @@ public class SpaghettiAutonomous extends LinearOpMode {
     public static double CLAW_TIME = 400;
 
     // Launcher-related constants
-    public static double LAUNCHER_POWER = 0.56; // 0.56
+    public static double LAUNCHER_POWER = 0.5275; // 0.56
     public static double LAUNCHER_TARGET = MotorUtil.fromMotorPower(LAUNCHER_POWER);
     public static double LAUNCHER_THRESHOLD = 0.05;
-    public static double LAUNCHER_SPINUP = 1.5;
-    public static double LAUNCHER_STABILIZATION_TIMEOUT = 0.25;
+    public static double LAUNCHER_SPINUP = 1;
+    public static double LAUNCHER_STABILIZATION_TIMEOUT = 0.2;
     public static double LAUNCHER_SPINDOWN = 0.5;
-    public static double LAUNCHER_LAUNCH = 0.6;
+    public static double LAUNCHER_LAUNCH = 0.4;
 
     // Wobble goal related variables
     public static Pose2d WOBBLE_GOAL_1 = new Pose2d(-1.7014121587073083, 55.303271023102646, Math.toRadians(358.8521558517273));

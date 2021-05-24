@@ -44,8 +44,8 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
     public static double MIN_CONFIDENCE = 0.65;
 
     // Timings for arm and claw actions
-    public static double ARM_TIME = 0.6;
-    public static double CLAW_TIME = 0.4;
+    public static double ARM_TIME = 0.4;
+    public static double CLAW_TIME = 0.3;
 
     // Launcher-related constants
     public static double LAUNCHER_POWER = SpaghettiAutonomous.LAUNCHER_POWER;
@@ -55,8 +55,8 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
     public static double LAUNCHER_SPINDOWN = SpaghettiAutonomous.LAUNCHER_SPINDOWN;
     public static double LAUNCHER_LAUNCH = SpaghettiAutonomous.LAUNCHER_LAUNCH;
 
-    public static double RING_WAIT_TIME = 1.25;
-    public static double ZOOM_RATIO = 1.25;
+    public static double RING_WAIT_TIME = 0.5;
+    public static double ZOOM_RATIO = 1.5;
     public static double ZOOM_ASPECT_RATIO = 16.0 / 9.0;
 
     private VuforiaLocalizer vuforia;
@@ -173,7 +173,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
         boolean previousRemoveTypeState = false;
 
         config_loop:
-        while (true) {
+        while (!isStarted() && !isStopRequested()) {
             telemetry.clear();
 
             boolean previousState = gamepad1.left_bumper;
@@ -370,7 +370,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                             switch (ringCount) {
                                 case None:
                                     t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Blue.WOBBLE_GOAL_A, 0)
+                                            .splineToLinearHeading(Position.Blue.WOBBLE_GOAL_A, Math.toRadians(90))
                                             .build();
 
                                     break;
@@ -382,7 +382,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                                     break;
                                 case Quad:
                                     t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Blue.WOBBLE_GOAL_C, 0)
+                                            .splineToLinearHeading(Position.Blue.WOBBLE_GOAL_C, Math.toRadians(90))
                                             .build();
 
                                     break;
@@ -426,7 +426,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                     switch (alliance) {
                         case Blue:
                             t[0] = drive.trajectoryBuilder(lastPose)
-                                    .splineToLinearHeading(Position.Blue.POWER_SHOT_1, 0)
+                                    .lineToLinearHeading(Position.Blue.POWER_SHOT_1)
                                     .build();
 
                             t[1] = drive.trajectoryBuilder(t[0].end())
@@ -440,7 +440,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                             break;
                         case Red:
                             t[0] = drive.trajectoryBuilder(lastPose)
-                                    .splineToLinearHeading(Position.Red.POWER_SHOT_1, 0)
+                                    .lineToLinearHeading(Position.Red.POWER_SHOT_1)
                                     .build();
 
                             t[1] = drive.trajectoryBuilder(t[0].end())
@@ -460,42 +460,59 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                 case Park:
                     t = new Trajectory[1];
 
-                    switch (alliance) {
+                    switch(alliance) {
                         case Blue:
-                            switch (location) {
-                                case Inner:
-                                    t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Blue.FINISH_INNER, 0)
-                                            .build();
+                            Pose2d targetPosition = new Pose2d(Position.PARK_X, lastPose.getY(), 0);
 
-                                    break;
-                                case Outer:
-                                    t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Blue.FINISH_OUTER, 0)
-                                            .build();
-
-                                    break;
-                            }
+                            t[0] = drive.trajectoryBuilder(lastPose)
+                                    .lineToLinearHeading(targetPosition)
+                                    .build();
 
                             break;
                         case Red:
-                            switch (location) {
-                                case Inner:
-                                    t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Red.FINISH_INNER, 0)
-                                            .build();
-
-                                    break;
-                                case Outer:
-                                    t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Red.FINISH_OUTER, 0)
-                                            .build();
-
-                                    break;
-                            }
+                            t[0] = drive.trajectoryBuilder(lastPose)
+                                    .lineToLinearHeading(Position.Red.FINISH_OUTER)
+                                    .build();
 
                             break;
                     }
+//                    switch (alliance) {
+//                        case Blue:
+//                            switch (location) {
+//                                case Inner:
+//
+//                                    t[0] = drive.trajectoryBuilder(lastPose)
+//                                            .splineToLinearHeading(Position.Blue.FINISH_INNER, 0)
+//                                            .build();
+//
+//                                    break;
+//                                case Outer:
+//                                    t[0] = drive.trajectoryBuilder(lastPose)
+//                                            .splineToLinearHeading(Position.Blue.FINISH_OUTER, 0)
+//                                            .build();
+//
+//                                    break;
+//                            }
+//
+//                            break;
+//                        case Red:
+//                            switch (location) {
+//                                case Inner:
+//                                    t[0] = drive.trajectoryBuilder(lastPose)
+//                                            .splineToLinearHeading(Position.Red.FINISH_INNER, 0)
+//                                            .build();
+//
+//                                    break;
+//                                case Outer:
+//                                    t[0] = drive.trajectoryBuilder(lastPose)
+//                                            .splineToLinearHeading(Position.Red.FINISH_OUTER, 0)
+//                                            .build();
+//
+//                                    break;
+//                            }
+//
+//                            break;
+//                    }
 
                     lastPose = t[0].end();
 
@@ -754,7 +771,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
         }
 
         // Display some more telemetry information, which is, again, useful for debugging
-        telemetry.addData("tensorflow time", time.seconds());
+        telemetry.addData("tensorflow time", "%.02f", time.seconds());
         telemetry.addData("recognition label", label);
         telemetry.update();
     }

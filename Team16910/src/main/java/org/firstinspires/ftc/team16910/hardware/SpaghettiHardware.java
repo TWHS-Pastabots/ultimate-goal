@@ -22,7 +22,7 @@ public class SpaghettiHardware extends RobotHardware {
     public static double OFF = 0;
 
     public static double INTAKE_POWER = 0.15;
-    public static double LAUNCHER_POWER = 0.675;
+    public static double LAUNCHER_POWER = 0.575;
     public static double LAUNCHER_AID_POWER = 0.5;
 
     // Miscellaneous robot motors and servos

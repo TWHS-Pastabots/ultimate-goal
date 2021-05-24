@@ -82,9 +82,9 @@ public class DriveConstants {
      */
     public static double MAX_MULTIPLIER = 0.8;
     public static double MAX_VEL = 64.93505015167946 * MAX_MULTIPLIER; // 41.065033847087705
-    public static double MAX_ACCEL = 64.93505015167946 * MAX_MULTIPLIER; // 41.065033847087705
+    public static double MAX_ACCEL = 41.25 * MAX_MULTIPLIER; // 41.065033847087705
     public static double MAX_ANG_VEL = Math.toRadians(305.764931999182) * MAX_MULTIPLIER; // 130.71406249999998 // 325.8003349830843
-    public static double MAX_ANG_ACCEL = Math.toRadians(305.764931999182) * MAX_MULTIPLIER;
+    public static double MAX_ANG_ACCEL = Math.toRadians(180) * MAX_MULTIPLIER;
 
 
     public static double encoderTicksToInches(double ticks) {
