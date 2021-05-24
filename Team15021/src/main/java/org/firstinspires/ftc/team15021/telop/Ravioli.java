@@ -44,6 +44,7 @@ public class Ravioli extends LinearOpMode {
     double vLauncherMult = 0.70;
     double vConveyor = 0.0;
     double vServoMotor = 0.0;
+    int clawPos = 30;
 
     private double moveMult;
 
@@ -91,6 +92,9 @@ public class Ravioli extends LinearOpMode {
 
         runTime.reset();
         telemetry.addData("Run Time", "reset");
+
+        telemetry.speak("Nice Cock!");
+        telemetry.update();
 
         waitForStart();
 
@@ -186,30 +190,32 @@ public class Ravioli extends LinearOpMode {
             else vConveyor = 0.0;
 
             // robot.servoClaw.setPosition((1 - gamepad2.left_trigger) / 2);
-            if (gamepad2.left_trigger > 0 && !open) {
+            if (gamepad2.left_trigger > 0.5) {
                 robot.servoClaw.setPosition(OFF);
                 open = true;
             }
-            else if (gamepad2.left_trigger > 0 && open) {
+            else if (gamepad2.left_trigger < 0.5) {
                 robot.servoClaw.setPosition(.5);
                 open = false;
             }
 
-            if (gamepad2.right_stick_y > .5) {
-                clawTarget = 170;
-            } else if (gamepad2.right_stick_y < -.5) {
-                clawTarget = 30;
+            if (gamepad2.right_stick_y > .5 && clawPos <= 170) {
+                clawPos++;
+            } else if (gamepad2.right_stick_y < -.5 && clawPos >= 30) {
+                clawPos--;
             }
 
             if (Math.abs(clawTarget - robot.motorClaw.getCurrentPosition()) < 30) {
-                clawSpeed = .1;
+                clawSpeed = .5;
             } else {
                 clawSpeed = .8;
             }
 
-            robot.motorClaw.setTargetPosition(clawTarget);
-            robot.motorClaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            robot.motorClaw.setPower(clawSpeed);
+//            robot.motorClaw.setTargetPositionTolerance(30);
+//            robot.motorClaw.setTargetPosition(clawPos);
+//            robot.motorClaw.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            robot.motorClaw.setPower(1);
+            robot.motorClaw.setPower(gamepad2.right_stick_y);
 
             if (gamepad2.cross) robot.servoIntake.setPosition(0.6);
             else robot.servoIntake.setPosition(0);
