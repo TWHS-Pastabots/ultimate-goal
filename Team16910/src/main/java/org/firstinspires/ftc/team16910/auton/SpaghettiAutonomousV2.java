@@ -287,6 +287,23 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
 
             telemetry.addData("Steps", stepsString.toString());
 
+            if (configStep == ConfigurationStep.Steps) {
+                telemetry.addLine();
+
+                StringBuilder allStepsString = new StringBuilder();
+                for (int i = 0; i < Step.values().length; i++) {
+                    Step step = Step.values()[i];
+
+                    if (i != 0) {
+                        allStepsString.append(", ");
+                    }
+
+                    allStepsString.append(step);
+                }
+
+                telemetry.addData("All steps", allStepsString.toString());
+            }
+
             if (configStep == ConfigurationStep.Finish) {
                 telemetry.addLine("Press right bumper to finish setting up");
             }
@@ -370,7 +387,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                             switch (ringCount) {
                                 case None:
                                     t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Blue.WOBBLE_GOAL_A, Math.toRadians(90))
+                                            .splineToLinearHeading(Position.Blue.WOBBLE_GOAL_A, 0)
                                             .build();
 
                                     break;
@@ -382,7 +399,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                                     break;
                                 case Quad:
                                     t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Blue.WOBBLE_GOAL_C, Math.toRadians(90))
+                                            .splineToLinearHeading(Position.Blue.WOBBLE_GOAL_C, Math.toRadians(90) * (location == Location.Outer ? 0 : 1))
                                             .build();
 
                                     break;
@@ -405,7 +422,7 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                                     break;
                                 case Quad:
                                     t[0] = drive.trajectoryBuilder(lastPose)
-                                            .splineToLinearHeading(Position.Red.WOBBLE_GOAL_C, 0)
+                                            .splineToLinearHeading(Position.Red.WOBBLE_GOAL_C, Math.toRadians(90) * (location == Location.Outer ? 0 : -1))
                                             .build();
 
                                     break;
@@ -459,57 +476,25 @@ public class SpaghettiAutonomousV2 extends LinearOpMode {
                     break;
                 case Park:
                     t = new Trajectory[1];
+                    Pose2d targetPosition = new Pose2d(Position.PARK_X, lastPose.getY(), 0);
 
-                    switch(alliance) {
-                        case Blue:
-                            Pose2d targetPosition = new Pose2d(Position.PARK_X, lastPose.getY(), 0);
+                    t[0] = drive.trajectoryBuilder(lastPose)
+                            .lineToLinearHeading(targetPosition)
+                            .build();
 
-                            t[0] = drive.trajectoryBuilder(lastPose)
-                                    .lineToLinearHeading(targetPosition)
-                                    .build();
-
-                            break;
-                        case Red:
-                            t[0] = drive.trajectoryBuilder(lastPose)
-                                    .lineToLinearHeading(Position.Red.FINISH_OUTER)
-                                    .build();
-
-                            break;
-                    }
-//                    switch (alliance) {
+//                    switch(alliance) {
 //                        case Blue:
-//                            switch (location) {
-//                                case Inner:
+//                            Pose2d targetPosition = new Pose2d(Position.PARK_X, lastPose.getY(), 0);
 //
-//                                    t[0] = drive.trajectoryBuilder(lastPose)
-//                                            .splineToLinearHeading(Position.Blue.FINISH_INNER, 0)
-//                                            .build();
-//
-//                                    break;
-//                                case Outer:
-//                                    t[0] = drive.trajectoryBuilder(lastPose)
-//                                            .splineToLinearHeading(Position.Blue.FINISH_OUTER, 0)
-//                                            .build();
-//
-//                                    break;
-//                            }
+//                            t[0] = drive.trajectoryBuilder(lastPose)
+//                                    .lineToLinearHeading(targetPosition)
+//                                    .build();
 //
 //                            break;
 //                        case Red:
-//                            switch (location) {
-//                                case Inner:
-//                                    t[0] = drive.trajectoryBuilder(lastPose)
-//                                            .splineToLinearHeading(Position.Red.FINISH_INNER, 0)
-//                                            .build();
-//
-//                                    break;
-//                                case Outer:
-//                                    t[0] = drive.trajectoryBuilder(lastPose)
-//                                            .splineToLinearHeading(Position.Red.FINISH_OUTER, 0)
-//                                            .build();
-//
-//                                    break;
-//                            }
+//                            t[0] = drive.trajectoryBuilder(lastPose)
+//                                    .lineToLinearHeading(Position.Red.FINISH_OUTER)
+//                                    .build();
 //
 //                            break;
 //                    }
