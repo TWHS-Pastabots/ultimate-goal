@@ -217,8 +217,6 @@ public class Spaghetti extends OpMode {
         // Set the motor velocity for the launcher motor
         robot.spinLauncher(gamepad2.right_trigger, true);
 
-        robot.spinLauncherAid(gamepad2.dpad_up, gamepad2.dpad_down);
-
         // Check if the launcher button is pressed, and the launcher should run
         if (gamepad2.left_bumper && lastLaunchTime + LAUNCH_TIME * 2 < getRuntime()) {
             // Run the launcher and store the time that the launcher is run so that we can

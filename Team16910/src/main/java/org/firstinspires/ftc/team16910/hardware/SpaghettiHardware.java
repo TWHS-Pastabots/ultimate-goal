@@ -2,6 +2,7 @@ package org.firstinspires.ftc.team16910.hardware;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -25,7 +26,6 @@ public class SpaghettiHardware extends RobotHardware {
     public static double INTAKE_POWER = 0.15;
     public static double OUTER_INTAKE_POWER = 0.5;
     public static double LAUNCHER_POWER = 0.575;
-    public static double LAUNCHER_AID_POWER = 0.5;
 
     // Miscellaneous robot motors and servos
     public DcMotorEx intakeMotor = null;
@@ -36,7 +36,6 @@ public class SpaghettiHardware extends RobotHardware {
     public Servo leftIntakeServo = null;
     public Servo rightIntakeServo = null;
     public DcMotorEx outerIntakeMotor = null;
-    public DcMotorEx launcherAidMotor = null;
 
     private Telemetry telemetry;
 
@@ -57,10 +56,9 @@ public class SpaghettiHardware extends RobotHardware {
         leftIntakeServo = hardwareMap.get(Servo.class, SpaghettiIds.LEFT_INTAKE_SERVO);
         rightIntakeServo = hardwareMap.get(Servo.class, SpaghettiIds.RIGHT_INTAKE_SERVO);
         outerIntakeMotor = hardwareMap.get(DcMotorEx.class, SpaghettiIds.OUTER_INTAKE_MOTOR);
-        launcherAidMotor = hardwareMap.get(DcMotorEx.class, SpaghettiIds.LAUNCHER_AID_MOTOR);
 
         // Setup the motors list
-        motors.addAll(Arrays.asList(intakeMotor, outerIntakeMotor, launcherMotor, launcherAidMotor));
+        motors.addAll(Arrays.asList(intakeMotor, outerIntakeMotor, launcherMotor));
 
         // Setup the servos list
         servos.addAll(Arrays.asList(launcherServo, armServo, clawServo, leftIntakeServo, rightIntakeServo));
@@ -73,8 +71,7 @@ public class SpaghettiHardware extends RobotHardware {
         launcherMotor.setDirection(DcMotorEx.Direction.FORWARD);
         leftIntakeServo.setDirection(Servo.Direction.FORWARD);
         rightIntakeServo.setDirection(Servo.Direction.FORWARD);
-        outerIntakeMotor.setDirection(DcMotorEx.Direction.FORWARD);
-        launcherAidMotor.setDirection(DcMotorEx.Direction.FORWARD);
+        outerIntakeMotor.setDirection(DcMotorEx.Direction.REVERSE);
 
         // Range scalings
         launcherServo.scaleRange(0, 0.19);
@@ -251,18 +248,5 @@ public class SpaghettiHardware extends RobotHardware {
             telemetry.addData("launcher motor actual", "%.02f", velocity);
             telemetry.addData("launcher motor error", "%.02f%%", error * 100);
         }
-    }
-
-    /**
-     * TODO(BSFishy): document this
-     *
-     * @param forward if the motor should spin forward
-     * @param reverse if the motor should spin in reverse
-     */
-    public void spinLauncherAid(boolean forward, boolean reverse) {
-        double launcherAidPower = (forward ? 1 : 0) * LAUNCHER_AID_POWER
-                + (reverse ? 1 : 0) * -LAUNCHER_AID_POWER;
-
-        launcherAidMotor.setPower(launcherAidPower);
     }
 }
