@@ -8,6 +8,8 @@ import java.util.Locale;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 public class Pose2dUtil {
     /**

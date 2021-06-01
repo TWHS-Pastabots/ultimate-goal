@@ -33,6 +33,8 @@ import static org.firstinspires.ftc.team16910.auton.Position.SAFE_SPOT_DISTANCE;
 /**
  * TODO(BSFishy): document this
  * Game Manual 2, section 4.5.1
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 @Config
 @Autonomous(name = "Spaghetti Autonomous V2", group = Spaghetti.GROUP, preselectTeleOp = Spaghetti.NAME)

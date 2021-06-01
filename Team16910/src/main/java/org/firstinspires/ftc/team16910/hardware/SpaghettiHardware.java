@@ -13,6 +13,8 @@ import java.util.Arrays;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 @Config
 public class SpaghettiHardware extends RobotHardware {

@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.internal.system.Assert;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 public class TelemetryHelper implements Telemetry {
     private final Telemetry telemetry;

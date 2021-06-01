@@ -27,6 +27,8 @@ import java.util.List;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 @Config
 @Autonomous(name = "Spaghetti Autonomous", group = Spaghetti.GROUP, preselectTeleOp = Spaghetti.NAME)

@@ -7,6 +7,8 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 @Config
 public class Position {

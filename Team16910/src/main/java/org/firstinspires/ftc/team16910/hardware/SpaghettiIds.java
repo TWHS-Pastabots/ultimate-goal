@@ -2,6 +2,8 @@ package org.firstinspires.ftc.team16910.hardware;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 public class SpaghettiIds {
     public static final String INTAKE_MOTOR = "intakeMotor";

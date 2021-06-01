@@ -8,6 +8,8 @@ import org.firstinspires.ftc.team16910.util.Pose2dUtil;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 @Config
 public class Position {
@@ -22,6 +24,8 @@ public class Position {
 
     /**
      * TODO(BSFishy): document this
+     *
+     * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
      */
     public static class Blue {
         public static final Pose2d POWER_SHOT_SHIFT = new Pose2d(0, -POWER_SHOT_SHIFT_DISTANCE);
@@ -43,6 +47,8 @@ public class Position {
 
     /**
      * TODO(BSFishy): document this
+     *
+     * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
      */
     public static class Red {
         public static final Pose2d POWER_SHOT_SHIFT = new Pose2d(0, POWER_SHOT_SHIFT_DISTANCE);

@@ -15,6 +15,8 @@ import org.firstinspires.ftc.team16910.util.MotorUtil;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 @Config
 @TeleOp(name = "Launcher Tester", group = Spaghetti.GROUP)

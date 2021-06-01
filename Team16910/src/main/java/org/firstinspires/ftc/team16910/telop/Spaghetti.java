@@ -18,6 +18,8 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 @TeleOp(name = Spaghetti.NAME, group = Spaghetti.GROUP)
 @Config

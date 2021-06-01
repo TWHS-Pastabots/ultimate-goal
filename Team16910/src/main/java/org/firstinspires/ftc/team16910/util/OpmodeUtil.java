@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 
 /**
  * TODO(BSFishy): document this
+ *
+ * @author Matt Provost &lt;mattprovost6@gmail.com&gt;
  */
 public class OpmodeUtil {
     /**
