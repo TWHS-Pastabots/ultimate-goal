@@ -11,7 +11,7 @@ import java.util.function.Supplier;
  * Contains utility functions related to {@link DcMotorEx}.
  * <p>
  * There are certain things that are used repetitively regarding motors, so this
- * class contains a number of useful functions implementing those things. For example,
+ * contains a number of useful functions implementing those things. For example,
  * there are methods to convert motor velocities to and from power levels, spin motors
  * to specific velocities, etc.
  * <p>
