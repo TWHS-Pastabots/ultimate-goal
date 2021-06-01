@@ -11,6 +11,6 @@ public class SpaghettiIds {
     public static final String LAUNCHER_SERVO = "launcherServo";
     public static final String LEFT_INTAKE_SERVO = "leftIntake";
     public static final String RIGHT_INTAKE_SERVO = "rightIntake";
-    public static final String INTAKE_SERVO = "intakeServo";
+    public static final String OUTER_INTAKE_MOTOR = "outerIntakeMotor";
     public static final String LAUNCHER_AID_MOTOR = "launcherAidMotor";
 }
